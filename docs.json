@@ -143,23 +143,6 @@
                       }
                     ],
                     "root": "projects/cli-factory/providers/example/index"
-                  },
-                  {
-                    "group": "Google Workspace",
-                    "pages": [
-                      "projects/cli-factory/providers/google-workspace/index",
-                      {
-                        "expanded": true,
-                        "group": "Tools",
-                        "pages": [
-                          "projects/cli-factory/providers/google-workspace/tools/check-calendar-events",
-                          "projects/cli-factory/providers/google-workspace/tools/check-emails",
-                          "projects/cli-factory/providers/google-workspace/tools/create-calendar-event",
-                          "projects/cli-factory/providers/google-workspace/tools/send-email"
-                        ]
-                      }
-                    ],
-                    "root": "projects/cli-factory/providers/google-workspace/index"
                   }
                 ],
                 "root": "projects/cli-factory/providers/overview"
