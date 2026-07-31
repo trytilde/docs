@@ -31,7 +31,7 @@ Tilde opens a secure browser login when your client connects. Do not paste crede
 Replace the bracketed text, then send this prompt to the connected agent.
 
 <Prompt description="Build with Tilde" icon="sparkles" actions={["copy", "cursor"]}>
-Start by reading https://api.trytilde.ai/llms.txt and the hosted agent guides it links for this task. Treat them as the canonical Tilde instructions. Help me build [describe your agent] with Tilde. First inspect my Tilde identity and teams, then ask only the questions needed to understand the agent. Search Tilde's available capabilities at runtime instead of assuming which providers exist. Configure the tools, credentials, ChatKit channels, and skills the agent needs. Give me secure approval links for credentials; never ask me to paste secrets into chat. Ask before actions with external side effects. Test the setup with a read-only action, then summarize the resources you created and what I should do next. If this agent needs a cloud endpoint, prepare it for Vercel.
+Start by reading https://api.trytilde.ai/llms.txt. Then use https://docs.trytilde.ai/llms.txt to open the relevant production-hosted agent guides. Treat the frontend context and those guides as the canonical Tilde instructions. Help me build [describe your agent] with Tilde. First inspect my Tilde identity and teams, then ask only the questions needed to understand the agent. Search Tilde's available capabilities at runtime instead of assuming which providers exist. Configure the tools, credentials, ChatKit channels, and skills the agent needs. Give me secure approval links for credentials; never ask me to paste secrets into chat. Ask before actions with external side effects. Test the setup with a read-only action, then summarize the resources you created and what I should do next. If this agent needs a cloud endpoint, prepare it for Vercel.
 </Prompt>
 
 Your agent should:
@@ -49,7 +49,7 @@ The [code review agent](https://github.com/trytilde/examples/tree/main/code-revi
 Ask your connected agent to adapt it:
 
 <Prompt description="Adapt the code review agent" icon="code-branch" actions={["copy", "cursor"]}>
-Start by reading https://api.trytilde.ai/llms.txt and the hosted agent guides it links for this task. Treat them as the canonical Tilde instructions. Use https://github.com/trytilde/examples/tree/main/code-review-bot as the starting point for my agent. Read its README and tilde-state.yaml before changing code. Adapt the example to [describe the job]. Keep credentials behind Tilde, expose only required tools, and preserve webhook signature verification. Help me run it locally, complete any human approval steps, and test one safe end-to-end request. Then prepare the environment variables and production endpoint for Vercel.
+Start by reading https://api.trytilde.ai/llms.txt. Then use https://docs.trytilde.ai/llms.txt to open the relevant production-hosted agent guides. Treat the frontend context and those guides as the canonical Tilde instructions. Use https://github.com/trytilde/examples/tree/main/code-review-bot as the starting point for my agent. Read its README and tilde-state.yaml before changing code. Adapt the example to [describe the job]. Keep credentials behind Tilde, expose only required tools, and preserve webhook signature verification. Help me run it locally, complete any human approval steps, and test one safe end-to-end request. Then prepare the environment variables and production endpoint for Vercel.
 </Prompt>
 
 <Accordion title="Set up the example manually" icon="terminal">
