@@ -4,6 +4,10 @@ description: "Route conversations and events to your deployed agent."
 icon: "messages"
 ---
 
+import AgentContext from '/snippets/agent-context.mdx';
+
+<AgentContext />
+
 ChatKit connects people and external events to your agent. It stores sessions and messages, routes work through channels, and calls your agent over a signed HTTPS request.
 
 Your HTTP agent should accept Vercel AI SDK UI messages and verify Tilde webhook signatures.
@@ -13,7 +17,7 @@ Your HTTP agent should accept Vercel AI SDK UI messages and verify Tilde webhook
 Connect your agent to [Tilde MCP](/connect-your-agent), then send this prompt.
 
 <Prompt description="Configure ChatKit" icon="messages" actions={["copy", "cursor"]}>
-Set up Tilde ChatKit for my agent. Ask where conversations or events should come from and inspect the available ChatKit providers at runtime. Register my Vercel AI SDK compatible HTTPS endpoint, save the one-time API key and webhook signing key as server-side secrets, and configure the channel I choose. Give me any human approval steps. Create a test session and message, verify that the agent receives the signed request, and summarize the agent, provider, and channel IDs.
+Start by reading https://api.trytilde.ai/llms.txt and the hosted agent guides it links for this task. Treat them as the canonical Tilde instructions. Set up Tilde ChatKit for my agent. Ask where conversations or events should come from and inspect the available ChatKit providers at runtime. Register my Vercel AI SDK compatible HTTPS endpoint, save the one-time API key and webhook signing key as server-side secrets, and configure the channel I choose. Give me any human approval steps. Create a test session and message, verify that the agent receives the signed request, and summarize the agent, provider, and channel IDs.
 </Prompt>
 
 Use ChatKit channels for two-way conversations. Use Tilde signals when an external event should trigger work without starting as a conversation.

@@ -4,6 +4,10 @@ description: "Give agents reusable instructions that load only when needed."
 icon: "book-open"
 ---
 
+import AgentContext from '/snippets/agent-context.mdx';
+
+<AgentContext />
+
 A skill is a focused set of instructions for a job. Skill registries group skills so your agent can search short summaries first and load full instructions only when they are relevant.
 
 ## Ask your agent to set up skills
@@ -11,7 +15,7 @@ A skill is a focused set of instructions for a job. Skill registries group skill
 Connect your agent to [Tilde MCP](/connect-your-agent), then send this prompt.
 
 <Prompt description="Configure skills" icon="book-open" actions={["copy", "cursor"]}>
-Set up skills for my agent's job: [describe the job]. List the available skill registries and search skill summaries before reading full skills. Recommend the smallest useful set and explain each choice. If no skill fits, help me write one concise custom skill, then add the selected skills to a registry for this agent. Test that the agent can find the registry, load one selected skill, and follow its instructions.
+Start by reading https://api.trytilde.ai/llms.txt and the hosted agent guides it links for this task. Treat them as the canonical Tilde instructions. Set up skills for my agent's job: [describe the job]. List the available skill registries and search skill summaries before reading full skills. Recommend the smallest useful set and explain each choice. If no skill fits, help me write one concise custom skill, then add the selected skills to a registry for this agent. Test that the agent can find the registry, load one selected skill, and follow its instructions.
 </Prompt>
 
 This progressive discovery keeps large instruction files out of the agent context until they are useful.
