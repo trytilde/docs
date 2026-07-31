@@ -1,0 +1,25 @@
+---
+title: "Skills"
+description: "Give agents reusable instructions that load only when needed."
+icon: "book-open"
+---
+
+A skill is a focused set of instructions for a job. Skill registries group skills so your agent can search short summaries first and load full instructions only when they are relevant.
+
+## Ask your agent to set up skills
+
+Connect your agent to [Tilde MCP](/connect-your-agent), then send this prompt.
+
+<Prompt description="Configure skills" icon="book-open" actions={["copy", "cursor"]}>
+Set up skills for my agent's job: [describe the job]. List the available skill registries and search skill summaries before reading full skills. Recommend the smallest useful set and explain each choice. If no skill fits, help me write one concise custom skill, then add the selected skills to a registry for this agent. Test that the agent can find the registry, load one selected skill, and follow its instructions.
+</Prompt>
+
+This progressive discovery keeps large instruction files out of the agent context until they are useful.
+
+<Accordion title="Set up skills in Tilde yourself" icon="user">
+  Open Tilde and choose a team. Under **Skills**, create a registry. Add trusted provider skills or write a team-owned custom skill, then add only the skills your agent needs to that registry.
+</Accordion>
+
+<Tip>
+  For a cloud agent, deploy its endpoint to Vercel and confirm the production agent can search and read its Tilde skill registry.
+</Tip>

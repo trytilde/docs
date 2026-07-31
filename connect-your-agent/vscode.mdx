@@ -1,0 +1,32 @@
+---
+title: "Set up VS Code"
+description: "Connect GitHub Copilot in VS Code to the global Tilde MCP server."
+icon: "code"
+---
+
+[← All clients](/connect-your-agent)
+
+<Steps>
+  <Step title="Install with one click">
+    [Install Tilde in VS Code](vscode:mcp/install?%7B%22name%22%3A%22tilde%22%2C%22type%22%3A%22http%22%2C%22url%22%3A%22https%3A%2F%2Fapi.trytilde.ai%2Fmcp%22%7D). This requires VS Code 1.99 or later with GitHub Copilot.
+  </Step>
+
+  <Step title="Or add Tilde manually">
+    Open or create `.vscode/mcp.json` in your project and add this configuration:
+
+    ```json mcp.json
+    {
+      "servers": {
+        "tilde": {
+          "type": "http",
+          "url": "https://api.trytilde.ai/mcp"
+        }
+      }
+    }
+    ```
+  </Step>
+
+  <Step title="Authorize">
+    Click **Start** in the CodeLens above the server entry, or open a GitHub Copilot chat. VS Code detects OAuth and asks you to sign in.
+  </Step>
+</Steps>

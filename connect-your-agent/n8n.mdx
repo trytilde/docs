@@ -1,0 +1,33 @@
+---
+title: "Set up n8n"
+description: "Connect n8n to the global Tilde MCP server."
+icon: "diagram-project"
+---
+
+[← All clients](/connect-your-agent)
+
+<Steps>
+  <Step title="Add an MCP Client node">
+    Add an **MCP Client** node, or an **MCP Client Tool** sub-node for an AI agent chain.
+  </Step>
+
+  <Step title="Set the connection type">
+    Set the connection type to **HTTP Streamable**.
+  </Step>
+
+  <Step title="Enter the server URL">
+    Paste the global Tilde MCP server URL.
+
+    ```text MCP URL
+    https://api.trytilde.ai/mcp
+    ```
+  </Step>
+
+  <Step title="Configure authentication">
+    Use hosted Tilde login if your n8n MCP client supports browser authorization.
+  </Step>
+
+  <Step title="Connect">
+    Click **Connect**. Tilde tools are now available in your workflow.
+  </Step>
+</Steps>

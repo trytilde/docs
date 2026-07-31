@@ -1,0 +1,33 @@
+---
+title: "Set up Codex"
+description: "Connect Codex to the global Tilde MCP server with secure Tilde login."
+icon: "square-code"
+---
+
+[← All clients](/connect-your-agent)
+
+<Steps>
+  <Step title="Run the setup command">
+    Run this command to add the Tilde MCP server to Codex.
+
+    ```bash Terminal
+    codex mcp add tilde --url https://api.trytilde.ai/mcp
+    ```
+  </Step>
+
+  <Step title="Authenticate with OAuth">
+    Run the login command. Codex opens a browser window where you can authorize access to Tilde.
+
+    ```bash Terminal
+    codex mcp login tilde
+    ```
+  </Step>
+
+  <Step title="Verify the connection">
+    Confirm that Tilde appears as a registered MCP server.
+
+    ```bash Terminal
+    codex mcp list
+    ```
+  </Step>
+</Steps>

@@ -1,0 +1,35 @@
+---
+title: "Set up Windsurf"
+description: "Connect Windsurf to the global Tilde MCP server with secure Tilde login."
+icon: "wind"
+---
+
+[← All clients](/connect-your-agent)
+
+<Steps>
+  <Step title="Open your MCP config">
+    Open `~/.codeium/windsurf/mcp_config.json`, or go to **Windsurf → Settings → MCP Configuration**.
+  </Step>
+
+  <Step title="Add the Tilde server">
+    Add this configuration:
+
+    ```json mcp_config.json
+    {
+      "mcpServers": {
+        "tilde": {
+          "serverUrl": "https://api.trytilde.ai/mcp"
+        }
+      }
+    }
+    ```
+  </Step>
+
+  <Step title="Authorize">
+    Restart Windsurf, then click **Authorize** next to Tilde. Sign in when the browser window opens.
+  </Step>
+
+  <Step title="Start using Tilde">
+    Tilde tools are now available in Cascade.
+  </Step>
+</Steps>

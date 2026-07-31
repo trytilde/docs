@@ -1,0 +1,25 @@
+---
+title: "Tools"
+description: "Give an agent the APIs and MCP tools it needs without exposing credentials."
+icon: "wrench"
+---
+
+Tools let your agent act in other systems. Tilde discovers available providers, stores their credentials, and exposes only the functions you select through an MCP server.
+
+## Ask your agent to set up tools
+
+Connect your agent to [Tilde MCP](/connect-your-agent), then send this prompt.
+
+<Prompt description="Configure tools" icon="wrench" actions={["copy", "cursor"]}>
+Configure the tools my agent needs for [describe the job]. Search Tilde's available capabilities at runtime and show me the best matches, required credentials, and any approval requirements. After I choose, enable the provider and send me secure approval links. Never ask me to paste credentials into chat. Create or reuse an MCP server, expose only the tools I approve, and test one read-only call. Return the MCP server ID, enabled tool names, and any remaining setup steps.
+</Prompt>
+
+Tilde keeps upstream credentials out of the agent context. If a tool runs in the background, your agent polls its function ticket until the call completes or fails.
+
+<Accordion title="Set up tools in Tilde yourself" icon="user">
+  Open Tilde and choose a team. Under **Tools**, find a provider, complete its credential setup, and enable only the functions your agent needs. Then create an MCP server and add those functions to it.
+</Accordion>
+
+<Tip>
+  If the agent has an HTTP endpoint, deploy it to Vercel and keep all Tilde and provider keys in server-side environment variables.
+</Tip>

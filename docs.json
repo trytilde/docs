@@ -1,9 +1,19 @@
 {
   "$schema": "https://mintlify.com/docs.json",
+  "appearance": {
+    "default": "light",
+    "strict": true
+  },
   "colors": {
-    "dark": "#15803D",
-    "light": "#07C983",
-    "primary": "#16A34A"
+    "dark": "#4C81DC",
+    "light": "#89C0FF",
+    "primary": "#0038AE"
+  },
+  "background": {
+    "color": {
+      "dark": "#2E2723",
+      "light": "#FFFFFF"
+    }
   },
   "contextual": {
     "options": [
@@ -17,143 +27,45 @@
       "vscode"
     ]
   },
-  "favicon": "/favicon.svg",
-  "footer": {
-    "socials": {
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify",
-      "x": "https://x.com/mintlify"
-    }
+  "description": "Documentation for building and operating AI agents with Tilde.",
+  "favicon": {
+    "dark": "/favicon-dark.svg",
+    "light": "/favicon.svg"
   },
   "logo": {
     "dark": "/logo/dark.svg",
     "light": "/logo/light.svg"
   },
-  "name": "Mintlify Starter Kit",
-  "navbar": {
-    "links": [
-      {
-        "href": "mailto:hi@mintlify.com",
-        "label": "Support"
-      }
-    ],
-    "primary": {
-      "href": "https://dashboard.mintlify.com",
-      "label": "Dashboard",
-      "type": "button"
+  "fonts": {
+    "family": "Inter",
+    "heading": {
+      "family": "Inter",
+      "weight": 500
     }
   },
+  "name": "Tilde documentation",
   "navigation": {
-    "global": {
-      "anchors": [
-        {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
-        },
-        {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
-        }
-      ]
-    },
-    "tabs": [
+    "groups": [
       {
-        "groups": [
-          {
-            "group": "Getting started",
-            "pages": [
-              "index",
-              "quickstart",
-              "development"
-            ]
-          },
-          {
-            "group": "Customization",
-            "pages": [
-              "essentials/settings",
-              "essentials/navigation"
-            ]
-          },
-          {
-            "group": "Writing content",
-            "pages": [
-              "essentials/markdown",
-              "essentials/code",
-              "essentials/images",
-              "essentials/components",
-              "essentials/reusable-snippets"
-            ]
-          },
-          {
-            "group": "Agent ready",
-            "pages": [
-              "agent-ready/prompt",
-              "agent-ready/visibility",
-              "agent-ready/contextual",
-              "ai-tools/cursor",
-              "ai-tools/claude-code",
-              "ai-tools/windsurf"
-            ]
-          }
-        ],
-        "tab": "Guides"
+        "group": "Get started",
+        "pages": [
+          "index",
+          "quickstart"
+        ]
       },
       {
-        "groups": [
-          {
-            "group": "API documentation",
-            "pages": [
-              "api-reference/introduction"
-            ]
-          },
-          {
-            "group": "Endpoint examples",
-            "pages": [
-              "api-reference/endpoint/get",
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/delete",
-              "api-reference/endpoint/webhook"
-            ]
-          }
-        ],
-        "tab": "API reference"
-      },
-      {
-        "groups": [
-          {
-            "group": "CLI Factory",
-            "pages": [
-              "projects/cli-factory/index",
-              {
-                "group": "Providers",
-                "pages": [
-                  "projects/cli-factory/providers/overview",
-                  {
-                    "group": "Example",
-                    "pages": [
-                      "projects/cli-factory/providers/example/index",
-                      {
-                        "expanded": true,
-                        "group": "Tools",
-                        "pages": [
-                          "projects/cli-factory/providers/example/tools/echo"
-                        ]
-                      }
-                    ],
-                    "root": "projects/cli-factory/providers/example/index"
-                  }
-                ],
-                "root": "projects/cli-factory/providers/overview"
-              }
-            ],
-            "root": "projects/cli-factory/index"
-          }
-        ],
-        "tab": "Projects"
+        "group": "Build",
+        "pages": [
+          "tools",
+          "chatkit",
+          "skills"
+        ]
       }
     ]
   },
-  "theme": "mint"
+  "styling": {
+    "codeblocks": "system",
+    "eyebrows": "breadcrumbs"
+  },
+  "theme": "willow"
 }

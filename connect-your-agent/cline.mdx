@@ -1,0 +1,37 @@
+---
+title: "Set up Cline"
+description: "Connect Cline to the global Tilde MCP server with secure Tilde login."
+icon: "box"
+---
+
+[← All clients](/connect-your-agent)
+
+<Steps>
+  <Step title="Open MCP settings">
+    In VS Code with Cline installed, click the **MCP Servers** icon in the Cline navigation bar.
+  </Step>
+
+  <Step title="Edit the MCP config file">
+    Click **Configure**, then click **Configure MCP Servers**.
+  </Step>
+
+  <Step title="Add the Tilde server">
+    Add this configuration:
+
+    ```json MCP Settings
+    {
+      "mcpServers": {
+        "tilde": {
+          "url": "https://api.trytilde.ai/mcp",
+          "type": "streamableHttp",
+          "disabled": false
+        }
+      }
+    }
+    ```
+  </Step>
+
+  <Step title="Authorize">
+    Save the configuration. Cline opens a browser window where you can authorize access to your Tilde account.
+  </Step>
+</Steps>

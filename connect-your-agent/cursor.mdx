@@ -1,0 +1,31 @@
+---
+title: "Set up Cursor"
+description: "Connect Cursor to the global Tilde MCP server with secure Tilde login."
+icon: "arrow-pointer"
+---
+
+[← All clients](/connect-your-agent)
+
+<Steps>
+  <Step title="Install with one click">
+    [Install Tilde in Cursor](https://cursor.com/en/install-mcp?name=tilde&config=eyJ1cmwiOiJodHRwczovL2FwaS50cnl0aWxkZS5haS9tY3AifQ%3D%3D), then authorize access in your browser.
+  </Step>
+
+  <Step title="Or add Tilde manually">
+    Open `.cursor/mcp.json` in your project or `~/.cursor/mcp.json` for global configuration. Add this entry:
+
+    ```json mcp.json
+    {
+      "mcpServers": {
+        "tilde": {
+          "url": "https://api.trytilde.ai/mcp"
+        }
+      }
+    }
+    ```
+  </Step>
+
+  <Step title="Authorize in your browser">
+    Restart Cursor, then click **Connect** next to Tilde in MCP Tools settings. Sign in when the browser window opens.
+  </Step>
+</Steps>

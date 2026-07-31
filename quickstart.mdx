@@ -1,81 +1,76 @@
 ---
 title: "Quickstart"
-description: "Start building awesome documentation in minutes"
-icon: 'rocket'
+description: "Connect your agent to Tilde and build from a prompt."
+icon: "rocket"
 ---
 
-## Get started in three steps
+Tilde lets your agent configure its own tools, credentials, messaging, and skills. You stay in control of approvals and external side effects.
 
-Get your documentation site running locally and make your first customization.
+## 1. Connect your agent
 
-### Step 1: Set up your local environment
+Open the setup page, choose the client where your agent runs, and connect it to the global Tilde MCP server.
 
-<AccordionGroup>
-  <Accordion icon="copy" title="Clone your docs locally">
-    During the onboarding process, you created a GitHub repository with your docs content if you didn't already have one. You can find a link to this repository in your [dashboard](https://dashboard.mintlify.com).
-    
-    To clone the repository locally so that you can make and preview changes to your docs, follow the [Cloning a repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) guide in the GitHub docs.
-  </Accordion>
-  <Accordion icon="rectangle-terminal" title="Start the preview server">
-    1. Install the Mintlify CLI: `npm i -g mint`
-    2. Navigate to your docs directory and run: `mint dev`
-    3. Open `http://localhost:3000` to see your docs live!
-    
-    <Tip>Your preview updates automatically as you edit files.</Tip>
-  </Accordion>
-</AccordionGroup>
+<Card title="Connect your agent" icon="plug" href="/connect-your-agent" horizontal>
+  Set up Codex, Claude, ChatGPT, Cursor, VS Code, or another MCP client.
+</Card>
 
-### Step 2: Deploy your changes
+Your client connects to:
 
-<AccordionGroup>
-  <Accordion icon="github" title="Install our GitHub app">
-    Install the Mintlify GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app).
-    
-    Our GitHub app automatically deploys your changes to your docs site, so you don't need to manage deployments yourself.
+```text
+https://api.trytilde.ai/mcp
+```
+
+Tilde opens a secure browser login when your client connects. Do not paste credentials into your conversation.
+
+## 2. Tell your agent what to build
+
+Replace the bracketed text, then send this prompt to the connected agent.
+
+<Prompt description="Build with Tilde" icon="sparkles" actions={["copy", "cursor"]}>
+Help me build [describe your agent] with Tilde. First inspect my Tilde identity and teams, then ask only the questions needed to understand the agent. Search Tilde's available capabilities at runtime instead of assuming which providers exist. Configure the tools, credentials, ChatKit channels, and skills the agent needs. Give me secure approval links for credentials; never ask me to paste secrets into chat. Ask before actions with external side effects. Test the setup with a read-only action, then summarize the resources you created and what I should do next. If this agent needs a cloud endpoint, prepare it for Vercel.
+</Prompt>
+
+Your agent should:
+
+1. Reuse an existing team or help you create one.
+2. Search Tilde for capabilities that match the job.
+3. Show you required credentials and approvals.
+4. Expose only the tools the agent needs through its MCP server.
+5. Test the setup and return the resource IDs you will need later.
+
+## 3. Start from a working example
+
+The [code review agent](https://github.com/trytilde/examples/tree/main/code-review-bot) is a production-oriented Next.js example. It receives GitHub messages through ChatKit, runs reviews in a sandbox, and calls allowlisted GitHub tools without receiving GitHub or sandbox credentials.
+
+Ask your connected agent to adapt it:
+
+<Prompt description="Adapt the code review agent" icon="code-branch" actions={["copy", "cursor"]}>
+Use https://github.com/trytilde/examples/tree/main/code-review-bot as the starting point for my agent. Read its README and tilde-state.yaml before changing code. Adapt the example to [describe the job]. Keep credentials behind Tilde, expose only required tools, and preserve webhook signature verification. Help me run it locally, complete any human approval steps, and test one safe end-to-end request. Then prepare the environment variables and production endpoint for Vercel.
+</Prompt>
+
+<Accordion title="Set up the example manually" icon="terminal">
+  Clone the examples repository, then follow the project README.
+
+  ```bash
+  git clone https://github.com/trytilde/examples.git
+  cd examples/code-review-bot
+  pnpm install
+  cp .env.example .env.local
+  ```
+
+  Import `tilde-state.yaml`, complete the pending GitHub and Modal credentials in Tilde, add the returned values to `.env.local`, then run `pnpm dev`.
 </Accordion>
-<Accordion icon="palette" title="Update your site name and colors">
-    For a first change, let's update the name and colors of your docs site.
 
-    1. Open `docs.json` in your editor.
-    2. Change the `"name"` field to your project name.
-    3. Update the `"colors"` to match your brand.
-    4. Save and see your changes instantly at `http://localhost:3000`.
+## Deploy to Vercel
 
-    <Tip>Try changing the primary color to see an immediate difference!</Tip>
-  </Accordion>
-</AccordionGroup>
+For a cloud agent, deploy its HTTPS endpoint to Vercel. Add the server-side environment variables from the project to Vercel and keep API keys and signing keys secret.
 
-### Step 3: Go live
+```bash
+vercel deploy --prod
+```
 
-<Accordion icon="rocket" title="Publish your docs">
-  1. Commit and push your changes.
-  2. Your docs will update and be live in moments!
-</Accordion>
-
-## Next steps
-
-Now that you have your docs running, explore these key features:
-
-<CardGroup cols={2}>
-
-<Card title="Write Content" icon="pen-to-square" href="/essentials/markdown">
-  Learn MDX syntax and start writing your documentation.
-</Card>
-
-<Card title="Customize style" icon="palette" href="/essentials/settings">
-  Make your docs match your brand perfectly.
-</Card>
-
-<Card title="Add code examples" icon="square-code" href="/essentials/code">
-  Include syntax-highlighted code blocks.
-</Card>
-
-<Card title="API documentation" icon="code" href="/api-reference/introduction">
-  Auto-generate API docs from OpenAPI specs.
-</Card>
-
-</CardGroup>
+After deployment, ask your agent to update the Tilde ChatKit agent to the production URL and run one final test.
 
 <Note>
-  **Need help?** See our [full documentation](https://mintlify.com/docs) or join our [community](https://mintlify.com/community).
+  The code review example allows requests that can run for up to 300 seconds. Confirm that your Vercel plan supports the required function duration.
 </Note>

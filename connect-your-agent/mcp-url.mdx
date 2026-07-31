@@ -1,0 +1,35 @@
+---
+title: "Use the MCP URL"
+description: "Connect any compatible client to the global Tilde MCP server."
+icon: "network-wired"
+---
+
+[← All clients](/connect-your-agent)
+
+<Steps>
+  <Step title="Copy the server URL">
+    Use this Streamable HTTP endpoint with any compatible MCP client.
+
+    ```text MCP URL
+    https://api.trytilde.ai/mcp
+    ```
+  </Step>
+
+  <Step title="Use hosted Tilde login">
+    Do not add custom authentication headers. Your client should detect OAuth and open hosted Tilde login when it connects.
+  </Step>
+
+  <Step title="Add the endpoint to your client config">
+    Use this general configuration when your client accepts an `mcpServers` object:
+
+    ```json MCP config
+    {
+      "mcpServers": {
+        "tilde": {
+          "url": "https://api.trytilde.ai/mcp"
+        }
+      }
+    }
+    ```
+  </Step>
+</Steps>

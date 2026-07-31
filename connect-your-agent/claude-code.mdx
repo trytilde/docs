@@ -1,0 +1,25 @@
+---
+title: "Set up Claude Code"
+description: "Connect Claude Code to the global Tilde MCP server with secure Tilde login."
+icon: "code"
+---
+
+[← All clients](/connect-your-agent)
+
+<Steps>
+  <Step title="Run the setup command">
+    Run this command to add Tilde as a user-scoped Streamable HTTP MCP server.
+
+    ```bash Terminal
+    claude mcp add --scope user --transport http tilde https://api.trytilde.ai/mcp
+    ```
+  </Step>
+
+  <Step title="Authenticate with OAuth">
+    Open Claude Code and type `/mcp`. Select **Tilde**, then follow the browser login flow.
+  </Step>
+
+  <Step title="Verify the connection">
+    Confirm that Tilde appears as connected in the `/mcp` server list.
+  </Step>
+</Steps>
