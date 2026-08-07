@@ -37,6 +37,12 @@ body {
   letter-spacing: -0.025em;
 }
 
+#content-side-layout,
+#table-of-contents-layout,
+#table-of-contents {
+  display: none !important;
+}
+
 #topbar-cta-button,
 card,
 callout,
@@ -66,13 +72,22 @@ card {
   box-shadow: none;
 }
 
+.card [data-component-part="card-content"] {
+  font-size: 0.875rem !important;
+  line-height: 1.25rem !important;
+}
+
 .dark card {
   border-color: #4b403b;
 }
 
-sidebar-group-header,
-eyebrow {
+sidebar-group-header {
   letter-spacing: 0.02em;
+}
+
+eyebrow,
+.breadcrumb-list {
+  display: none !important;
 }
 
 ::selection {
@@ -87,4 +102,27 @@ html[data-current-path^="/connect-your-agent"] steps {
 
 html[data-current-path="/connect-your-agent"] card {
   min-height: 4rem;
+}
+
+.continue-exploring-cards .card::after {
+  content: "\2192";
+  position: absolute;
+  top: 50%;
+  right: 1.5rem;
+  color: currentColor;
+  font-size: 1.125rem;
+  line-height: 1;
+  pointer-events: none;
+  transform: translateY(-50%);
+  transition: transform 150ms ease;
+}
+
+.continue-exploring-cards .card:hover::after,
+.continue-exploring-cards .card:focus-visible::after {
+  transform: translate(0.25rem, -50%);
+}
+
+.continue-exploring-cards [data-component-part="card-title"] {
+  padding-right: 2.5rem;
+  font-weight: 400 !important;
 }
