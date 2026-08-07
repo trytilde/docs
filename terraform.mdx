@@ -1,0 +1,24 @@
+---
+title: "Terraform"
+description: "Manage Tilde resources as code."
+---
+
+import AgentContext from '/snippets/agent-context.mdx';
+
+<AgentContext />
+
+Use Terraform to define and review Tilde configuration alongside the rest of your infrastructure.
+
+Infrastructure as code gives your team a repeatable workflow for proposing changes, reviewing plans, and applying approved configuration.
+
+## Recommended workflow
+
+1. Define the Tilde resources your agent needs.
+2. Store configuration in version control without committing secrets.
+3. Review the Terraform plan before applying it.
+4. Apply the approved changes.
+5. Verify the resulting resources in Tilde.
+
+<Warning>
+  Review destructive changes in the Terraform plan before applying them.
+</Warning>

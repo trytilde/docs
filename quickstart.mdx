@@ -1,13 +1,13 @@
 ---
 title: "Quickstart"
-description: "Build, run, and deploy your first Tilde agent."
+description: "Build, run, and test your first Tilde agent."
 ---
 
 <Info>
   Tilde is designed for agents to build more agents. Choose **Agentic workflow** to work through your coding agent, or **For humans** to follow the same steps yourself.
 </Info>
 
-This guide builds the [Hello World agent](https://github.com/trytilde/examples/tree/main/hello-world-agent): one signed ChatKit endpoint and one Vercel UI channel using Next.js and the Vercel AI SDK.
+This guide shows you how to build and test a signed ChatKit endpoint using Next.js and the Vercel AI SDK. A completed [Hello World agent](https://github.com/trytilde/examples/tree/main/hello-world-agent) is available for reference.
 
 <Tabs>
   <Tab title="Agentic workflow">
@@ -24,7 +24,7 @@ This guide builds the [Hello World agent](https://github.com/trytilde/examples/t
         Send this prompt to the connected agent.
 
         <Prompt description="Build the Hello World agent" icon="sparkles" actions={["copy", "cursor"]}>
-Start by reading https://api.trytilde.ai/llms.txt and use https://docs.trytilde.ai/llms.txt to open the production-hosted agent guides. Clone https://github.com/trytilde/examples and use hello-world-agent as the source of truth. Explain the route before changing it, then ask what I want my agent to do. Keep Tilde webhook verification, ChatKit history, and server-side secrets intact. Help me deploy once to Vercel, import hello-world-agent/tilde.state.yaml with the deployed /api/hello-world endpoint, add the returned Tilde API key and webhook signing key to Vercel, and deploy to production. Finish by sending one test message through the Hello World UI ChatKit channel.
+Start by reading https://api.trytilde.ai/llms.txt and use https://docs.trytilde.ai/llms.txt to open the production-hosted agent guides. Use https://github.com/trytilde/examples/tree/main/hello-world-agent only as a reference and create the app and files in my project. Explain the route before changing it, then ask what I want my agent to do. Keep Tilde webhook verification, ChatKit history, and server-side secrets intact. Register the local endpoint at /api/hello-world as a ChatKit agent, save the returned Tilde API key and webhook signing key in .env.local, run the app through a Tilde Dev Tunnel, and test it in Mission Control.
         </Prompt>
       </Step>
     </Steps>
@@ -32,19 +32,19 @@ Start by reading https://api.trytilde.ai/llms.txt and use https://docs.trytilde.
 
   <Tab title="For humans">
     <Steps>
-      <Step title="Clone and install">
-        You need Node.js 22 or newer, pnpm 10, a Tilde account, an OpenAI API key, and a Vercel account.
+      <Step title="Create the app">
+        You need Node.js 22 or newer, pnpm 10, a Tilde account, and an OpenAI API key.
 
         ```bash
-        git clone https://github.com/trytilde/examples.git
-        cd examples/hello-world-agent
-        pnpm install
-        cp .env.example .env.local
+        pnpm create next-app@16.2.12 hello-world-agent --ts --eslint --app --no-src-dir --no-tailwind --use-pnpm
+        cd hello-world-agent
+        pnpm add @ai-sdk/openai ai @trytilde/harness-sdk @trytilde/harness-sdk-vercel-ai-node
+        touch .env.local
         ```
       </Step>
 
-      <Step title="Review the agent endpoint">
-        The example contains this complete route at [`app/api/hello-world/route.ts`](https://github.com/trytilde/examples/blob/main/hello-world-agent/app/api/hello-world/route.ts):
+      <Step title="Create the agent endpoint">
+        Create `app/api/hello-world/route.ts`. You can compare it with the [completed route](https://github.com/trytilde/examples/blob/main/hello-world-agent/app/api/hello-world/route.ts) in the examples repository.
 
         ```typescript app/api/hello-world/route.ts
         import { openai } from "@ai-sdk/openai";
@@ -59,99 +59,73 @@ Start by reading https://api.trytilde.ai/llms.txt and use https://docs.trytilde.
           streamText,
         } from "ai";
 
-        export const maxDuration = 60;
+        export const POST = chatKitEndpoint({
+          client: createClient({
+            apiKey: process.env.TILDE_API_KEY!,
+            orgId: process.env.TILDE_ORG_ID!,
+            teamId: process.env.TILDE_TEAM_ID!,
+          }),
+          webhookSigningKey: process.env.TILDE_WEBHOOK_SIGNING_KEY!,
+          async handler(request, context) {
+            const history = await context.session.history();
+            const messages = await convertToAiSdkMessages({
+              messages: [...history.items, ...context.messages],
+              chatkit: context.chatkit,
+            });
+            const result = streamText({
+              abortSignal: request.signal,
+              messages: await convertToModelMessages(messages),
+              model: openai("gpt-5.5"),
+              system: "You are a helpful assistant. Keep your answers concise.",
+            });
 
-        function requiredEnv(name: string): string {
-          const value = process.env[name]?.trim();
-          if (!value) throw new Error(`${name} is required`);
-          return value;
-        }
-
-        function createAgentHandler() {
-          const tilde = createClient({
-            apiKey: requiredEnv("TILDE_API_KEY"),
-            baseUrl: process.env.TILDE_BASE_URL ?? "https://api.trytilde.ai",
-            orgId: requiredEnv("TILDE_ORG_ID"),
-            orgSubdomain: false,
-            teamId: requiredEnv("TILDE_TEAM_ID"),
-          });
-
-          return chatKitEndpoint({
-            client: tilde,
-            webhookSigningKey: requiredEnv("TILDE_WEBHOOK_SIGNING_KEY"),
-            requestTimeoutMs: 55_000,
-            async handler(request, context) {
-              const history = await context.session.history();
-              const messages = await convertToAiSdkMessages({
-                messages: [...history.items, ...context.messages],
-                chatkit: context.chatkit,
-              });
-              const result = streamText({
-                abortSignal: request.signal,
-                messages: await convertToModelMessages(messages),
-                model: openai(process.env.OPENAI_MODEL ?? "gpt-5.4"),
-                system: "You are a helpful assistant. Keep your answers concise.",
-              });
-
-              return result.toUIMessageStreamResponse({
-                consumeSseStream: consumeStream,
-                originalMessages: messages,
-              });
-            },
-          });
-        }
-
-        export async function POST(request: Request) {
-          return createAgentHandler()(request);
-        }
+            return result.toUIMessageStreamResponse({
+              consumeSseStream: consumeStream,
+              originalMessages: messages,
+            });
+          },
+        });
         ```
 
         Change the `system` instruction to change what your agent does. Keep the signed `chatKitEndpoint` wrapper and ChatKit history conversion.
       </Step>
 
-      <Step title="Create a public endpoint">
-        Deploy once to get a public URL. The route loads secrets only when Tilde invokes it, so this initial build does not require the environment variables yet.
-
-        ```bash
-        vercel deploy
-        ```
-
-        Your endpoint is the deployment URL plus `/api/hello-world`.
-      </Step>
-
-      <Step title="Create the Tilde resources">
-        Import the example's [`tilde.state.yaml`](https://github.com/trytilde/examples/blob/main/hello-world-agent/tilde.state.yaml). Enter your endpoint when asked for `HELLO_WORLD_CHATKIT_ENDPOINT_URL`.
-
-        <Card title="Deploy with Tilde" icon="rocket" href="https://api.trytilde.ai/deploy?repository-url=https%3A%2F%2Fgithub.com%2Ftrytilde%2Fexamples&state-path=hello-world-agent%2Ftilde.state.yaml" horizontal>
-          Create the Hello World agent and its Vercel UI ChatKit channel.
-        </Card>
-
-        Save the one-time `api_key` and `webhook_signing_key` outputs from `chatkit/agent/hello-world`.
+      <Step title="Create the agent in Tilde">
+        1. Open Tilde, select your workspace, and go to **ChatKit** → **Agents**.
+        2. Click **Register agent** and name it `Hello World`.
+        3. Enable **Local running endpoint** and enter `api/hello-world` as the endpoint path.
+        4. Click **Register**, then copy the one-time API key and webhook signing key.
       </Step>
 
       <Step title="Configure the environment">
-        Set these values in `.env.local` and in your Vercel project. Keep API and signing keys server-side.
+        Set these values in `.env.local`.
+
+        Find the organization and team IDs under **Settings** → **Team settings** → **General information**.
 
         ```dotenv .env.local
-        OPENAI_API_KEY=
-        OPENAI_MODEL=gpt-5.4
-
         TILDE_API_KEY=
-        TILDE_BASE_URL=https://api.trytilde.ai
         TILDE_ORG_ID=
         TILDE_TEAM_ID=
         TILDE_WEBHOOK_SIGNING_KEY=
         ```
       </Step>
 
-      <Step title="Deploy and test">
-        Deploy with the configured environment.
+      <Step title="Run your app through a Dev Tunnel">
+        Start your app's development process through Tilde's Dev Tunnel. Replace `pnpm dev` with the command you normally use to run your app locally.
+
+        The tunnel gives your local agent a public HTTPS endpoint, allowing Tilde to deliver messages, webhooks, and tool invocations while you develop. For ChatKit, `chatKitEndpoint` verifies Tilde's webhook signature and rejects requests without a valid signature.
 
         ```bash
-        vercel deploy --prod
+        harness-sdk tunnel -- pnpm dev
         ```
 
-        If the hostname changed, update the Tilde agent to the production `/api/hello-world` endpoint. Open **ChatKit**, select **Hello World UI**, and send:
+        <Warning>
+          The Dev Tunnel exposes every page and API route served by your local app—not only the agent endpoint—to the public internet. Disable any unneeded or unsecured routes before starting the tunnel, or protect them with authentication and use the tunnel with caution.
+        </Warning>
+      </Step>
+
+      <Step title="Test the agent">
+        Open [**Mission Control**](https://api.trytilde.ai/mission-control), select the workspace where you registered **Hello World**, start a session with the agent, and send:
 
         ```text
         Say hello in one sentence.
@@ -161,4 +135,12 @@ Start by reading https://api.trytilde.ai/llms.txt and use https://docs.trytilde.
   </Tab>
 </Tabs>
 
-For local development, run `pnpm dev` and expose port 3000 through a public HTTPS tunnel. Point the Tilde agent to the tunnel URL plus `/api/hello-world` while you test.
+## Continue exploring
+
+<Columns cols={2}>
+  <Card title="Connect third party services and custom tools to your agent" href="/tools" arrow={false} />
+  <Card title="Provision a skills registry and give your agent skills and the ability to edit them" href="/skills" arrow={false} />
+  <Card title="Trigger your agent from third party events beyond regular chats" href="/chatkit" arrow={false} />
+  <Card title="Create an agent brain or company brain to share between your agents" href="/memory" arrow={false} />
+  <Card title="Deploy to production and managing multiple dev environments" href="/terraform" arrow={false} />
+</Columns>
