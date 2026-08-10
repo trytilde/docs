@@ -1,0 +1,105 @@
+---
+title: "Google Drive tools for AI agents"
+sidebarTitle: "Google Drive"
+description: "Explore 10 Google Drive tools for AI agents in Tilde, including supported authentication and MCP capabilities."
+keywords:
+  - "Google Drive AI tools"
+  - "Google Drive MCP integration"
+  - "Google Drive tools for AI agents"
+  - "Tilde tool providers"
+  - "MCP tools"
+"og:title": "Google Drive tools for AI agents | Tilde"
+"og:description": "Explore 10 Google Drive tools for AI agents in Tilde, including supported authentication and MCP capabilities."
+mode: "wide"
+---
+
+import {
+  PUBLIC_CATALOG_URL,
+  iconAliases,
+  iconUrl,
+  providerFromApi,
+  ProviderLogo,
+  ToolProviderDetail,
+} from "/snippets/tool-provider-browser.jsx";
+
+export const provider = {
+  "name": "Google Drive",
+  "slug": "google_drive",
+  "initials": "GO",
+  "category": "File Storage",
+  "summary": "Google Drive integration for searching, uploading, downloading, and managing files and folders.",
+  "auth": [
+    "Tilde-managed OAuth"
+  ],
+  "iconSources": [],
+  "toolCount": 10,
+  "tools": [
+    [
+      "Search for files and folders using Drive query syntax",
+      "Search for files and folders in Google Drive using query syntax. Example: \"name contains 'report'\"."
+    ],
+    [
+      "Get metadata for a file",
+      "Get detailed metadata for a file in Google Drive."
+    ],
+    [
+      "Download a file. For Google Workspace files, exports to specified format.",
+      "Download a file from Google Drive. For Google Workspace files (Docs, Sheets, Slides), exports to the specified format."
+    ],
+    [
+      "Upload a file to Drive",
+      "Upload a file to Google Drive. Content must be base64-encoded. Uses multipart upload."
+    ],
+    [
+      "Create a new folder",
+      "Create a new folder in Google Drive."
+    ],
+    [
+      "Share a file with users or make it public",
+      "Share a file or folder in Google Drive with specific users or make it publicly accessible."
+    ],
+    [
+      "Move a file to a different folder",
+      "Move a file to a different folder in Google Drive."
+    ],
+    [
+      "Create a copy of a file",
+      "Create a copy of a file in Google Drive."
+    ],
+    [
+      "Move a file to trash",
+      "Move a file to the trash in Google Drive (does not permanently delete)."
+    ],
+    [
+      "Create a new file from text content",
+      "Create a new file in Google Drive from plain text content."
+    ]
+  ]
+};
+
+{/* GENERATED: scripts/generate-tool-provider-pages.mjs */}
+
+Google Drive integration for searching, uploading, downloading, and managing files and folders.
+
+Tilde exposes **10 Google Drive tools** for AI agents through MCP. Connect with Tilde-managed OAuth.
+
+<ToolProviderDetail provider={provider} ProviderLogo={ProviderLogo} />
+
+## Popular Google Drive tools
+
+- **Search for files and folders using Drive query syntax** — Search for files and folders in Google Drive using query syntax. Example: "name contains 'report'".
+- **Get metadata for a file** — Get detailed metadata for a file in Google Drive.
+- **Download a file. For Google Workspace files, exports to specified format.** — Download a file from Google Drive. For Google Workspace files (Docs, Sheets, Slides), exports to the specified format.
+- **Upload a file to Drive** — Upload a file to Google Drive. Content must be base64-encoded. Uses multipart upload.
+- **Create a new folder** — Create a new folder in Google Drive.
+- **Share a file with users or make it public** — Share a file or folder in Google Drive with specific users or make it publicly accessible.
+- **Move a file to a different folder** — Move a file to a different folder in Google Drive.
+- **Create a copy of a file** — Create a copy of a file in Google Drive.
+- **Move a file to trash** — Move a file to the trash in Google Drive (does not permanently delete).
+- **Create a new file from text content** — Create a new file in Google Drive from plain text content.
+
+## Connect Google Drive to an AI agent
+
+Add Google Drive from the [Tilde dashboard](https://api.trytilde.ai/tools/available-tool-providers), then enable the tools your agent needs on an MCP server. [Learn how tools work in Tilde](/tools).
+
+[Browse every Tilde tool provider](/tool-providers/index) or [compare Tilde-managed and self-managed authentication](/tool-providers/managed-auth).

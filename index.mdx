@@ -1,31 +1,41 @@
 ---
-title: "Tilde"
-description: "Give your agent tools, secure credentials, messages, and reusable skills."
-icon: "wave-sine"
+title: "Start building with Tilde"
+sidebarTitle: "Welcome"
+description: ""
 ---
 
-import AgentContext from '/snippets/agent-context.mdx';
+Tilde breaks down what makes Claude Code, Codex, and OpenClaw effective and makes those capabilities available as an integrated product suite.
+Our mission is to open the hood on these products and give you the same building blocks. Tilde helps developers build purposeful AI agents quickly.
 
-<AgentContext />
+The product suite includes:
 
-Tilde is the control plane for your agents. Your agent uses Tilde to discover and call tools, connect accounts without seeing their credentials, receive messages, and load the instructions it needs.
+- **Tools:** Connect to hundreds of providers with off-the-shelf integrations, add custom tools, and group them in secure MCP servers.
+- **Memory:** Create a persistent brain and personal notebook for one agent, or share it across several agents.
+- **Skills:** Deploy skill registries that group instructions and make them available to agents.
+- **ChatKit:** Integrate with third-party chat providers, trigger agent runs from external webhook events, or schedule recurring prompts.
 
-You do not need to learn an API first. Connect your agent to Tilde, describe what you want to build, and let the agent configure it with you.
+These features are available through cloud APIs that hide the underlying complexity.
 
-<Card title="Build your first agent" icon="arrow-right" href="/quickstart" horizontal>
-  Connect Tilde and start with one prompt.
+Use our client-side library, `@trytilde/harness-sdk`, with first-class support for Vercel and Next.js to build and deploy your own cloud agents.
+
+
+<Card title="Quickstart" icon="rocket" href="/quickstart" horizontal>
+  Build your first agent
 </Card>
 
-## What Tilde gives your agent
+## Explore the product suite
 
-<Columns cols={3}>
-  <Card title="Tools" icon="wrench" href="/tools">
-    APIs and MCP tools with credentials kept out of the agent context.
+<Columns cols={2}>
+  <Card title="Tools" href="/tools">
+    Connect providers, add custom tools, and expose them through secure MCP servers.
   </Card>
-  <Card title="ChatKit" icon="messages" href="/chatkit">
-    Conversations and events that route work to your deployed agent.
+  <Card title="ChatKit" href="/chatkit">
+    Connect conversations, webhooks, and scheduled agent runs.
   </Card>
-  <Card title="Skills" icon="book-open" href="/skills">
-    Reusable instructions that your agent discovers only when needed.
+  <Card title="Skills" href="/skills">
+    Organize reusable agent instructions in skill registries.
+  </Card>
+  <Card title="Memory" href="/memory">
+    Give one or more agents durable context they can recall.
   </Card>
 </Columns>

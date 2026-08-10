@@ -24,13 +24,17 @@ This guide shows you how to build and test a signed ChatKit endpoint using Next.
         Send this prompt to the connected agent.
 
         <Prompt description="Build the Hello World agent" icon="sparkles" actions={["copy", "cursor"]}>
-Start by reading https://api.trytilde.ai/llms.txt and use https://docs.trytilde.ai/llms.txt to open the production-hosted agent guides. Use https://github.com/trytilde/examples/tree/main/hello-world-agent only as a reference and create the app and files in my project. Explain the route before changing it, then ask what I want my agent to do. Keep Tilde webhook verification, ChatKit history, and server-side secrets intact. Register the local endpoint at /api/hello-world as a ChatKit agent, save the returned Tilde API key and webhook signing key in .env.local, run the app through a Tilde Dev Tunnel, and test it in Mission Control.
+Start by reading https://api.trytilde.ai/llms.txt and use https://docs.trytilde.ai/llms.txt to open the production-hosted agent guides. Use https://github.com/trytilde/examples/tree/main/hello-world-agent only as a reference and create the app and files in my project. Explain the route before changing it, then ask what I want my agent to do. Keep Tilde webhook verification, ChatKit history, and server-side secrets intact. Register the local endpoint at /api/hello-world as a ChatKit agent, save the returned Tilde API key and webhook signing key in .env.local, sign in with `tilde auth login`, run the app through a Tilde Dev Tunnel, and test it in Mission Control.
         </Prompt>
       </Step>
     </Steps>
   </Tab>
 
   <Tab title="For humans">
+    Any project that includes a `tilde.state.yaml` file is instantly deployable to your Tilde account.
+
+    Use the <span style={{ display: "inline-flex", alignItems: "center", verticalAlign: "middle", marginBlock: 0, marginInline: "0.2rem", cursor: "default", textDecoration: "none" }}><img src="https://api.trytilde.ai/deploy-button.svg" alt="Deploy with Tilde" noZoom style={{ display: "block", width: "128px", height: "auto", margin: 0, pointerEvents: "none", userSelect: "none" }} /></span> button in a project's `README.md`, or import the file manually. See [Terraform](/terraform) to learn more.
+
     <Steps>
       <Step title="Create the app">
         You need Node.js 22 or newer, pnpm 10, a Tilde account, and an OpenAI API key.
@@ -39,6 +43,7 @@ Start by reading https://api.trytilde.ai/llms.txt and use https://docs.trytilde.
         pnpm create next-app@16.2.12 hello-world-agent --ts --eslint --app --no-src-dir --no-tailwind --use-pnpm
         cd hello-world-agent
         pnpm add @ai-sdk/openai ai @trytilde/harness-sdk @trytilde/harness-sdk-vercel-ai-node
+        pnpm add -D @trytilde/cli
         touch .env.local
         ```
       </Step>
@@ -111,12 +116,13 @@ Start by reading https://api.trytilde.ai/llms.txt and use https://docs.trytilde.
       </Step>
 
       <Step title="Run your app through a Dev Tunnel">
-        Start your app's development process through Tilde's Dev Tunnel. Replace `pnpm dev` with the command you normally use to run your app locally.
+        Sign in to Tilde before opening the tunnel. The login flow asks you to select the workspace containing **Hello World**. Then start your app's development process through the tunnel. Replace `pnpm dev` with the command you normally use to run your app locally.
 
         The tunnel gives your local agent a public HTTPS endpoint, allowing Tilde to deliver messages, webhooks, and tool invocations while you develop. For ChatKit, `chatKitEndpoint` verifies Tilde's webhook signature and rejects requests without a valid signature.
 
         ```bash
-        harness-sdk tunnel -- pnpm dev
+        pnpm exec tilde auth login
+        pnpm exec tilde tunnel -- pnpm dev
         ```
 
         <Warning>
@@ -139,10 +145,10 @@ Start by reading https://api.trytilde.ai/llms.txt and use https://docs.trytilde.
 
 <div className="continue-exploring-cards">
   <Columns cols={1}>
-    <Card title="Connect third party services and custom tools to your agent" href="/tools" arrow={false} />
-    <Card title="Provision a skills registry and give your agent skills and the ability to edit them" href="/skills" arrow={false} />
-    <Card title="Trigger your agent from third party events beyond regular chats" href="/chatkit" arrow={false} />
-    <Card title="Create an agent brain or company brain to share between your agents" href="/memory" arrow={false} />
-    <Card title="Deploy to production and managing multiple dev environments" href="/terraform" arrow={false} />
+    <Card title="Connect third-party services and custom tools to your agent" href="/tools" arrow={false} />
+    <Card title="Provision a skill registry so your agent can discover and update skills" href="/skills" arrow={false} />
+    <Card title="Trigger your agent from third-party events outside regular chats" href="/chatkit" arrow={false} />
+    <Card title="Create a shared brain for one or more agents" href="/memory" arrow={false} />
+    <Card title="Deploy to production and manage multiple development environments" href="/terraform" arrow={false} />
   </Columns>
 </div>

@@ -1,0 +1,118 @@
+---
+title: "GitHub tools for AI agents"
+sidebarTitle: "GitHub"
+description: "Explore 78 GitHub tools for AI agents in Tilde, including supported authentication and MCP capabilities."
+keywords:
+  - "GitHub AI tools"
+  - "GitHub MCP integration"
+  - "GitHub tools for AI agents"
+  - "Tilde tool providers"
+  - "MCP tools"
+"og:title": "GitHub tools for AI agents | Tilde"
+"og:description": "Explore 78 GitHub tools for AI agents in Tilde, including supported authentication and MCP capabilities."
+mode: "wide"
+---
+
+import {
+  PUBLIC_CATALOG_URL,
+  iconAliases,
+  iconUrl,
+  providerFromApi,
+  ProviderLogo,
+  ToolProviderDetail,
+} from "/snippets/tool-provider-browser.jsx";
+
+export const provider = {
+  "name": "GitHub",
+  "slug": "github",
+  "initials": "GI",
+  "category": "Developer Tools",
+  "summary": "GitHub developer workflow tools for issues, pull requests, code, Actions, checks, releases, reactions, search, users, and organizations.",
+  "auth": [
+    "Personal access token",
+    "OAuth app",
+    "GitHub App",
+    "Tilde-managed OAuth"
+  ],
+  "iconSources": [],
+  "toolCount": 78,
+  "tools": [
+    [
+      "Create Issue",
+      "Create a GitHub issue."
+    ],
+    [
+      "Update Issue",
+      "Update GitHub issue fields."
+    ],
+    [
+      "Get Issue",
+      "Get a GitHub issue."
+    ],
+    [
+      "Search Issues",
+      "Search GitHub issues and pull requests."
+    ],
+    [
+      "List Issue Comments",
+      "List issue or PR conversation comments."
+    ],
+    [
+      "Add Issue Comment",
+      "Add an issue or PR conversation comment."
+    ],
+    [
+      "Update Issue Comment",
+      "Update an issue comment."
+    ],
+    [
+      "Delete Issue Comment",
+      "Delete an issue comment."
+    ],
+    [
+      "List Labels",
+      "List repository labels."
+    ],
+    [
+      "Add Labels To Issue",
+      "Add labels to an issue."
+    ],
+    [
+      "Remove Label From Issue",
+      "Remove a label from an issue."
+    ],
+    [
+      "List Milestones",
+      "List repository milestones."
+    ]
+  ]
+};
+
+{/* GENERATED: scripts/generate-tool-provider-pages.mjs */}
+
+GitHub developer workflow tools for issues, pull requests, code, Actions, checks, releases, reactions, search, users, and organizations.
+
+Tilde exposes **78 GitHub tools** for AI agents through MCP. Connect with Personal access token, OAuth app, GitHub App, Tilde-managed OAuth.
+
+<ToolProviderDetail provider={provider} ProviderLogo={ProviderLogo} />
+
+## Popular GitHub tools
+
+- **Create Issue** — Create a GitHub issue.
+- **Update Issue** — Update GitHub issue fields.
+- **Get Issue** — Get a GitHub issue.
+- **Search Issues** — Search GitHub issues and pull requests.
+- **List Issue Comments** — List issue or PR conversation comments.
+- **Add Issue Comment** — Add an issue or PR conversation comment.
+- **Update Issue Comment** — Update an issue comment.
+- **Delete Issue Comment** — Delete an issue comment.
+- **List Labels** — List repository labels.
+- **Add Labels To Issue** — Add labels to an issue.
+- **Remove Label From Issue** — Remove a label from an issue.
+- **List Milestones** — List repository milestones.
+
+## Connect GitHub to an AI agent
+
+Add GitHub from the [Tilde dashboard](https://api.trytilde.ai/tools/available-tool-providers), then enable the tools your agent needs on an MCP server. [Learn how tools work in Tilde](/tools).
+
+[Browse every Tilde tool provider](/tool-providers/index) or [compare Tilde-managed and self-managed authentication](/tool-providers/managed-auth).

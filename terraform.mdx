@@ -1,24 +1,76 @@
 ---
 title: "Terraform"
-description: "Manage Tilde resources as code."
+description: "Export, share, and reproduce portable Tilde resource state."
 ---
 
-import AgentContext from '/snippets/agent-context.mdx';
+Well, not exactly. Tilde does not require a Terraform provider, but all Tilde resource state is portable. This makes it easy to share a setup and reproduce it across development, staging, and production workspaces.
 
-<AgentContext />
+## The `tilde.state.yaml` file
 
-Use Terraform to define and review Tilde configuration alongside the rest of your infrastructure.
+`tilde.state.yaml` describes the desired configuration for resources in a workspace. It can include ChatKit agents and providers, MCP servers, tool providers, skill registries, wikis, memory-bank bindings, reverse proxies, and their relationships.
 
-Infrastructure as code gives your team a repeatable workflow for proposing changes, reviewing plans, and applying approved configuration.
+State files can declare variables for values that change between environments, such as an agent endpoint URL. They do not contain API keys, signing keys, third-party credentials, conversation history, or other runtime content. An import returns generated values separately and leaves credential-backed resources pending until you connect the corresponding accounts.
 
-## Recommended workflow
+Commit `tilde.state.yaml` with your application so reviewers can see which Tilde resources it expects.
 
-1. Define the Tilde resources your agent needs.
-2. Store configuration in version control without committing secrets.
-3. Review the Terraform plan before applying it.
-4. Apply the approved changes.
-5. Verify the resulting resources in Tilde.
+## Export state from a workspace
+
+<Tabs>
+  <Tab title="Tilde">
+    1. Select the workspace you want to export.
+    2. Go to **Settings** → **Team settings** → **State**.
+    3. Open the **Export** tab and click **Export**.
+
+    Tilde downloads the workspace configuration as `tilde.state.yaml`.
+  </Tab>
+
+  <Tab title="CLI">
+    ```bash
+    pnpm add -D @trytilde/cli
+    pnpm exec tilde auth login
+    pnpm exec tilde state export ./tilde.state.yaml
+    ```
+  </Tab>
+</Tabs>
+
+## Import state manually
+
+1. Select the destination workspace.
+2. Go to **Settings** → **Team settings** → **State**.
+3. Open the **Import** tab and upload `tilde.state.yaml`.
+4. Provide any variables requested by the file.
+5. Review the validation result and resource plan, then apply it.
+6. Save the generated import outputs and complete any items under **Pending credentials**.
+
+You can perform the same workflow from the CLI:
+
+```bash
+pnpm exec tilde auth login
+pnpm exec tilde state import ./tilde.state.yaml ./tilde-state-import-outputs.yaml
+```
+
+The CLI shows the plan before applying it. Add `--auto-apply` only in a trusted automated workflow where the state change has already been reviewed.
+
+## Add a Deploy with Tilde button
+
+Add the button to a project's `README.md` when its repository contains a `tilde.state.yaml` file.
+
+[![Deploy with Tilde](https://api.trytilde.ai/deploy-button.svg)](https://api.trytilde.ai/deploy?repository-url=https%3A%2F%2Fgithub.com%2Ftrytilde%2Fexamples&state-path=hello-world-agent%2Ftilde.state.yaml)
+
+Clicking the button opens Tilde, asks the user to select a workspace, reads the state file from GitHub, collects its variables, and shows the import plan before creating resources.
+
+Use this Markdown and replace both query parameters with your repository and state-file path:
+
+```markdown README.md
+[![Deploy with Tilde](https://api.trytilde.ai/deploy-button.svg)](https://api.trytilde.ai/deploy?repository-url=https%3A%2F%2Fgithub.com%2FYOUR_ORG%2FYOUR_REPOSITORY&state-path=tilde.state.yaml)
+```
+
+`repository-url` must point to a GitHub repository over HTTPS. `state-path` must be a relative path to a YAML file, so monorepos can use a value such as `agents/code-review/tilde.state.yaml`.
+
+## Manage multiple environments
+
+Keep one reviewed state file as the shared baseline. Use variables for environment-specific endpoints and reconnect credentials separately in each workspace. Import the same state into development, staging, and production, then review each plan before applying it.
 
 <Warning>
-  Review destructive changes in the Terraform plan before applying them.
+  State imports can update or replace existing configuration. Review conflicts, destructive changes, requested variables, and pending credentials before applying a plan.
 </Warning>

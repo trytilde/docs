@@ -1,0 +1,95 @@
+---
+title: "Tilde Pay tools for AI agents"
+sidebarTitle: "Tilde Pay"
+description: "Explore 8 Tilde Pay tools for AI agents in Tilde, including supported authentication and MCP capabilities."
+keywords:
+  - "Tilde Pay AI tools"
+  - "Tilde Pay MCP integration"
+  - "Tilde Pay tools for AI agents"
+  - "Tilde tool providers"
+  - "MCP tools"
+"og:title": "Tilde Pay tools for AI agents | Tilde"
+"og:description": "Explore 8 Tilde Pay tools for AI agents in Tilde, including supported authentication and MCP capabilities."
+mode: "wide"
+---
+
+import {
+  PUBLIC_CATALOG_URL,
+  iconAliases,
+  iconUrl,
+  providerFromApi,
+  ProviderLogo,
+  ToolProviderDetail,
+} from "/snippets/tool-provider-browser.jsx";
+
+export const provider = {
+  "name": "Tilde Pay",
+  "slug": "tilde_wallet",
+  "initials": "TI",
+  "category": "Pay",
+  "summary": "Tilde Pay tools for balances, deposit information, and agent payments.",
+  "auth": [
+    "No Auth"
+  ],
+  "iconSources": [],
+  "toolCount": 8,
+  "tools": [
+    [
+      "get_tilde_pay_balances",
+      "Refresh and return Tilde Pay balances."
+    ],
+    [
+      "get_tilde_pay_bank_deposit_information",
+      "Refresh and return Tilde Pay bank deposit information."
+    ],
+    [
+      "get_tilde_pay_usdc_deposit_information",
+      "Return USDC deposit information for Tilde Pay."
+    ],
+    [
+      "wait_until_tilde_pay_balance",
+      "Wait until the cached Tilde Pay balance reaches a minimum amount."
+    ],
+    [
+      "list_transaction_history",
+      "Return cached wallet transaction history without scanning the chain."
+    ],
+    [
+      "refresh_transaction_history",
+      "Scan the chain and upsert cached wallet transaction history."
+    ],
+    [
+      "make_payment_x402",
+      "Make an x402 payment from Tilde Pay."
+    ],
+    [
+      "make_payment_mpp",
+      "Make an MPP payment from Tilde Pay."
+    ]
+  ]
+};
+
+{/* GENERATED: scripts/generate-tool-provider-pages.mjs */}
+
+Tilde Pay tools for balances, deposit information, and agent payments.
+
+Tilde exposes **8 Tilde Pay tools** for AI agents through MCP. Connect with No Auth.
+
+<ToolProviderDetail provider={provider} ProviderLogo={ProviderLogo} />
+
+## Popular Tilde Pay tools
+
+- **get_tilde_pay_balances** — Refresh and return Tilde Pay balances.
+- **get_tilde_pay_bank_deposit_information** — Refresh and return Tilde Pay bank deposit information.
+- **get_tilde_pay_usdc_deposit_information** — Return USDC deposit information for Tilde Pay.
+- **wait_until_tilde_pay_balance** — Wait until the cached Tilde Pay balance reaches a minimum amount.
+- **list_transaction_history** — Return cached wallet transaction history without scanning the chain.
+- **refresh_transaction_history** — Scan the chain and upsert cached wallet transaction history.
+- **make_payment_x402** — Make an x402 payment from Tilde Pay.
+- **make_payment_mpp** — Make an MPP payment from Tilde Pay.
+
+## Connect Tilde Pay to an AI agent
+
+Add Tilde Pay from the [Tilde dashboard](https://api.trytilde.ai/tools/available-tool-providers), then enable the tools your agent needs on an MCP server. [Learn how tools work in Tilde](/tools).
+
+[Browse every Tilde tool provider](/tool-providers/index) or [compare Tilde-managed and self-managed authentication](/tool-providers/managed-auth).

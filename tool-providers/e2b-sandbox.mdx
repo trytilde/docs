@@ -1,0 +1,115 @@
+---
+title: "E2B Sandbox tools for AI agents"
+sidebarTitle: "E2B Sandbox"
+description: "Explore 34 E2B Sandbox tools for AI agents in Tilde, including supported authentication and MCP capabilities."
+keywords:
+  - "E2B Sandbox AI tools"
+  - "E2B Sandbox MCP integration"
+  - "E2B Sandbox tools for AI agents"
+  - "Tilde tool providers"
+  - "MCP tools"
+"og:title": "E2B Sandbox tools for AI agents | Tilde"
+"og:description": "Explore 34 E2B Sandbox tools for AI agents in Tilde, including supported authentication and MCP capabilities."
+mode: "wide"
+---
+
+import {
+  PUBLIC_CATALOG_URL,
+  iconAliases,
+  iconUrl,
+  providerFromApi,
+  ProviderLogo,
+  ToolProviderDetail,
+} from "/snippets/tool-provider-browser.jsx";
+
+export const provider = {
+  "name": "E2B Sandbox",
+  "slug": "e2b_sandbox",
+  "initials": "E2",
+  "category": "Sandbox",
+  "summary": "E2B sandbox management, filesystem, patch, and command execution tools.",
+  "auth": [
+    "E2B API key"
+  ],
+  "iconSources": [],
+  "toolCount": 34,
+  "tools": [
+    [
+      "Check E2B API health",
+      "Check the E2B API health endpoint."
+    ],
+    [
+      "Create E2B sandbox",
+      "Create a new E2B sandbox from a template."
+    ],
+    [
+      "Connect E2B sandbox",
+      "Connect to an existing E2B sandbox and extend its TTL."
+    ],
+    [
+      "Get E2B sandbox",
+      "Get details for a specific E2B sandbox."
+    ],
+    [
+      "List E2B sandboxes",
+      "List running and paused E2B sandboxes."
+    ],
+    [
+      "Delete E2B sandbox",
+      "Terminate an E2B sandbox."
+    ],
+    [
+      "Pause E2B sandbox",
+      "Pause an E2B sandbox."
+    ],
+    [
+      "Refresh E2B sandbox",
+      "Refresh an E2B sandbox TTL."
+    ],
+    [
+      "Set E2B sandbox timeout",
+      "Set an E2B sandbox timeout."
+    ],
+    [
+      "Get E2B sandbox logs",
+      "Get logs for a specific E2B sandbox."
+    ],
+    [
+      "Get E2B sandbox metrics",
+      "Get metrics for a specific E2B sandbox."
+    ],
+    [
+      "Get E2B sandbox events",
+      "Get lifecycle events for a specific E2B sandbox."
+    ]
+  ]
+};
+
+{/* GENERATED: scripts/generate-tool-provider-pages.mjs */}
+
+E2B sandbox management, filesystem, patch, and command execution tools.
+
+Tilde exposes **34 E2B Sandbox tools** for AI agents through MCP. Connect with E2B API key.
+
+<ToolProviderDetail provider={provider} ProviderLogo={ProviderLogo} />
+
+## Popular E2B Sandbox tools
+
+- **Check E2B API health** — Check the E2B API health endpoint.
+- **Create E2B sandbox** — Create a new E2B sandbox from a template.
+- **Connect E2B sandbox** — Connect to an existing E2B sandbox and extend its TTL.
+- **Get E2B sandbox** — Get details for a specific E2B sandbox.
+- **List E2B sandboxes** — List running and paused E2B sandboxes.
+- **Delete E2B sandbox** — Terminate an E2B sandbox.
+- **Pause E2B sandbox** — Pause an E2B sandbox.
+- **Refresh E2B sandbox** — Refresh an E2B sandbox TTL.
+- **Set E2B sandbox timeout** — Set an E2B sandbox timeout.
+- **Get E2B sandbox logs** — Get logs for a specific E2B sandbox.
+- **Get E2B sandbox metrics** — Get metrics for a specific E2B sandbox.
+- **Get E2B sandbox events** — Get lifecycle events for a specific E2B sandbox.
+
+## Connect E2B Sandbox to an AI agent
+
+Add E2B Sandbox from the [Tilde dashboard](https://api.trytilde.ai/tools/available-tool-providers), then enable the tools your agent needs on an MCP server. [Learn how tools work in Tilde](/tools).
+
+[Browse every Tilde tool provider](/tool-providers/index) or [compare Tilde-managed and self-managed authentication](/tool-providers/managed-auth).

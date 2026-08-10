@@ -1,32 +1,65 @@
 # Tilde
 
-> Agent-first documentation for building with Tilde. Agents should read the canonical Tilde context before using the human quickstarts below.
+> Build, connect, and operate AI agents through a cloud control plane.
 
-## Start here
+## Build a custom deployed agent
 
-- [Canonical Tilde agent context](https://api.trytilde.ai/llms.txt): Fetch this first. It defines Tilde's current machine interfaces, discovery rules, credential boundaries, and agent workflows.
-- [Connect an agent](https://docs.trytilde.ai/connect-your-agent.md): Connect an MCP client to Tilde.
-- [Quickstart](https://docs.trytilde.ai/quickstart.md): Build with Tilde from an agent prompt.
+Start from working code. Use the [Hello World agent](https://github.com/trytilde/examples/tree/main/hello-world-agent) for the smallest signed ChatKit endpoint. Use the [code review bot](https://github.com/trytilde/examples/tree/main/code-review-bot) for a production-shaped agent with tools, signals, typed provider context, reverse proxies, and portable state. Browse the full [Tilde examples repository](https://github.com/trytilde/examples) before inventing an integration pattern.
 
-## Canonical agent guides
+Use the Vercel AI SDK with [`@trytilde/harness-sdk`](https://www.npmjs.com/package/@trytilde/harness-sdk). Keep `chatKitEndpoint`, webhook verification, ChatKit history conversion, and all secrets server-side.
 
-- [Organization, team, and auth](https://api.trytilde.ai/.agent/skills/org-team-auth.md): Identity, teams, API keys, and authorization.
-- [Tool provider integration](https://api.trytilde.ai/.agent/skills/tool-provider-integration.md): Toolkit providers, credentials, custom tools, proxied MCP servers, and team MCP servers.
-- [ChatKit, signals, and messaging](https://api.trytilde.ai/.agent/skills/chatkit-signals-messaging.md): Conversations, messages, providers, channels, signals, and event routing.
-- [Create and deploy an agent](https://api.trytilde.ai/.agent/skills/create-deploy-agent.md): Tilde runtime agents and externally hosted HTTP agents.
-- [AI SDK compatible agent](https://api.trytilde.ai/.agent/skills/ai-sdk-compatible-agent.md): Vercel AI SDK HTTP contract, registration, signatures, and testing.
-- [Slack agent](https://api.trytilde.ai/.agent/skills/slackbot-agent.md): Build an agent that receives and replies to Slack messages.
-- [GitHub agent](https://api.trytilde.ai/.agent/skills/github-agent.md): Build an agent that handles GitHub events and conversations.
-- [Agent-to-agent communication](https://api.trytilde.ai/.agent/skills/agent-to-agent-communication.md): Route work between agents.
-- [Agent-maintained wiki](https://api.trytilde.ai/.agent/skills/agent-wiki.md): Create and maintain structured team knowledge.
+## Agent configuration guides
 
-## Human guides
+Use Tilde's global MCP server at `https://api.trytilde.ai/mcp` to configure runtime resources. Read the guide for the product you need:
 
-- [Tools](https://docs.trytilde.ai/tools.md): Give an agent selected tools without exposing upstream credentials.
-- [ChatKit](https://docs.trytilde.ai/chatkit.md): Route conversations and events to a deployed agent.
-- [Skills](https://docs.trytilde.ai/skills.md): Give agents reusable instructions through skill registries.
-- [Code review agent example](https://github.com/trytilde/examples/tree/main/code-review-bot): A production-oriented Next.js, ChatKit, MCP, and Vercel example.
+- [Tools over Global MCP](https://docs.trytilde.ai/llms/tools.md)
+- [ChatKit and Signals over Global MCP](https://docs.trytilde.ai/llms/chatkit.md)
+- [Memory banks and wikis over Global MCP](https://docs.trytilde.ai/llms/memory.md)
+- [Skills and registries over Global MCP](https://docs.trytilde.ai/llms/skills.md)
+- [Local development with Dev Tunnels](https://docs.trytilde.ai/llms/dev-tunnels.md)
+- [State export and import over Global MCP](https://docs.trytilde.ai/llms/state.md)
 
-## Full documentation
+These files are optimized for AI agents. The [human documentation](https://docs.trytilde.ai) explains the same products through the dashboard and SDK.
 
-- [Combined Tilde documentation](https://docs.trytilde.ai/llms-full.txt): Full Markdown content for the Mintlify guides.
+## Core model
+
+- **Tools** connect provider, proxied MCP, custom HTTP, memory, wiki, and skill-registry functions to an agent through a Tilde MCP server.
+- **ChatKit** stores conversations and delivers signed turns from chat providers, custom clients, and Signals to deployed agents.
+- **Memory banks** provide semantic long-term memory. **Wikis** provide structured, browsable knowledge.
+- **Skills** are reusable instructions grouped into registries and discovered progressively.
+
+The global MCP server configures these resources. It is not the runtime MCP server that your deployed agent uses to invoke its configured tools.
+
+## Authentication and scope
+
+1. Call `tilde_whoami` first.
+2. Select the target team from the returned identity. Teams are also called workspaces.
+3. Pass `team_id` to every team-scoped function on the global MCP server. The organization is inferred from the authenticated OAuth token or API key.
+4. Prefer OAuth when acting for a human. Use a team-scoped machine API key for a deployed agent.
+
+If a function returns `approval_url`, show it to the user. Then immediately call the returned `next_tool_name` with `next_tool_arguments` and wait for approval before continuing.
+
+## Other integration surfaces
+
+- REST API: `https://api.trytilde.ai/openapi.json`
+- Harness SDK: `https://github.com/trytilde/harness-sdk`
+- Any MCP client can connect to a runtime Tilde MCP server after it is configured.
+
+Use the REST API only when the global MCP server does not expose the required operation. Never guess request fields: inspect the current MCP input schema or OpenAPI schema first.
+
+## Portable state
+
+Export the finished workspace configuration to `tilde.state.yaml` and commit it with the agent source. State includes resource configuration and relationships, not credentials, signing keys, or conversation content. Validate and review an import plan before applying it.
+
+## Pricing
+
+Tilde is currently in early testing. Most features are free. Hosted memory banks currently cost $20 per bank each month; this pricing is expected to change.
+
+## Links
+
+- Homepage: https://trytilde.ai
+- Docs: https://docs.trytilde.ai
+- Global MCP: https://api.trytilde.ai/mcp
+- Dashboard and API: https://api.trytilde.ai
+- Examples: https://github.com/trytilde/examples
+- Blog: https://trytilde.ai/blog

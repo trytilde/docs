@@ -1,0 +1,105 @@
+---
+title: "Google Sheets tools for AI agents"
+sidebarTitle: "Google Sheets"
+description: "Explore 10 Google Sheets tools for AI agents in Tilde, including supported authentication and MCP capabilities."
+keywords:
+  - "Google Sheets AI tools"
+  - "Google Sheets MCP integration"
+  - "Google Sheets tools for AI agents"
+  - "Tilde tool providers"
+  - "MCP tools"
+"og:title": "Google Sheets tools for AI agents | Tilde"
+"og:description": "Explore 10 Google Sheets tools for AI agents in Tilde, including supported authentication and MCP capabilities."
+mode: "wide"
+---
+
+import {
+  PUBLIC_CATALOG_URL,
+  iconAliases,
+  iconUrl,
+  providerFromApi,
+  ProviderLogo,
+  ToolProviderDetail,
+} from "/snippets/tool-provider-browser.jsx";
+
+export const provider = {
+  "name": "Google Sheets",
+  "slug": "google_sheets",
+  "initials": "GO",
+  "category": "Spreadsheets",
+  "summary": "Google Sheets integration for reading, writing, and managing spreadsheet data.",
+  "auth": [
+    "Tilde-managed OAuth"
+  ],
+  "iconSources": [],
+  "toolCount": 10,
+  "tools": [
+    [
+      "Read data from a cell range in A1 notation",
+      "Read data from a cell range in A1 notation (e.g. \"Sheet1!A1:D10\")."
+    ],
+    [
+      "Write data to a cell range",
+      "Write data to a cell range. Values are interpreted as if typed by the user (USER_ENTERED)."
+    ],
+    [
+      "Append rows to the end of a sheet's data",
+      "Append rows to the end of a sheet's existing data."
+    ],
+    [
+      "Find rows matching criteria in a column",
+      "Search for rows where a given column matches a value using the specified operator (equals, contains, greater_than, less_than). The column can be identified by letter or by its header name in the first row."
+    ],
+    [
+      "Create a new spreadsheet",
+      "Create a new Google Sheets spreadsheet with an optional initial sheet name."
+    ],
+    [
+      "List all worksheets in a spreadsheet",
+      "List all worksheet tabs and their properties in a spreadsheet."
+    ],
+    [
+      "Add a new worksheet tab",
+      "Add a new worksheet tab to an existing spreadsheet."
+    ],
+    [
+      "Get metadata about a spreadsheet",
+      "Retrieve metadata about a spreadsheet including its title, URL, locale, and worksheet list."
+    ],
+    [
+      "Clear cell contents while preserving formatting",
+      "Clear the contents of cells in a range while preserving formatting."
+    ],
+    [
+      "Apply formatting to cells",
+      "Apply formatting (bold, italic, text colour, background colour) to a range of cells."
+    ]
+  ]
+};
+
+{/* GENERATED: scripts/generate-tool-provider-pages.mjs */}
+
+Google Sheets integration for reading, writing, and managing spreadsheet data.
+
+Tilde exposes **10 Google Sheets tools** for AI agents through MCP. Connect with Tilde-managed OAuth.
+
+<ToolProviderDetail provider={provider} ProviderLogo={ProviderLogo} />
+
+## Popular Google Sheets tools
+
+- **Read data from a cell range in A1 notation** — Read data from a cell range in A1 notation (e.g. "Sheet1!A1:D10").
+- **Write data to a cell range** — Write data to a cell range. Values are interpreted as if typed by the user (USER_ENTERED).
+- **Append rows to the end of a sheet's data** — Append rows to the end of a sheet's existing data.
+- **Find rows matching criteria in a column** — Search for rows where a given column matches a value using the specified operator (equals, contains, greater_than, less_than). The column can be identified by letter or by its header name in the first row.
+- **Create a new spreadsheet** — Create a new Google Sheets spreadsheet with an optional initial sheet name.
+- **List all worksheets in a spreadsheet** — List all worksheet tabs and their properties in a spreadsheet.
+- **Add a new worksheet tab** — Add a new worksheet tab to an existing spreadsheet.
+- **Get metadata about a spreadsheet** — Retrieve metadata about a spreadsheet including its title, URL, locale, and worksheet list.
+- **Clear cell contents while preserving formatting** — Clear the contents of cells in a range while preserving formatting.
+- **Apply formatting to cells** — Apply formatting (bold, italic, text colour, background colour) to a range of cells.
+
+## Connect Google Sheets to an AI agent
+
+Add Google Sheets from the [Tilde dashboard](https://api.trytilde.ai/tools/available-tool-providers), then enable the tools your agent needs on an MCP server. [Learn how tools work in Tilde](/tools).
+
+[Browse every Tilde tool provider](/tool-providers/index) or [compare Tilde-managed and self-managed authentication](/tool-providers/managed-auth).

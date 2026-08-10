@@ -1,0 +1,115 @@
+---
+title: "Tilde Wiki tools for AI agents"
+sidebarTitle: "Tilde Wiki"
+description: "Explore 43 Tilde Wiki tools for AI agents in Tilde, including supported authentication and MCP capabilities."
+keywords:
+  - "Tilde Wiki AI tools"
+  - "Tilde Wiki MCP integration"
+  - "Tilde Wiki tools for AI agents"
+  - "Tilde tool providers"
+  - "MCP tools"
+"og:title": "Tilde Wiki tools for AI agents | Tilde"
+"og:description": "Explore 43 Tilde Wiki tools for AI agents in Tilde, including supported authentication and MCP capabilities."
+mode: "wide"
+---
+
+import {
+  PUBLIC_CATALOG_URL,
+  iconAliases,
+  iconUrl,
+  providerFromApi,
+  ProviderLogo,
+  ToolProviderDetail,
+} from "/snippets/tool-provider-browser.jsx";
+
+export const provider = {
+  "name": "Tilde Wiki",
+  "slug": "tilde_wiki",
+  "initials": "TI",
+  "category": "Wiki",
+  "summary": "Maintain Markdown pages, semantic relationships, graph queries, revisions, and media assets in one bound Tilde Wiki.",
+  "auth": [
+    "No Auth"
+  ],
+  "iconSources": [],
+  "toolCount": 43,
+  "tools": [
+    [
+      "list_pages",
+      "List or full-text search pages in this wiki."
+    ],
+    [
+      "read_page",
+      "Read a Markdown page by stable id."
+    ],
+    [
+      "upsert_page",
+      "Create or update a page. Updates require expected_revision."
+    ],
+    [
+      "move_page",
+      "Move a page without changing its stable id."
+    ],
+    [
+      "delete_page",
+      "Delete a page at an expected revision."
+    ],
+    [
+      "page_history",
+      "List immutable page revisions."
+    ],
+    [
+      "migrate_page",
+      "Migrate a page to an explicit page type schema version."
+    ],
+    [
+      "list_ontology_templates",
+      "List reusable ontology templates with their page schemas and relationship definitions."
+    ],
+    [
+      "apply_ontology_template",
+      "Install a reusable ontology template into this wiki idempotently."
+    ],
+    [
+      "list_page_types",
+      "List custom page type definitions."
+    ],
+    [
+      "create_page_type",
+      "Create a custom page type with a Draft 7 JSON Schema."
+    ],
+    [
+      "get_page_type",
+      "Read a custom page type."
+    ]
+  ]
+};
+
+{/* GENERATED: scripts/generate-tool-provider-pages.mjs */}
+
+Maintain Markdown pages, semantic relationships, graph queries, revisions, and media assets in one bound Tilde Wiki.
+
+Tilde exposes **43 Tilde Wiki tools** for AI agents through MCP. Connect with No Auth.
+
+<ToolProviderDetail provider={provider} ProviderLogo={ProviderLogo} />
+
+## Popular Tilde Wiki tools
+
+- **list_pages** — List or full-text search pages in this wiki.
+- **read_page** — Read a Markdown page by stable id.
+- **upsert_page** — Create or update a page. Updates require expected_revision.
+- **move_page** — Move a page without changing its stable id.
+- **delete_page** — Delete a page at an expected revision.
+- **page_history** — List immutable page revisions.
+- **migrate_page** — Migrate a page to an explicit page type schema version.
+- **list_ontology_templates** — List reusable ontology templates with their page schemas and relationship definitions.
+- **apply_ontology_template** — Install a reusable ontology template into this wiki idempotently.
+- **list_page_types** — List custom page type definitions.
+- **create_page_type** — Create a custom page type with a Draft 7 JSON Schema.
+- **get_page_type** — Read a custom page type.
+
+## Connect Tilde Wiki to an AI agent
+
+Add Tilde Wiki from the [Tilde dashboard](https://api.trytilde.ai/tools/available-tool-providers), then enable the tools your agent needs on an MCP server. [Learn how tools work in Tilde](/tools).
+
+[Browse every Tilde tool provider](/tool-providers/index) or [compare Tilde-managed and self-managed authentication](/tool-providers/managed-auth).

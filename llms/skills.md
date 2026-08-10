@@ -1,0 +1,33 @@
+# Configure skills over Tilde Global MCP
+
+A skill is a focused instruction document. A registry groups skills and exposes progressive discovery tools so an agent loads full instructions only when relevant.
+
+Use `https://api.trytilde.ai/mcp`. Call `tilde_whoami`, select a workspace, and pass its `team_id` to every function below.
+
+## Create a registry from team-owned skills
+
+1. Call `tilde_create_skill` for each focused instruction document. Use a lowercase, hyphenated name, a concise discovery description, and complete Markdown content.
+2. Call `tilde_list_skills` if you need to recover the created skill IDs.
+3. Call `tilde_create_skill_registry` with a focused name, description, and `skill_ids`.
+4. To change membership, call `tilde_update_skill_registry` with the complete desired `skill_ids` array. It replaces the current selection.
+5. Call `tilde_list_skill_registries` to verify the registry and obtain its ID.
+
+A registry's private provider is created and enabled automatically. It exposes `list_skills`, `search_skills`, `read_skill_description`, and `read_skill`.
+
+## Expose discovery to an agent
+
+1. Call `tilde_search_enabled_capabilities` using the registry name.
+2. Find the registry-bound provider and its four discovery functions.
+3. Map each function to the agent's runtime MCP server with `tilde_set_mcp_server_tool_enabled`.
+4. Verify the mappings with `tilde_search_enabled_capabilities`, filtered by `mcp_server_instance_id`.
+
+Tell the runtime agent to search summaries first, read one description, and load the full skill only when it is relevant.
+
+## Inspect a registry from Global MCP
+
+- `tilde_list_skill_summaries`: list concise entries without full content.
+- `tilde_search_skill_registry`: semantically search one registry.
+- `tilde_read_skill_description`: inspect one candidate.
+- `tilde_read_skill`: load the complete content.
+
+Harness SDK also exposes programmatic access through `context.skills` inside `chatKitEndpoint`. Use it when application code already knows the registry or skill to load. See the [human Skills guide](https://docs.trytilde.ai/skills).

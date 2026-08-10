@@ -1,0 +1,14 @@
+{
+  "name": "tilde-docs",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20.17 <25"
+  },
+  "scripts": {
+    "generate:tool-providers": "node scripts/generate-tool-provider-pages.mjs",
+    "check:tool-providers": "node scripts/generate-tool-provider-pages.mjs --check",
+    "dev": "npm run generate:tool-providers && mint dev",
+    "check": "npm run check:tool-providers && mint broken-links"
+  }
+}

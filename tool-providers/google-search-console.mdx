@@ -1,0 +1,115 @@
+---
+title: "Google Search Console tools for AI agents"
+sidebarTitle: "Google Search Console"
+description: "Explore 19 Google Search Console tools for AI agents in Tilde, including supported authentication and MCP capabilities."
+keywords:
+  - "Google Search Console AI tools"
+  - "Google Search Console MCP integration"
+  - "Google Search Console tools for AI agents"
+  - "Tilde tool providers"
+  - "MCP tools"
+"og:title": "Google Search Console tools for AI agents | Tilde"
+"og:description": "Explore 19 Google Search Console tools for AI agents in Tilde, including supported authentication and MCP capabilities."
+mode: "wide"
+---
+
+import {
+  PUBLIC_CATALOG_URL,
+  iconAliases,
+  iconUrl,
+  providerFromApi,
+  ProviderLogo,
+  ToolProviderDetail,
+} from "/snippets/tool-provider-browser.jsx";
+
+export const provider = {
+  "name": "Google Search Console",
+  "slug": "google_search_console",
+  "initials": "GO",
+  "category": "Search",
+  "summary": "Google Search Console tools for property management, search analytics, URL inspection, indexing diagnostics, and sitemap management.",
+  "auth": [
+    "Tilde-managed OAuth"
+  ],
+  "iconSources": [],
+  "toolCount": 19,
+  "tools": [
+    [
+      "Get Google Search Console tool capabilities and auth status",
+      "Lists available Google Search Console tools, grouped by category, and reports whether the current credential can call Search Console."
+    ],
+    [
+      "List Google Search Console properties",
+      "Lists all Google Search Console sites/properties visible to the connected Google account."
+    ],
+    [
+      "Get Search Console property details",
+      "Gets verification, ownership, and permission details for a specific Search Console property."
+    ],
+    [
+      "Add a Search Console property",
+      "Adds a site to the connected Google Search Console account."
+    ],
+    [
+      "Delete a Search Console property",
+      "Removes a site from the connected Google Search Console account."
+    ],
+    [
+      "Get Search Console analytics",
+      "Returns top Search Console rows for a property over a recent time window."
+    ],
+    [
+      "Get Search Console performance overview",
+      "Returns total Search Console performance metrics and daily trend data for a property."
+    ],
+    [
+      "Compare Search Console periods",
+      "Compares clicks, impressions, CTR, and position between two date ranges."
+    ],
+    [
+      "Get queries for a page",
+      "Returns Search Console query performance for a specific page URL."
+    ],
+    [
+      "Get advanced Search Console analytics",
+      "Returns Search Console analytics with date range, search type, filters, sorting, and pagination."
+    ],
+    [
+      "Inspect a URL in Search Console",
+      "Returns URL inspection, crawl, indexing, canonical, and rich result details for one URL."
+    ],
+    [
+      "Inspect URLs in batch",
+      "Inspects up to 10 URLs and returns compact URL inspection summaries."
+    ]
+  ]
+};
+
+{/* GENERATED: scripts/generate-tool-provider-pages.mjs */}
+
+Google Search Console tools for property management, search analytics, URL inspection, indexing diagnostics, and sitemap management.
+
+Tilde exposes **19 Google Search Console tools** for AI agents through MCP. Connect with Tilde-managed OAuth.
+
+<ToolProviderDetail provider={provider} ProviderLogo={ProviderLogo} />
+
+## Popular Google Search Console tools
+
+- **Get Google Search Console tool capabilities and auth status** — Lists available Google Search Console tools, grouped by category, and reports whether the current credential can call Search Console.
+- **List Google Search Console properties** — Lists all Google Search Console sites/properties visible to the connected Google account.
+- **Get Search Console property details** — Gets verification, ownership, and permission details for a specific Search Console property.
+- **Add a Search Console property** — Adds a site to the connected Google Search Console account.
+- **Delete a Search Console property** — Removes a site from the connected Google Search Console account.
+- **Get Search Console analytics** — Returns top Search Console rows for a property over a recent time window.
+- **Get Search Console performance overview** — Returns total Search Console performance metrics and daily trend data for a property.
+- **Compare Search Console periods** — Compares clicks, impressions, CTR, and position between two date ranges.
+- **Get queries for a page** — Returns Search Console query performance for a specific page URL.
+- **Get advanced Search Console analytics** — Returns Search Console analytics with date range, search type, filters, sorting, and pagination.
+- **Inspect a URL in Search Console** — Returns URL inspection, crawl, indexing, canonical, and rich result details for one URL.
+- **Inspect URLs in batch** — Inspects up to 10 URLs and returns compact URL inspection summaries.
+
+## Connect Google Search Console to an AI agent
+
+Add Google Search Console from the [Tilde dashboard](https://api.trytilde.ai/tools/available-tool-providers), then enable the tools your agent needs on an MCP server. [Learn how tools work in Tilde](/tools).
+
+[Browse every Tilde tool provider](/tool-providers/index) or [compare Tilde-managed and self-managed authentication](/tool-providers/managed-auth).

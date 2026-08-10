@@ -27,14 +27,21 @@
       "vscode"
     ]
   },
-  "description": "Documentation for building and operating AI agents with Tilde.",
+  "description": "Tilde documentation for connecting AI agents to tools, authenticated providers, MCP servers, memory, and ChatKit.",
+  "seo": {
+    "indexing": "all",
+    "metatags": {
+      "og:site_name": "Tilde Docs"
+    }
+  },
   "favicon": {
     "dark": "/favicon-dark.svg",
     "light": "/favicon.svg"
   },
   "logo": {
     "dark": "/logo/dark.svg",
-    "light": "/logo/light.svg"
+    "light": "/logo/light.svg",
+    "href": "/"
   },
   "fonts": {
     "family": "Inter",
@@ -50,15 +57,51 @@
         "group": "Get started",
         "pages": [
           "index",
-          "quickstart"
+          "quickstart",
+          {
+            "group": "Connect your coding agent",
+            "root": "connect-your-agent/index",
+            "expanded": false,
+            "pages": [
+              "connect-your-agent/openclaw",
+              "connect-your-agent/claude-desktop",
+              "connect-your-agent/claude-code",
+              "connect-your-agent/codex",
+              "connect-your-agent/chatgpt",
+              "connect-your-agent/notion",
+              "connect-your-agent/cursor",
+              "connect-your-agent/vscode",
+              "connect-your-agent/windsurf",
+              "connect-your-agent/cline",
+              "connect-your-agent/openai-agent-builder",
+              "connect-your-agent/n8n",
+              "connect-your-agent/mcp-url"
+            ]
+          }
         ]
       },
       {
-        "group": "Build",
+        "group": "Product features",
         "pages": [
-          "tools",
+          {
+            "group": "Tools",
+            "icon": "wrench",
+            "pages": [
+              "tools",
+              "tool-providers/index"
+            ]
+          },
           "chatkit",
-          "skills"
+          "memory",
+          "skills",
+          "dev-tunnels",
+          "terraform"
+        ]
+      },
+      {
+        "group": "Guides",
+        "pages": [
+          "guides/code-review-agent"
         ]
       }
     ]

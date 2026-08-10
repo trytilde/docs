@@ -1,0 +1,110 @@
+---
+title: "Google Mail tools for AI agents"
+sidebarTitle: "Google Mail"
+description: "Explore 11 Google Mail tools for AI agents in Tilde, including supported authentication and MCP capabilities."
+keywords:
+  - "Google Mail AI tools"
+  - "Google Mail MCP integration"
+  - "Google Mail tools for AI agents"
+  - "Tilde tool providers"
+  - "MCP tools"
+"og:title": "Google Mail tools for AI agents | Tilde"
+"og:description": "Explore 11 Google Mail tools for AI agents in Tilde, including supported authentication and MCP capabilities."
+mode: "wide"
+---
+
+import {
+  PUBLIC_CATALOG_URL,
+  iconAliases,
+  iconUrl,
+  providerFromApi,
+  ProviderLogo,
+  ToolProviderDetail,
+} from "/snippets/tool-provider-browser.jsx";
+
+export const provider = {
+  "name": "Google Mail",
+  "slug": "google_mail",
+  "initials": "GO",
+  "category": "Email",
+  "summary": "Google Mail integration for sending and reading emails via the Gmail API.",
+  "auth": [
+    "Tilde-managed OAuth"
+  ],
+  "iconSources": [],
+  "toolCount": 11,
+  "tools": [
+    [
+      "Send an email",
+      "Send an email via Gmail API. Requires appropriate Gmail scopes."
+    ],
+    [
+      "Search and retrieve emails",
+      "Search and retrieve emails using Gmail search syntax"
+    ],
+    [
+      "Retrieve a single email by ID",
+      "Retrieve a single email by ID with full headers, body, and attachment metadata"
+    ],
+    [
+      "Retrieve all messages in a conversation thread",
+      "Retrieve all messages in a conversation thread"
+    ],
+    [
+      "Send a reply within an existing email thread",
+      "Send a reply within an existing email thread"
+    ],
+    [
+      "Create an email draft without sending",
+      "Create an email draft without sending"
+    ],
+    [
+      "Move a message to trash",
+      "Move a message to trash"
+    ],
+    [
+      "Add or remove labels from a message",
+      "Add or remove labels from a message"
+    ],
+    [
+      "List all labels",
+      "List all labels"
+    ],
+    [
+      "Create a new user label",
+      "Create a new user label"
+    ],
+    [
+      "Download an attachment from an email",
+      "Download an attachment from an email"
+    ]
+  ]
+};
+
+{/* GENERATED: scripts/generate-tool-provider-pages.mjs */}
+
+Google Mail integration for sending and reading emails via the Gmail API.
+
+Tilde exposes **11 Google Mail tools** for AI agents through MCP. Connect with Tilde-managed OAuth.
+
+<ToolProviderDetail provider={provider} ProviderLogo={ProviderLogo} />
+
+## Popular Google Mail tools
+
+- **Send an email** — Send an email via Gmail API. Requires appropriate Gmail scopes.
+- **Search and retrieve emails** — Search and retrieve emails using Gmail search syntax
+- **Retrieve a single email by ID** — Retrieve a single email by ID with full headers, body, and attachment metadata
+- **Retrieve all messages in a conversation thread** — Retrieve all messages in a conversation thread
+- **Send a reply within an existing email thread** — Send a reply within an existing email thread
+- **Create an email draft without sending** — Create an email draft without sending
+- **Move a message to trash** — Move a message to trash
+- **Add or remove labels from a message** — Add or remove labels from a message
+- **List all labels** — List all labels
+- **Create a new user label** — Create a new user label
+- **Download an attachment from an email** — Download an attachment from an email
+
+## Connect Google Mail to an AI agent
+
+Add Google Mail from the [Tilde dashboard](https://api.trytilde.ai/tools/available-tool-providers), then enable the tools your agent needs on an MCP server. [Learn how tools work in Tilde](/tools).
+
+[Browse every Tilde tool provider](/tool-providers/index) or [compare Tilde-managed and self-managed authentication](/tool-providers/managed-auth).

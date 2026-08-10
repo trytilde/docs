@@ -1,0 +1,85 @@
+---
+title: "Tavily tools for AI agents"
+sidebarTitle: "Tavily"
+description: "Explore 6 Tavily tools for AI agents in Tilde, including supported authentication and MCP capabilities."
+keywords:
+  - "Tavily AI tools"
+  - "Tavily MCP integration"
+  - "Tavily tools for AI agents"
+  - "Tilde tool providers"
+  - "MCP tools"
+"og:title": "Tavily tools for AI agents | Tilde"
+"og:description": "Explore 6 Tavily tools for AI agents in Tilde, including supported authentication and MCP capabilities."
+mode: "wide"
+---
+
+import {
+  PUBLIC_CATALOG_URL,
+  iconAliases,
+  iconUrl,
+  providerFromApi,
+  ProviderLogo,
+  ToolProviderDetail,
+} from "/snippets/tool-provider-browser.jsx";
+
+export const provider = {
+  "name": "Tavily",
+  "slug": "tavily",
+  "initials": "TA",
+  "category": "Search",
+  "summary": "Tavily web search, extraction, crawl, map, research, and account usage tools.",
+  "auth": [
+    "Tavily API key"
+  ],
+  "iconSources": [],
+  "toolCount": 6,
+  "tools": [
+    [
+      "Search the web",
+      "Run a Tavily web search and return ranked results, optional answers, images, raw content, and usage."
+    ],
+    [
+      "Extract web content",
+      "Extract cleaned content from one or more URLs with Tavily Extract."
+    ],
+    [
+      "Crawl a website",
+      "Crawl a website from a root URL with configurable depth, breadth, path/domain selection, and extraction options."
+    ],
+    [
+      "Map a website",
+      "Map a website structure from a root URL and return discovered URLs."
+    ],
+    [
+      "Research a topic",
+      "Create a Tavily research task and poll until completion, returning the synthesized content."
+    ],
+    [
+      "Get usage",
+      "Return usage information for the Tavily API key."
+    ]
+  ]
+};
+
+{/* GENERATED: scripts/generate-tool-provider-pages.mjs */}
+
+Tavily web search, extraction, crawl, map, research, and account usage tools.
+
+Tilde exposes **6 Tavily tools** for AI agents through MCP. Connect with Tavily API key.
+
+<ToolProviderDetail provider={provider} ProviderLogo={ProviderLogo} />
+
+## Popular Tavily tools
+
+- **Search the web** — Run a Tavily web search and return ranked results, optional answers, images, raw content, and usage.
+- **Extract web content** — Extract cleaned content from one or more URLs with Tavily Extract.
+- **Crawl a website** — Crawl a website from a root URL with configurable depth, breadth, path/domain selection, and extraction options.
+- **Map a website** — Map a website structure from a root URL and return discovered URLs.
+- **Research a topic** — Create a Tavily research task and poll until completion, returning the synthesized content.
+- **Get usage** — Return usage information for the Tavily API key.
+
+## Connect Tavily to an AI agent
+
+Add Tavily from the [Tilde dashboard](https://api.trytilde.ai/tools/available-tool-providers), then enable the tools your agent needs on an MCP server. [Learn how tools work in Tilde](/tools).
+
+[Browse every Tilde tool provider](/tool-providers/index) or [compare Tilde-managed and self-managed authentication](/tool-providers/managed-auth).

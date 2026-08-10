@@ -1,0 +1,117 @@
+---
+title: "Sentry tools for AI agents"
+sidebarTitle: "Sentry"
+description: "Explore 237 Sentry tools for AI agents in Tilde, including supported authentication and MCP capabilities."
+keywords:
+  - "Sentry AI tools"
+  - "Sentry MCP integration"
+  - "Sentry tools for AI agents"
+  - "Tilde tool providers"
+  - "MCP tools"
+"og:title": "Sentry tools for AI agents | Tilde"
+"og:description": "Explore 237 Sentry tools for AI agents in Tilde, including supported authentication and MCP capabilities."
+mode: "wide"
+---
+
+import {
+  PUBLIC_CATALOG_URL,
+  iconAliases,
+  iconUrl,
+  providerFromApi,
+  ProviderLogo,
+  ToolProviderDetail,
+} from "/snippets/tool-provider-browser.jsx";
+
+export const provider = {
+  "name": "Sentry",
+  "slug": "sentry",
+  "initials": "SE",
+  "category": "Developer Tools",
+  "summary": "Sentry issue discovery, event investigation, assignment, status, and activity-note tools. The deduplicated catalog includes 48 official Sentry MCP definitions and 211 Composio aliases; Nango contributes 0 actions. Inputs and outputs use the upstream JSON schemas.",
+  "auth": [
+    "Sentry auth token",
+    "Sentry OAuth app",
+    "Tilde-managed OAuth"
+  ],
+  "iconSources": [],
+  "toolCount": 237,
+  "tools": [
+    [
+      "Who am I",
+      "Return the authenticated Sentry user."
+    ],
+    [
+      "Find organizations",
+      "Find Sentry organizations accessible to the authenticated user."
+    ],
+    [
+      "Find projects",
+      "Find projects in a Sentry organization."
+    ],
+    [
+      "Search issues",
+      "Search Sentry issues using Sentry issue-search syntax. Defaults to unresolved issues."
+    ],
+    [
+      "Get issue details",
+      "Get strongly typed details for one Sentry issue."
+    ],
+    [
+      "Get issue activity",
+      "Get activity and human comments for one Sentry issue."
+    ],
+    [
+      "Search issue events",
+      "Search the error events grouped into one Sentry issue."
+    ],
+    [
+      "Get event stacktrace",
+      "Retrieve a full issue event, including stacktrace entries when Sentry provides them."
+    ],
+    [
+      "Update issue",
+      "Assign an issue or update its status. This mutates visible Sentry state."
+    ],
+    [
+      "Add issue note",
+      "Add a human-visible comment to a Sentry issue activity feed."
+    ],
+    [
+      "add team to project",
+      "Grant a team access to an existing Sentry project.\n\nUse this tool when you need to:\n- Add another team to a project\n- Grant a team access without changing project metadata\n- Check whether a team already has project access before adding it\n\n<examples>\nadd_team_to_project(organizationSlug='my-organization', projectSlug='my-project', teamSlug='my-team')\n</examples>\n\n<hints>\n- Team access changes are separate from project metadata updates.\n- If the team is already assigned, this tool returns the current team list without making another change.\n</hints>"
+    ],
+    [
+      "analyze issue with seer",
+      "Use Seer to analyze production errors and get detailed root cause analysis with specific code fixes.\n\nUse this tool when:\n- The user explicitly asks for root cause analysis, Seer analysis, or help fixing/debugging an issue\n- You are unable to accurately determine the root cause from the issue details alone\n\nDo NOT call this tool as an automatic follow-up to get_sentry_resource.\n\nWhat this tool provides:\n- Root cause analysis with code-level explanations\n- Specific file locations and line numbers where errors occur\n- Concrete code fixes you can apply\n- Step-by-step implementation guidance\n\nThis tool automatically:\n1. Checks if analysis already exists (instant results)\n2. Starts new AI analysis if needed (~2-5 minutes)\n3. Returns complete fix recommendations\n\n<examples>\n### User: \"Run Seer on this issue\"\n\n```\nanalyze_issue_with_seer(issueUrl='https://my-org.sentry.io/issues/PROJECT-1Z43')\n```\n\n### User: \"Analyze this issue and suggest a fix\"\n\n```\nanalyze_issue_with_seer(organizationSlug='my-organization', issueId='ERROR-456')\n```\n</examples>\n\n<hints>\n- Only use when the user explicitly requests analysis or you cannot determine the root cause from issue details alone\n- Seer Autofix does not support metric alert issues (issueCategory: metric); use get_issue_details and search_events instead\n- If the user provides an issueUrl, extract it and use that parameter alone\n- The analysis includes actual code snippets and fixes, not just error descriptions\n- Results are cached - subsequent calls return instantly\n</hints>"
+    ]
+  ]
+};
+
+{/* GENERATED: scripts/generate-tool-provider-pages.mjs */}
+
+Sentry issue discovery, event investigation, assignment, status, and activity-note tools. The deduplicated catalog includes 48 official Sentry MCP definitions and 211 Composio aliases; Nango contributes 0 actions. Inputs and outputs use the upstream JSON schemas.
+
+Tilde exposes **237 Sentry tools** for AI agents through MCP. Connect with Sentry auth token, Sentry OAuth app, Tilde-managed OAuth.
+
+<ToolProviderDetail provider={provider} ProviderLogo={ProviderLogo} />
+
+## Popular Sentry tools
+
+- **Who am I** — Return the authenticated Sentry user.
+- **Find organizations** — Find Sentry organizations accessible to the authenticated user.
+- **Find projects** — Find projects in a Sentry organization.
+- **Search issues** — Search Sentry issues using Sentry issue-search syntax. Defaults to unresolved issues.
+- **Get issue details** — Get strongly typed details for one Sentry issue.
+- **Get issue activity** — Get activity and human comments for one Sentry issue.
+- **Search issue events** — Search the error events grouped into one Sentry issue.
+- **Get event stacktrace** — Retrieve a full issue event, including stacktrace entries when Sentry provides them.
+- **Update issue** — Assign an issue or update its status. This mutates visible Sentry state.
+- **Add issue note** — Add a human-visible comment to a Sentry issue activity feed.
+- **add team to project** — Grant a team access to an existing Sentry project. Use this tool when you need to: - Add another team to a project - Grant a team access without changing project metadata - Check whether a team already has project access before adding it &lt;examples&gt; add_team_to_project(organizationSlug='my-organization', projectSlug='my-project', teamSlug='my-team') &lt;/examples&gt; &lt;hints&gt; - Team access changes are separate from project metadata updates. - If the team is already assigned, this tool returns the current team list without making another change. &lt;/hints&gt;
+- **analyze issue with seer** — Use Seer to analyze production errors and get detailed root cause analysis with specific code fixes. Use this tool when: - The user explicitly asks for root cause analysis, Seer analysis, or help fixing/debugging an issue - You are unable to accurately determine the root cause from the issue details alone Do NOT call this tool as an automatic follow-up to get_sentry_resource. What this tool provides: - Root cause analysis with code-level explanations - Specific file locations and line numbers where errors occur - Concrete code fixes you can apply - Step-by-step implementation guidance This tool automatically: 1. Checks if analysis already exists (instant results) 2. Starts new AI analysis if needed (~2-5 minutes) 3. Returns complete fix recommendations &lt;examples&gt; ### User: "Run Seer on this issue" ``` analyze_issue_with_seer(issueUrl='https://my-org.sentry.io/issues/PROJECT-1Z43') ``` ### User: "Analyze this issue and suggest a fix" ``` analyze_issue_with_seer(organizationSlug='my-organization', issueId='ERROR-456') ``` &lt;/examples&gt; &lt;hints&gt; - Only use when the user explicitly requests analysis or you cannot determine the root cause from issue details alone - Seer Autofix does not support metric alert issues (issueCategory: metric); use get_issue_details and search_events instead - If the user provides an issueUrl, extract it and use that parameter alone - The analysis includes actual code snippets and fixes, not just error descriptions - Results are cached - subsequent calls return instantly &lt;/hints&gt;
+
+## Connect Sentry to an AI agent
+
+Add Sentry from the [Tilde dashboard](https://api.trytilde.ai/tools/available-tool-providers), then enable the tools your agent needs on an MCP server. [Learn how tools work in Tilde](/tools).
+
+[Browse every Tilde tool provider](/tool-providers/index) or [compare Tilde-managed and self-managed authentication](/tool-providers/managed-auth).

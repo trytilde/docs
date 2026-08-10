@@ -1,0 +1,90 @@
+---
+title: "Payload CMS tools for AI agents"
+sidebarTitle: "Payload CMS"
+description: "Explore 7 Payload CMS tools for AI agents in Tilde, including supported authentication and MCP capabilities."
+keywords:
+  - "Payload CMS AI tools"
+  - "Payload CMS MCP integration"
+  - "Payload CMS tools for AI agents"
+  - "Tilde tool providers"
+  - "MCP tools"
+"og:title": "Payload CMS tools for AI agents | Tilde"
+"og:description": "Explore 7 Payload CMS tools for AI agents in Tilde, including supported authentication and MCP capabilities."
+mode: "wide"
+---
+
+import {
+  PUBLIC_CATALOG_URL,
+  iconAliases,
+  iconUrl,
+  providerFromApi,
+  ProviderLogo,
+  ToolProviderDetail,
+} from "/snippets/tool-provider-browser.jsx";
+
+export const provider = {
+  "name": "Payload CMS",
+  "slug": "payload",
+  "initials": "PA",
+  "category": "Documents",
+  "summary": "Payload CMS document and global content management tools backed by Payload's REST API.",
+  "auth": [
+    "Payload API key"
+  ],
+  "iconSources": [],
+  "toolCount": 7,
+  "tools": [
+    [
+      "Find Payload documents",
+      "Find documents in a Payload collection by collection slug, optional ID, pagination, sorting, and filters."
+    ],
+    [
+      "Count Payload documents",
+      "Count documents in a Payload collection by collection slug and optional filters."
+    ],
+    [
+      "Create Payload document",
+      "Create a document in a Payload collection using the generated REST API."
+    ],
+    [
+      "Update Payload document",
+      "Update one Payload document by ID, or multiple documents with a where filter."
+    ],
+    [
+      "Delete Payload documents",
+      "Delete one Payload document by ID, or multiple documents with a where filter."
+    ],
+    [
+      "Find Payload global",
+      "Fetch a Payload global singleton by global slug."
+    ],
+    [
+      "Update Payload global",
+      "Update a Payload global singleton by global slug."
+    ]
+  ]
+};
+
+{/* GENERATED: scripts/generate-tool-provider-pages.mjs */}
+
+Payload CMS document and global content management tools backed by Payload's REST API.
+
+Tilde exposes **7 Payload CMS tools** for AI agents through MCP. Connect with Payload API key.
+
+<ToolProviderDetail provider={provider} ProviderLogo={ProviderLogo} />
+
+## Popular Payload CMS tools
+
+- **Find Payload documents** — Find documents in a Payload collection by collection slug, optional ID, pagination, sorting, and filters.
+- **Count Payload documents** — Count documents in a Payload collection by collection slug and optional filters.
+- **Create Payload document** — Create a document in a Payload collection using the generated REST API.
+- **Update Payload document** — Update one Payload document by ID, or multiple documents with a where filter.
+- **Delete Payload documents** — Delete one Payload document by ID, or multiple documents with a where filter.
+- **Find Payload global** — Fetch a Payload global singleton by global slug.
+- **Update Payload global** — Update a Payload global singleton by global slug.
+
+## Connect Payload CMS to an AI agent
+
+Add Payload CMS from the [Tilde dashboard](https://api.trytilde.ai/tools/available-tool-providers), then enable the tools your agent needs on an MCP server. [Learn how tools work in Tilde](/tools).
+
+[Browse every Tilde tool provider](/tool-providers/index) or [compare Tilde-managed and self-managed authentication](/tool-providers/managed-auth).

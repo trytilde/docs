@@ -1,0 +1,60 @@
+---
+title: "Message internal agent tools for AI agents"
+sidebarTitle: "Message internal agent"
+description: "Explore 1 Message internal agent tools for AI agents in Tilde, including supported authentication and MCP capabilities."
+keywords:
+  - "Message internal agent AI tools"
+  - "Message internal agent MCP integration"
+  - "Message internal agent tools for AI agents"
+  - "Tilde tool providers"
+  - "MCP tools"
+"og:title": "Message internal agent tools for AI agents | Tilde"
+"og:description": "Explore 1 Message internal agent tools for AI agents in Tilde, including supported authentication and MCP capabilities."
+mode: "wide"
+---
+
+import {
+  PUBLIC_CATALOG_URL,
+  iconAliases,
+  iconUrl,
+  providerFromApi,
+  ProviderLogo,
+  ToolProviderDetail,
+} from "/snippets/tool-provider-browser.jsx";
+
+export const provider = {
+  "name": "Message internal agent",
+  "slug": "chatkit_internal_agent",
+  "initials": "ME",
+  "category": "Chat",
+  "summary": "Send messages between paired ChatKit agents through an internal ChatKit session.",
+  "auth": [
+    "No Auth"
+  ],
+  "iconSources": [],
+  "toolCount": 1,
+  "tools": [
+    [
+      "Send message to paired agent",
+      "Send a message from this ChatKit agent to the paired internal ChatKit agent."
+    ]
+  ]
+};
+
+{/* GENERATED: scripts/generate-tool-provider-pages.mjs */}
+
+Send messages between paired ChatKit agents through an internal ChatKit session.
+
+Tilde exposes **1 Message internal agent tool** for AI agents through MCP. Connect with No Auth.
+
+<ToolProviderDetail provider={provider} ProviderLogo={ProviderLogo} />
+
+## Popular Message internal agent tools
+
+- **Send message to paired agent** — Send a message from this ChatKit agent to the paired internal ChatKit agent.
+
+## Connect Message internal agent to an AI agent
+
+Add Message internal agent from the [Tilde dashboard](https://api.trytilde.ai/tools/available-tool-providers), then enable the tools your agent needs on an MCP server. [Learn how tools work in Tilde](/tools).
+
+[Browse every Tilde tool provider](/tool-providers/index) or [compare Tilde-managed and self-managed authentication](/tool-providers/managed-auth).

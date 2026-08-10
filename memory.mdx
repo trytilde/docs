@@ -1,24 +1,159 @@
 ---
 title: "Memory"
-description: "Give your agent durable context across sessions."
+description: "Give your agents durable context through memory banks and structured wikis."
 icon: "brain"
 ---
 
-import AgentContext from '/snippets/agent-context.mdx';
+Tilde provides two related ways to manage knowledge for agents.
 
-<AgentContext />
+| Resource | Use it for | Agent access |
+| --- | --- | --- |
+| **Memory bank** | Durable facts, decisions, preferences, and work summaries that agents can recall semantically. | `retain`, `recall`, `reflect`, and `delete_document` tools. |
+| **Wiki** | Agent-maintained Markdown pages, revisions, relationships, graph queries, and media assets. | Page, schema, relationship, graph, and asset tools. |
 
-Memory gives your agent durable context it can recall across conversations and tasks.
+Use memory banks when an agent needs relevant context without knowing where it was stored. Use wikis when the knowledge should have an explicit structure that people and agents can browse and maintain.
 
-Use memory for knowledge that should outlive one session. Keep temporary instructions and request-specific details in the current conversation.
+## Memory banks
 
-## What belongs in memory
+<Warning>
+  Memory banks are managed and hosted through Hindsight. Because usage-based billing is currently difficult to track accurately, we charge a flat fee of $20 per memory bank each month. We expect this pricing model to change.
+</Warning>
 
-- Stable facts your agent will need again
-- Decisions and their supporting context
-- Team knowledge shared across workflows
-- Summaries of completed work
+A memory bank is an isolated store that lasts beyond one conversation. Agents can retain stable documents, recall content relevant to a query, and reflect on the bank to produce a contextual answer.
 
-<Tip>
-  Store focused, reusable context. Avoid copying full conversations when a concise summary will do.
-</Tip>
+Tilde memory banks are powered by [Hindsight](https://hindsight.vectorize.io/). Tilde exposes most Hindsight bank configuration, including retain and reflect missions, extraction behavior, observations, consolidation, disposition, entity settings, memory defense, directives, mental models, and advanced provider overrides. You can also import and export portable bank templates.
+
+Open Tilde, select your workspace, and go to **Memory** → **Memory Banks**. Click **New memory bank**, then give the bank a clear name and description.
+
+Tilde automatically creates a private tool provider bound to the bank and enables these tools:
+
+- `retain` stores or replaces a stable document. Reuse its `document_id` when updating it.
+- `recall` searches for memories relevant to a query.
+- `reflect` answers a question using knowledge held by the bank.
+- `delete_document` removes a retained document by ID.
+
+Tilde binds the bank ID internally, so it does not appear as an agent-controlled tool parameter.
+
+## Wikis
+
+A wiki is a structured Markdown knowledge base for your team. It can contain nested pages, typed data, version history, semantic relationships, graph queries, and media assets.
+
+Go to **Memory** → **Wikis** and click **New wiki**. You can select one or more memory banks during setup. Tilde then synchronizes wiki changes into those banks, giving agents both structured wiki access and semantic recall over the same knowledge.
+
+Creating a wiki automatically provisions and enables its private wiki tools. They cover:
+
+- **Pages:** list, read, create or update, move, delete, migrate, and inspect history.
+- **Data model:** manage versioned page types, JSON schemas, and relationship types.
+- **Graph:** relate pages, inspect backlinks and neighborhoods, and traverse relationships.
+- **Assets:** upload, download, update, delete, and inspect media references.
+
+Each tool is bound to the wiki that created it, so an agent cannot redirect a call to another wiki by changing an input parameter.
+
+### Wiki schema packs
+
+A Wiki Schema Pack adds a coherent data model to a wiki. Each pack contains page types with JSON schemas and the semantic relationships allowed between them.
+
+Go to **Memory** → **Wiki Schema Packs**, choose a pack, and select its destination wiki. Tilde preserves definitions with matching stable keys. Installed definitions remain editable and versioned inside the wiki.
+
+Schema packs do not create a separate tool provider. The wiki's existing tools immediately work with the added page types and relationships.
+
+## Keep memory continuously updated
+
+Use automatic ingestion for source data, agent tools for deliberate updates, and a scheduled distillation agent for durable lessons from conversations.
+
+### Ingest supported sources automatically
+
+Open a memory bank and select the sources you want it to ingest. Tilde can ingest ChatKit conversations, signals, wikis, skills, and MCP servers. Once a source is linked, Tilde detects changes and resynchronizes the affected documents into the bank.
+
+A source is not shared with every memory bank automatically. You choose which banks receive it. For wikis, select the destination memory banks when you create or edit the wiki.
+
+### Let an agent maintain its knowledge
+
+Give an agent the `retain` tool so it can write directly to its memory bank. Ask it to use a stable `document_id` for knowledge that should be updated instead of duplicated.
+
+Give the agent wiki page and relationship tools when it needs to maintain structured knowledge. If the wiki is linked to the agent's memory bank, each wiki update is ingested into that bank automatically. The agent can then use semantic recall over the content without writing the same information with `retain`.
+
+Treat the wiki as a first-class source of truth for common and relational data such as customers, projects, ownership, policies, and dependencies. Use the memory bank for semantic recall, conclusions, preferences, and concise summaries that do not belong in a structured page.
+
+### Run a daily distillation agent
+
+We recommend running a dedicated agent on a schedule, typically once every 24 hours. Give it access to that day's conversations, the target memory bank tools, and the relevant wiki tools. Its job is to compress the day's interactions into durable knowledge.
+
+```text Daily memory distillation prompt
+Review the last 24 hours of conversations.
+
+Identify durable facts, decisions, preferences, outcomes, and unresolved work.
+Ignore greetings, repeated context, temporary instructions, and unverified claims.
+
+Update structured and relational facts in the wiki first.
+Use stable page identifiers and preserve existing relationships.
+
+Retain concise summaries that do not belong in the wiki in the memory bank.
+Recall related memories before writing, and reuse stable document IDs when updating them.
+Do not retain secrets or duplicate content already ingested from the wiki.
+```
+
+This pattern keeps raw conversation noise out of long-term memory while steadily improving the context available to future sessions.
+
+## Expose memory tools to an agent
+
+Memory bank and wiki tools are enabled automatically when you create their resource. You do not need to configure another provider or supply credentials.
+
+<Steps>
+  <Step title="Review the enabled tools">
+    Go to **Tools** → **Manage Enabled Tools**. Find the provider named for your memory bank or wiki and review its enabled tools.
+
+    Keep destructive tools such as `delete_document`, `delete_page`, and schema deletion out of the agent's MCP server unless it needs them.
+  </Step>
+
+  <Step title="Add tools to an MCP server">
+    Go to **Tools** → **MCP Servers** and open the server used by your agent. Add the memory bank or wiki tools you want to expose.
+
+    Enable dynamic mode when you add the full wiki toolset. It lets the agent search for the relevant tool instead of loading every wiki tool schema into its context at once.
+  </Step>
+
+  <Step title="Connect the agent">
+    Connect to that MCP server with the Harness SDK. Memory and wiki tools are returned alongside its other tools.
+
+    ```typescript wherever-you-run-your-agent.ts
+    import { openai } from "@ai-sdk/openai";
+    import { generateText } from "ai";
+    import { createMCPClient } from "@trytilde/harness-sdk-vercel-ai-node";
+
+    const { mcp, closeMcp } = await createMCPClient({
+      client: tilde,
+      serverId: process.env.TILDE_MCP_SERVER_ID!,
+    });
+
+    try {
+      await generateText({
+        model: openai("gpt-5.5"),
+        messages,
+        tools: await mcp.tools(),
+      });
+    } finally {
+      await closeMcp();
+    }
+    ```
+
+    See [Tools](/tools) for the complete client and environment setup.
+  </Step>
+</Steps>
+
+## Guide the agent
+
+Tell the agent which knowledge belongs in each resource.
+
+```text Agent instruction
+Recall relevant memory before starting work that may depend on past decisions.
+Retain durable facts, decisions, and concise work summaries.
+Use the wiki for structured knowledge that should be browsed, linked, or maintained.
+Follow the wiki's page schemas and relationships when creating or updating pages.
+Do not store secrets, temporary instructions, or unverified assumptions.
+```
+
+## Memory and ChatKit history
+
+ChatKit history reconstructs one conversation. Memory banks and wikis carry selected knowledge across sessions, channels, and agents.
+
+Do not copy every message into memory. Keep the part another session would need: the decision, its context, and the resulting state.

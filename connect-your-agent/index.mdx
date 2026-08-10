@@ -1,54 +1,50 @@
 ---
-title: "Setup"
-sidebarTitle: "Overview"
-description: "Connect your agent client to the global Tilde MCP server."
+title: "Connect your coding agent"
+sidebarTitle: "Connect your coding agent"
+description: "Connect a supported coding agent or MCP client to Tilde."
 icon: "plug"
 keywords: ["MCP", "agent", "OAuth", "setup"]
 ---
 
-import AgentContext from '/snippets/agent-context.mdx';
-
-<AgentContext />
-
 Connect the client where your agent runs to the global Tilde MCP server.
 
-## Choose your agent client
+## Choose your coding agent
 
 Select where your agent runs, then follow the setup instructions for that client.
 
 ### OpenClaw
 
 <Columns cols={3}>
-  <Card title="OpenClaw" icon="terminal" href="/connect-your-agent/openclaw" horizontal />
+  <Card title="OpenClaw" icon="/icons/openclaw.svg" href="/connect-your-agent/openclaw" horizontal />
 </Columns>
 
 ### Claude
 
 <Columns cols={3}>
-  <Card title="Claude Desktop" icon="robot" href="/connect-your-agent/claude-desktop" horizontal />
-  <Card title="Claude Code" icon="code" href="/connect-your-agent/claude-code" horizontal />
+  <Card title="Claude Desktop" icon="https://cdn.jsdelivr.net/npm/simple-icons@16.28.0/icons/claude.svg" href="/connect-your-agent/claude-desktop" horizontal />
+  <Card title="Claude Code" icon="https://cdn.jsdelivr.net/npm/simple-icons@16.28.0/icons/claude.svg" href="/connect-your-agent/claude-code" horizontal />
 </Columns>
 
 ### Codex + ChatGPT
 
 <Columns cols={3}>
-  <Card title="Codex" icon="square-code" href="/connect-your-agent/codex" horizontal />
-  <Card title="ChatGPT" icon="message" href="/connect-your-agent/chatgpt" horizontal />
+  <Card title="Codex" icon="https://cdn.jsdelivr.net/npm/simple-icons@15.16.0/icons/openai.svg" href="/connect-your-agent/codex" horizontal />
+  <Card title="ChatGPT" icon="https://cdn.jsdelivr.net/npm/simple-icons@15.16.0/icons/openai.svg" href="/connect-your-agent/chatgpt" horizontal />
 </Columns>
 
 ### MCP
 
 <Columns cols={3}>
-  <Card title="Notion" icon="notebook" href="/connect-your-agent/notion" horizontal />
-  <Card title="Cursor" icon="arrow-pointer" href="/connect-your-agent/cursor" horizontal />
-  <Card title="VS Code" icon="code" href="/connect-your-agent/vscode" horizontal />
-  <Card title="Windsurf" icon="wind" href="/connect-your-agent/windsurf" horizontal />
-  <Card title="Cline" icon="box" href="/connect-your-agent/cline" horizontal />
-  <Card title="Agent Builder" icon="robot" href="/connect-your-agent/openai-agent-builder" horizontal />
-  <Card title="n8n" icon="diagram-project" href="/connect-your-agent/n8n" horizontal />
+  <Card title="Notion" icon="https://cdn.jsdelivr.net/npm/simple-icons@16.28.0/icons/notion.svg" href="/connect-your-agent/notion" horizontal />
+  <Card title="Cursor" icon="https://cdn.jsdelivr.net/npm/simple-icons@16.28.0/icons/cursor.svg" href="/connect-your-agent/cursor" horizontal />
+  <Card title="VS Code" icon="https://cdn.jsdelivr.net/npm/simple-icons@12.4.0/icons/visualstudiocode.svg" href="/connect-your-agent/vscode" horizontal />
+  <Card title="Windsurf" icon="https://cdn.jsdelivr.net/npm/simple-icons@16.28.0/icons/windsurf.svg" href="/connect-your-agent/windsurf" horizontal />
+  <Card title="Cline" icon="https://cdn.jsdelivr.net/npm/simple-icons@16.28.0/icons/cline.svg" href="/connect-your-agent/cline" horizontal />
+  <Card title="Agent Builder" icon="https://cdn.jsdelivr.net/npm/simple-icons@15.16.0/icons/openai.svg" href="/connect-your-agent/openai-agent-builder" horizontal />
+  <Card title="n8n" icon="https://cdn.jsdelivr.net/npm/simple-icons@16.28.0/icons/n8n.svg" href="/connect-your-agent/n8n" horizontal />
   <Card title="MCP URL" icon="network-wired" href="/connect-your-agent/mcp-url" horizontal />
 </Columns>
 
 <Info>
-  The global endpoint infers your organization from your Tilde login. Tools that act on a team ask for a `team_id`.
+  The global endpoint infers your organization from your Tilde login. Tools that act on a team require a `team_id`.
 </Info>

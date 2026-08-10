@@ -1,0 +1,85 @@
+---
+title: "Google Docs tools for AI agents"
+sidebarTitle: "Google Docs"
+description: "Explore 6 Google Docs tools for AI agents in Tilde, including supported authentication and MCP capabilities."
+keywords:
+  - "Google Docs AI tools"
+  - "Google Docs MCP integration"
+  - "Google Docs tools for AI agents"
+  - "Tilde tool providers"
+  - "MCP tools"
+"og:title": "Google Docs tools for AI agents | Tilde"
+"og:description": "Explore 6 Google Docs tools for AI agents in Tilde, including supported authentication and MCP capabilities."
+mode: "wide"
+---
+
+import {
+  PUBLIC_CATALOG_URL,
+  iconAliases,
+  iconUrl,
+  providerFromApi,
+  ProviderLogo,
+  ToolProviderDetail,
+} from "/snippets/tool-provider-browser.jsx";
+
+export const provider = {
+  "name": "Google Docs",
+  "slug": "google_docs",
+  "initials": "GO",
+  "category": "Documents",
+  "summary": "Google Docs integration for creating, reading, and editing documents.",
+  "auth": [
+    "Tilde-managed OAuth"
+  ],
+  "iconSources": [],
+  "toolCount": 6,
+  "tools": [
+    [
+      "Create a new Google Doc with optional initial content",
+      "Create a new Google Doc with optional initial content"
+    ],
+    [
+      "Retrieve a document's content as plain text",
+      "Retrieve a document's content as plain text"
+    ],
+    [
+      "Append text to the end of a document",
+      "Append text to the end of a document"
+    ],
+    [
+      "Insert text at a specific position in a document",
+      "Insert text at a specific position in a document"
+    ],
+    [
+      "Find and replace text within a document",
+      "Find and replace text within a document"
+    ],
+    [
+      "Create a copy of an existing document",
+      "Create a copy of an existing document"
+    ]
+  ]
+};
+
+{/* GENERATED: scripts/generate-tool-provider-pages.mjs */}
+
+Google Docs integration for creating, reading, and editing documents.
+
+Tilde exposes **6 Google Docs tools** for AI agents through MCP. Connect with Tilde-managed OAuth.
+
+<ToolProviderDetail provider={provider} ProviderLogo={ProviderLogo} />
+
+## Popular Google Docs tools
+
+- **Create a new Google Doc with optional initial content** — Create a new Google Doc with optional initial content
+- **Retrieve a document's content as plain text** — Retrieve a document's content as plain text
+- **Append text to the end of a document** — Append text to the end of a document
+- **Insert text at a specific position in a document** — Insert text at a specific position in a document
+- **Find and replace text within a document** — Find and replace text within a document
+- **Create a copy of an existing document** — Create a copy of an existing document
+
+## Connect Google Docs to an AI agent
+
+Add Google Docs from the [Tilde dashboard](https://api.trytilde.ai/tools/available-tool-providers), then enable the tools your agent needs on an MCP server. [Learn how tools work in Tilde](/tools).
+
+[Browse every Tilde tool provider](/tool-providers/index) or [compare Tilde-managed and self-managed authentication](/tool-providers/managed-auth).

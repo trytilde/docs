@@ -1,48 +1,74 @@
-# Mintlify Starter Kit
+# Tilde documentation
 
-Use the starter kit to get your docs deployed and ready to customize.
+This repository contains the Tilde documentation site built with Mintlify.
 
-Click the green **Use this template** button at the top of this repo to copy the Mintlify starter kit. The starter kit contains examples with
+## Tool provider catalog
 
-- Guide pages
-- Navigation
-- Customizations
-- API reference pages
-- Use of popular components
+The public Tilde API is the source of truth for tool providers, authentication methods, icons, and tools:
 
-**[Follow the full quickstart guide](https://starter.mintlify.com/quickstart)**
+```text
+https://api.trytilde.ai/api/v1/mcp/available-tool-groups
+```
+
+The catalog fetches this endpoint in the browser so provider and tool information stays current. Mintlify requires a physical MDX file for every indexable route, so the repository also stores API-generated provider pages and a generated catalog fallback.
+
+Regenerate them whenever the API catalog changes:
+
+```bash
+npm run generate:tool-providers
+```
+
+The generator:
+
+- fetches every page of the public catalog without authentication;
+- creates or updates `/tool-providers/<provider>.mdx` with SEO metadata and API content;
+- updates `snippets/generated-tool-providers.jsx` for the initial catalog render;
+- removes stale files only when they carry the generator marker;
+- fails instead of replacing the catalog when the API is unavailable or empty.
+
+Do not edit generated provider pages or `snippets/generated-tool-providers.jsx` by hand. Change the API data or the generator template, then regenerate.
+
+Check that committed files match the current API without writing changes:
+
+```bash
+npm run check:tool-providers
+```
+
+Set `TILDE_TOOL_PROVIDER_CATALOG_URL` to test against another compatible catalog endpoint.
+
+## Development
+
+Use Node.js 20 through 24. Install the [Mintlify CLI](https://www.npmjs.com/package/mint):
+
+```bash
+npm i -g mint
+```
+
+Generate the API-backed pages and start the local preview:
+
+```bash
+npm run dev
+```
+
+View your local preview at `http://localhost:3000`.
+
+Before publishing, regenerate and commit any API-derived changes, then run:
+
+```bash
+npm run check
+```
 
 ## AI-assisted writing
 
-Set up your AI coding tool to work with Mintlify:
+Install Mintlify's documentation skill for your coding tools:
 
 ```bash
 npx skills add https://mintlify.com/docs
 ```
 
-This command installs Mintlify's documentation skill for your configured AI tools like Claude Code, Cursor, Windsurf, and others. The skill includes component reference, writing standards, and workflow guidance.
-
-See the [AI tools guides](/ai-tools) for tool-specific setup.
-
-## Development
-
-Install the [Mintlify CLI](https://www.npmjs.com/package/mint) to preview your documentation changes locally. To install, use the following command:
-
-```
-npm i -g mint
-```
-
-Run the following command at the root of your documentation, where your `docs.json` is located:
-
-```
-mint dev
-```
-
-View your local preview at `http://localhost:3000`.
-
 ## Publishing changes
 
-Install our GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app) to propagate changes from your repo to your deployment. Changes are deployed to production automatically after pushing to the default branch.
+Mintlify deploys committed changes through its GitHub app. Generated tool-provider files must be committed because Mintlify maps indexable routes to MDX files in the repository.
 
 ## Need help?
 

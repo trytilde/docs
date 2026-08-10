@@ -1,0 +1,100 @@
+---
+title: "Google Calendar tools for AI agents"
+sidebarTitle: "Google Calendar"
+description: "Explore 9 Google Calendar tools for AI agents in Tilde, including supported authentication and MCP capabilities."
+keywords:
+  - "Google Calendar AI tools"
+  - "Google Calendar MCP integration"
+  - "Google Calendar tools for AI agents"
+  - "Tilde tool providers"
+  - "MCP tools"
+"og:title": "Google Calendar tools for AI agents | Tilde"
+"og:description": "Explore 9 Google Calendar tools for AI agents in Tilde, including supported authentication and MCP capabilities."
+mode: "wide"
+---
+
+import {
+  PUBLIC_CATALOG_URL,
+  iconAliases,
+  iconUrl,
+  providerFromApi,
+  ProviderLogo,
+  ToolProviderDetail,
+} from "/snippets/tool-provider-browser.jsx";
+
+export const provider = {
+  "name": "Google Calendar",
+  "slug": "google_calendar",
+  "initials": "GO",
+  "category": "Calendar",
+  "summary": "Google Calendar integration for managing events, scheduling, and calendar access.",
+  "auth": [
+    "Tilde-managed OAuth"
+  ],
+  "iconSources": [],
+  "toolCount": 9,
+  "tools": [
+    [
+      "Create a calendar event",
+      "Create a calendar event with attendees, location, description, and optional Google Meet link"
+    ],
+    [
+      "Search calendar events",
+      "Search events by text query within a time range"
+    ],
+    [
+      "List upcoming events",
+      "List upcoming events on a calendar. Defaults to next 7 days."
+    ],
+    [
+      "Find free time slots",
+      "Find available time slots across calendars within a date range"
+    ],
+    [
+      "Update a calendar event",
+      "Update an existing calendar event"
+    ],
+    [
+      "Delete a calendar event",
+      "Delete a calendar event"
+    ],
+    [
+      "RSVP to a calendar event",
+      "Respond to a calendar event invitation"
+    ],
+    [
+      "List calendars",
+      "List all calendars the user has access to"
+    ],
+    [
+      "Get current date and time",
+      "Get current date and time. Essential for relative scheduling since agents have no clock."
+    ]
+  ]
+};
+
+{/* GENERATED: scripts/generate-tool-provider-pages.mjs */}
+
+Google Calendar integration for managing events, scheduling, and calendar access.
+
+Tilde exposes **9 Google Calendar tools** for AI agents through MCP. Connect with Tilde-managed OAuth.
+
+<ToolProviderDetail provider={provider} ProviderLogo={ProviderLogo} />
+
+## Popular Google Calendar tools
+
+- **Create a calendar event** — Create a calendar event with attendees, location, description, and optional Google Meet link
+- **Search calendar events** — Search events by text query within a time range
+- **List upcoming events** — List upcoming events on a calendar. Defaults to next 7 days.
+- **Find free time slots** — Find available time slots across calendars within a date range
+- **Update a calendar event** — Update an existing calendar event
+- **Delete a calendar event** — Delete a calendar event
+- **RSVP to a calendar event** — Respond to a calendar event invitation
+- **List calendars** — List all calendars the user has access to
+- **Get current date and time** — Get current date and time. Essential for relative scheduling since agents have no clock.
+
+## Connect Google Calendar to an AI agent
+
+Add Google Calendar from the [Tilde dashboard](https://api.trytilde.ai/tools/available-tool-providers), then enable the tools your agent needs on an MCP server. [Learn how tools work in Tilde](/tools).
+
+[Browse every Tilde tool provider](/tool-providers/index) or [compare Tilde-managed and self-managed authentication](/tool-providers/managed-auth).
