@@ -1,0 +1,116 @@
+---
+title: "Slack tools for AI agents"
+sidebarTitle: "Slack"
+description: "Explore 53 Slack tools for AI agents in Tilde, including supported authentication and MCP capabilities."
+keywords:
+  - "Slack AI tools"
+  - "Slack MCP integration"
+  - "Slack tools for AI agents"
+  - "Tilde tool providers"
+  - "MCP tools"
+"og:title": "Slack tools for AI agents | Tilde"
+"og:description": "Explore 53 Slack tools for AI agents in Tilde, including supported authentication and MCP capabilities."
+mode: "wide"
+---
+
+import {
+  PUBLIC_CATALOG_URL,
+  iconAliases,
+  iconUrl,
+  providerFromApi,
+  ProviderLogo,
+  ToolProviderDetail,
+} from "/snippets/tool-provider-browser.jsx";
+
+export const provider = {
+  "name": "Slack",
+  "slug": "slack",
+  "initials": "SL",
+  "category": "Chat",
+  "summary": "Slack messaging tools backed by a configured Slack bot.",
+  "auth": [
+    "Tilde-managed OAuth",
+    "Slack app"
+  ],
+  "iconSources": [],
+  "toolCount": 53,
+  "tools": [
+    [
+      "Send a Slack message",
+      "Send a message to a Slack channel."
+    ],
+    [
+      "Reply in a Slack thread",
+      "Reply to an existing Slack thread."
+    ],
+    [
+      "List Slack channels",
+      "List Slack conversations visible to the bot."
+    ],
+    [
+      "Add a Slack reaction",
+      "Add a reaction to a Slack message."
+    ],
+    [
+      "Archive a Slack channel",
+      "Archive a Slack channel."
+    ],
+    [
+      "Get Slack channel info",
+      "Retrieve conversation details including topic, purpose, and membership state."
+    ],
+    [
+      "Invite users to a Slack channel",
+      "Invite users to a Slack channel."
+    ],
+    [
+      "Set Slack channel purpose",
+      "Update a channel's purpose text for a conversation."
+    ],
+    [
+      "Set Slack channel topic",
+      "Set the topic of a channel."
+    ],
+    [
+      "Unarchive a Slack channel",
+      "Restore an archived conversation so members can use it again."
+    ],
+    [
+      "Set Slack channel workspaces",
+      "Set the workspaces in an Enterprise Grid org that connect to a channel."
+    ],
+    [
+      "Create a Slack channel",
+      "Create a new public or private Slack channel by name."
+    ]
+  ]
+};
+
+{/* GENERATED: scripts/generate-tool-provider-pages.mjs */}
+
+Slack messaging tools backed by a configured Slack bot.
+
+Tilde exposes **53 Slack tools** for AI agents through MCP. Connect with Tilde-managed OAuth, Slack app.
+
+<ToolProviderDetail provider={provider} ProviderLogo={ProviderLogo} />
+
+## Popular Slack tools
+
+- **Send a Slack message** — Send a message to a Slack channel.
+- **Reply in a Slack thread** — Reply to an existing Slack thread.
+- **List Slack channels** — List Slack conversations visible to the bot.
+- **Add a Slack reaction** — Add a reaction to a Slack message.
+- **Archive a Slack channel** — Archive a Slack channel.
+- **Get Slack channel info** — Retrieve conversation details including topic, purpose, and membership state.
+- **Invite users to a Slack channel** — Invite users to a Slack channel.
+- **Set Slack channel purpose** — Update a channel's purpose text for a conversation.
+- **Set Slack channel topic** — Set the topic of a channel.
+- **Unarchive a Slack channel** — Restore an archived conversation so members can use it again.
+- **Set Slack channel workspaces** — Set the workspaces in an Enterprise Grid org that connect to a channel.
+- **Create a Slack channel** — Create a new public or private Slack channel by name.
+
+## Connect Slack to an AI agent
+
+Add Slack from the [Tilde dashboard](https://api.trytilde.ai/tools/available-tool-providers), then enable the tools your agent needs on an MCP server. [Learn how tools work in Tilde](/tools).
+
+[Browse every Tilde tool provider](/tool-providers/index) or [compare Tilde-managed and self-managed authentication](/tool-providers/managed-auth).

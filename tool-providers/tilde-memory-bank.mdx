@@ -1,0 +1,75 @@
+---
+title: "Tilde Memory Bank tools for AI agents"
+sidebarTitle: "Tilde Memory Bank"
+description: "Explore 4 Tilde Memory Bank tools for AI agents in Tilde, including supported authentication and MCP capabilities."
+keywords:
+  - "Tilde Memory Bank AI tools"
+  - "Tilde Memory Bank MCP integration"
+  - "Tilde Memory Bank tools for AI agents"
+  - "Tilde tool providers"
+  - "MCP tools"
+"og:title": "Tilde Memory Bank tools for AI agents | Tilde"
+"og:description": "Explore 4 Tilde Memory Bank tools for AI agents in Tilde, including supported authentication and MCP capabilities."
+mode: "wide"
+---
+
+import {
+  PUBLIC_CATALOG_URL,
+  iconAliases,
+  iconUrl,
+  providerFromApi,
+  ProviderLogo,
+  ToolProviderDetail,
+} from "/snippets/tool-provider-browser.jsx";
+
+export const provider = {
+  "name": "Tilde Memory Bank",
+  "slug": "tilde_memory_bank",
+  "initials": "TI",
+  "category": "Memory",
+  "summary": "Retain, recall, reflect on, and delete documents in one bound Tilde memory bank.",
+  "auth": [
+    "No Auth"
+  ],
+  "iconSources": [],
+  "toolCount": 4,
+  "tools": [
+    [
+      "retain",
+      "Retain or replace one stable document."
+    ],
+    [
+      "recall",
+      "Recall relevant memories."
+    ],
+    [
+      "reflect",
+      "Answer using the memory bank."
+    ],
+    [
+      "delete_document",
+      "Delete one stable document."
+    ]
+  ]
+};
+
+{/* GENERATED: scripts/generate-tool-provider-pages.mjs */}
+
+Retain, recall, reflect on, and delete documents in one bound Tilde memory bank.
+
+Tilde exposes **4 Tilde Memory Bank tools** for AI agents through MCP. Connect with No Auth.
+
+<ToolProviderDetail provider={provider} ProviderLogo={ProviderLogo} />
+
+## Popular Tilde Memory Bank tools
+
+- **retain** — Retain or replace one stable document.
+- **recall** — Recall relevant memories.
+- **reflect** — Answer using the memory bank.
+- **delete_document** — Delete one stable document.
+
+## Connect Tilde Memory Bank to an AI agent
+
+Add Tilde Memory Bank from the [Tilde dashboard](https://api.trytilde.ai/tools/available-tool-providers), then enable the tools your agent needs on an MCP server. [Learn how tools work in Tilde](/tools).
+
+[Browse every Tilde tool provider](/tool-providers/index) or [compare Tilde-managed and self-managed authentication](/tool-providers/managed-auth).

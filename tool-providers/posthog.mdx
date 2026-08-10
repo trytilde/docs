@@ -1,0 +1,115 @@
+---
+title: "PostHog tools for AI agents"
+sidebarTitle: "PostHog"
+description: "Explore 66 PostHog tools for AI agents in Tilde, including supported authentication and MCP capabilities."
+keywords:
+  - "PostHog AI tools"
+  - "PostHog MCP integration"
+  - "PostHog tools for AI agents"
+  - "Tilde tool providers"
+  - "MCP tools"
+"og:title": "PostHog tools for AI agents | Tilde"
+"og:description": "Explore 66 PostHog tools for AI agents in Tilde, including supported authentication and MCP capabilities."
+mode: "wide"
+---
+
+import {
+  PUBLIC_CATALOG_URL,
+  iconAliases,
+  iconUrl,
+  providerFromApi,
+  ProviderLogo,
+  ToolProviderDetail,
+} from "/snippets/tool-provider-browser.jsx";
+
+export const provider = {
+  "name": "PostHog",
+  "slug": "posthog",
+  "initials": "PO",
+  "category": "Product Analytics",
+  "summary": "PostHog product analytics, feature flags, insights, dashboards, cohorts, surveys, experiments, persons, events, annotations, alerts, and project tools backed by direct PostHog REST APIs.",
+  "auth": [
+    "PostHog API key"
+  ],
+  "iconSources": [],
+  "toolCount": 66,
+  "tools": [
+    [
+      "List projects",
+      "List PostHog projects.\n\nNative direct PostHog API tool derived from Nango's PostHog integration templates. Provide path fields such as `project_id` and `id`, list filters in `query`, and create/update fields in `data`."
+    ],
+    [
+      "Get project",
+      "Retrieve one PostHog project.\n\nNative direct PostHog API tool derived from Nango's PostHog integration templates. Provide path fields such as `project_id` and `id`, list filters in `query`, and create/update fields in `data`."
+    ],
+    [
+      "Capture event",
+      "Capture an event through PostHog's capture API. Requires a project API token in the tool parameters.\n\nNative direct PostHog API tool derived from Nango's PostHog integration templates. Provide path fields such as `project_id` and `id`, list filters in `query`, and create/update fields in `data`."
+    ],
+    [
+      "Identify person",
+      "Identify or update a person by fetching the project API token, then sending a `$identify` capture event.\n\nNative direct PostHog API tool derived from Nango's PostHog integration templates. Provide path fields such as `project_id` and `id`, list filters in `query`, and create/update fields in `data`."
+    ],
+    [
+      "Create person",
+      "Create a PostHog person by sending an identify event, then reading the person by distinct_id.\n\nNative direct PostHog API tool derived from Nango's PostHog integration templates. Provide path fields such as `project_id` and `id`, list filters in `query`, and create/update fields in `data`."
+    ],
+    [
+      "List persons",
+      "List PostHog persons for a project.\n\nNative direct PostHog API tool derived from Nango's PostHog integration templates. Provide path fields such as `project_id` and `id`, list filters in `query`, and create/update fields in `data`."
+    ],
+    [
+      "Get person",
+      "Retrieve a PostHog person.\n\nNative direct PostHog API tool derived from Nango's PostHog integration templates. Provide path fields such as `project_id` and `id`, list filters in `query`, and create/update fields in `data`."
+    ],
+    [
+      "Update person",
+      "Update a PostHog person.\n\nNative direct PostHog API tool derived from Nango's PostHog integration templates. Provide path fields such as `project_id` and `id`, list filters in `query`, and create/update fields in `data`."
+    ],
+    [
+      "Delete person",
+      "Delete or archive a PostHog person.\n\nNative direct PostHog API tool derived from Nango's PostHog integration templates. Provide path fields such as `project_id` and `id`, list filters in `query`, and create/update fields in `data`."
+    ],
+    [
+      "List feature flags",
+      "List PostHog feature flags.\n\nNative direct PostHog API tool derived from Nango's PostHog integration templates. Provide path fields such as `project_id` and `id`, list filters in `query`, and create/update fields in `data`."
+    ],
+    [
+      "Get feature flag",
+      "Retrieve a PostHog feature flag.\n\nNative direct PostHog API tool derived from Nango's PostHog integration templates. Provide path fields such as `project_id` and `id`, list filters in `query`, and create/update fields in `data`."
+    ],
+    [
+      "Create feature flag",
+      "Create a PostHog feature flag.\n\nNative direct PostHog API tool derived from Nango's PostHog integration templates. Provide path fields such as `project_id` and `id`, list filters in `query`, and create/update fields in `data`."
+    ]
+  ]
+};
+
+{/* GENERATED: scripts/generate-tool-provider-pages.mjs */}
+
+PostHog product analytics, feature flags, insights, dashboards, cohorts, surveys, experiments, persons, events, annotations, alerts, and project tools backed by direct PostHog REST APIs.
+
+Tilde exposes **66 PostHog tools** for AI agents through MCP. Connect with PostHog API key.
+
+<ToolProviderDetail provider={provider} ProviderLogo={ProviderLogo} />
+
+## Popular PostHog tools
+
+- **List projects** — List PostHog projects. Native direct PostHog API tool derived from Nango's PostHog integration templates. Provide path fields such as `project_id` and `id`, list filters in `query`, and create/update fields in `data`.
+- **Get project** — Retrieve one PostHog project. Native direct PostHog API tool derived from Nango's PostHog integration templates. Provide path fields such as `project_id` and `id`, list filters in `query`, and create/update fields in `data`.
+- **Capture event** — Capture an event through PostHog's capture API. Requires a project API token in the tool parameters. Native direct PostHog API tool derived from Nango's PostHog integration templates. Provide path fields such as `project_id` and `id`, list filters in `query`, and create/update fields in `data`.
+- **Identify person** — Identify or update a person by fetching the project API token, then sending a `$identify` capture event. Native direct PostHog API tool derived from Nango's PostHog integration templates. Provide path fields such as `project_id` and `id`, list filters in `query`, and create/update fields in `data`.
+- **Create person** — Create a PostHog person by sending an identify event, then reading the person by distinct_id. Native direct PostHog API tool derived from Nango's PostHog integration templates. Provide path fields such as `project_id` and `id`, list filters in `query`, and create/update fields in `data`.
+- **List persons** — List PostHog persons for a project. Native direct PostHog API tool derived from Nango's PostHog integration templates. Provide path fields such as `project_id` and `id`, list filters in `query`, and create/update fields in `data`.
+- **Get person** — Retrieve a PostHog person. Native direct PostHog API tool derived from Nango's PostHog integration templates. Provide path fields such as `project_id` and `id`, list filters in `query`, and create/update fields in `data`.
+- **Update person** — Update a PostHog person. Native direct PostHog API tool derived from Nango's PostHog integration templates. Provide path fields such as `project_id` and `id`, list filters in `query`, and create/update fields in `data`.
+- **Delete person** — Delete or archive a PostHog person. Native direct PostHog API tool derived from Nango's PostHog integration templates. Provide path fields such as `project_id` and `id`, list filters in `query`, and create/update fields in `data`.
+- **List feature flags** — List PostHog feature flags. Native direct PostHog API tool derived from Nango's PostHog integration templates. Provide path fields such as `project_id` and `id`, list filters in `query`, and create/update fields in `data`.
+- **Get feature flag** — Retrieve a PostHog feature flag. Native direct PostHog API tool derived from Nango's PostHog integration templates. Provide path fields such as `project_id` and `id`, list filters in `query`, and create/update fields in `data`.
+- **Create feature flag** — Create a PostHog feature flag. Native direct PostHog API tool derived from Nango's PostHog integration templates. Provide path fields such as `project_id` and `id`, list filters in `query`, and create/update fields in `data`.
+
+## Connect PostHog to an AI agent
+
+Add PostHog from the [Tilde dashboard](https://api.trytilde.ai/tools/available-tool-providers), then enable the tools your agent needs on an MCP server. [Learn how tools work in Tilde](/tools).
+
+[Browse every Tilde tool provider](/tool-providers/index) or [compare Tilde-managed and self-managed authentication](/tool-providers/managed-auth).

@@ -1,0 +1,35 @@
+---
+title: "Tool providers for AI agents"
+sidebarTitle: "Available Providers"
+description: "Browse Tilde tool providers for AI agents, compare authentication options, and explore MCP tools for GitHub, Slack, Google, Stripe, and more."
+keywords:
+  - "AI tool providers"
+  - "AI agent integrations"
+  - "MCP tools"
+  - "MCP integrations"
+  - "Tilde tool providers"
+  - "tools for AI agents"
+mode: "wide"
+---
+
+import {
+  PUBLIC_CATALOG_URL,
+  iconAliases,
+  iconUrl,
+  providerFromApi,
+  providerRoute,
+  ProviderLogo,
+  ToolProviderBrowser,
+} from "/snippets/tool-provider-browser.jsx";
+
+import { providers } from "/snippets/generated-tool-providers.jsx";
+
+Browse Tilde integrations for AI agents, including GitHub, Slack, Google Workspace, Stripe, Notion, and more. Search each provider to compare supported authentication methods and inspect its available MCP tools.
+
+The catalog loads provider names, descriptions, tools, authentication methods, and available icon metadata from Tilde's public API. It remains accessible without a Tilde account.
+
+<Card title="Tilde-managed authentication" icon="shield-check" href="/tool-providers/managed-auth">
+  Compare Tilde-managed authentication with self-managed credentials.
+</Card>
+
+<ToolProviderBrowser providers={providers} ProviderLogo={ProviderLogo} />

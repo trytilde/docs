@@ -1,0 +1,60 @@
+---
+title: "Stripe tools for AI agents"
+sidebarTitle: "Stripe"
+description: "Explore 1 Stripe tools for AI agents in Tilde, including supported authentication and MCP capabilities."
+keywords:
+  - "Stripe AI tools"
+  - "Stripe MCP integration"
+  - "Stripe tools for AI agents"
+  - "Tilde tool providers"
+  - "MCP tools"
+"og:title": "Stripe tools for AI agents | Tilde"
+"og:description": "Explore 1 Stripe tools for AI agents in Tilde, including supported authentication and MCP capabilities."
+mode: "wide"
+---
+
+import {
+  PUBLIC_CATALOG_URL,
+  iconAliases,
+  iconUrl,
+  providerFromApi,
+  ProviderLogo,
+  ToolProviderDetail,
+} from "/snippets/tool-provider-browser.jsx";
+
+export const provider = {
+  "name": "Stripe",
+  "slug": "stripe",
+  "initials": "ST",
+  "category": "Payments",
+  "summary": "Stripe payment processing integration.",
+  "auth": [
+    "API Key"
+  ],
+  "iconSources": [],
+  "toolCount": 1,
+  "tools": [
+    [
+      "Process a refund",
+      "Process a refund via the Stripe API."
+    ]
+  ]
+};
+
+{/* GENERATED: scripts/generate-tool-provider-pages.mjs */}
+
+Stripe payment processing integration.
+
+Tilde exposes **1 Stripe tool** for AI agents through MCP. Connect with API Key.
+
+<ToolProviderDetail provider={provider} ProviderLogo={ProviderLogo} />
+
+## Popular Stripe tools
+
+- **Process a refund** — Process a refund via the Stripe API.
+
+## Connect Stripe to an AI agent
+
+Add Stripe from the [Tilde dashboard](https://api.trytilde.ai/tools/available-tool-providers), then enable the tools your agent needs on an MCP server. [Learn how tools work in Tilde](/tools).
+
+[Browse every Tilde tool provider](/tool-providers/index) or [compare Tilde-managed and self-managed authentication](/tool-providers/managed-auth).

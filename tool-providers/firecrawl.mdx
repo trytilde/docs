@@ -1,0 +1,115 @@
+---
+title: "Firecrawl tools for AI agents"
+sidebarTitle: "Firecrawl"
+description: "Explore 26 Firecrawl tools for AI agents in Tilde, including supported authentication and MCP capabilities."
+keywords:
+  - "Firecrawl AI tools"
+  - "Firecrawl MCP integration"
+  - "Firecrawl tools for AI agents"
+  - "Tilde tool providers"
+  - "MCP tools"
+"og:title": "Firecrawl tools for AI agents | Tilde"
+"og:description": "Explore 26 Firecrawl tools for AI agents in Tilde, including supported authentication and MCP capabilities."
+mode: "wide"
+---
+
+import {
+  PUBLIC_CATALOG_URL,
+  iconAliases,
+  iconUrl,
+  providerFromApi,
+  ProviderLogo,
+  ToolProviderDetail,
+} from "/snippets/tool-provider-browser.jsx";
+
+export const provider = {
+  "name": "Firecrawl",
+  "slug": "firecrawl",
+  "initials": "FI",
+  "category": "Search",
+  "summary": "Firecrawl web search, scraping, crawling, extraction, monitor, interact, parse, feedback, agent, and research tools.",
+  "auth": [
+    "Firecrawl API key"
+  ],
+  "iconSources": [],
+  "toolCount": 26,
+  "tools": [
+    [
+      "Scrape a URL",
+      "Scrape one URL with Firecrawl and return clean markdown, JSON extraction, screenshots, links, branding data, or other requested formats."
+    ],
+    [
+      "Map a website",
+      "Discover URLs on a site before deciding what to scrape or crawl."
+    ],
+    [
+      "Search the web",
+      "Search the web with Firecrawl and optionally scrape returned results."
+    ],
+    [
+      "Send search feedback",
+      "Submit feedback for a previous Firecrawl search result."
+    ],
+    [
+      "Send endpoint feedback",
+      "Submit endpoint-level feedback for scrape, parse, map, or search jobs."
+    ],
+    [
+      "Run a site crawl",
+      "Start a Firecrawl crawl job and poll until a terminal status is reached."
+    ],
+    [
+      "Get crawl status",
+      "Fetch the current status and available results for an existing crawl job."
+    ],
+    [
+      "Extract structured data",
+      "Extract structured information from one or more URLs with Firecrawl extraction."
+    ],
+    [
+      "Start a research agent",
+      "Start an asynchronous Firecrawl autonomous web research agent job."
+    ],
+    [
+      "Get agent status",
+      "Poll an existing Firecrawl agent job for status and results."
+    ],
+    [
+      "Interact with a page",
+      "Open or reuse a Firecrawl scrape browser session and execute a prompt or code interaction."
+    ],
+    [
+      "Stop interact session",
+      "Stop a Firecrawl interact session for a scrape id."
+    ]
+  ]
+};
+
+{/* GENERATED: scripts/generate-tool-provider-pages.mjs */}
+
+Firecrawl web search, scraping, crawling, extraction, monitor, interact, parse, feedback, agent, and research tools.
+
+Tilde exposes **26 Firecrawl tools** for AI agents through MCP. Connect with Firecrawl API key.
+
+<ToolProviderDetail provider={provider} ProviderLogo={ProviderLogo} />
+
+## Popular Firecrawl tools
+
+- **Scrape a URL** — Scrape one URL with Firecrawl and return clean markdown, JSON extraction, screenshots, links, branding data, or other requested formats.
+- **Map a website** — Discover URLs on a site before deciding what to scrape or crawl.
+- **Search the web** — Search the web with Firecrawl and optionally scrape returned results.
+- **Send search feedback** — Submit feedback for a previous Firecrawl search result.
+- **Send endpoint feedback** — Submit endpoint-level feedback for scrape, parse, map, or search jobs.
+- **Run a site crawl** — Start a Firecrawl crawl job and poll until a terminal status is reached.
+- **Get crawl status** — Fetch the current status and available results for an existing crawl job.
+- **Extract structured data** — Extract structured information from one or more URLs with Firecrawl extraction.
+- **Start a research agent** — Start an asynchronous Firecrawl autonomous web research agent job.
+- **Get agent status** — Poll an existing Firecrawl agent job for status and results.
+- **Interact with a page** — Open or reuse a Firecrawl scrape browser session and execute a prompt or code interaction.
+- **Stop interact session** — Stop a Firecrawl interact session for a scrape id.
+
+## Connect Firecrawl to an AI agent
+
+Add Firecrawl from the [Tilde dashboard](https://api.trytilde.ai/tools/available-tool-providers), then enable the tools your agent needs on an MCP server. [Learn how tools work in Tilde](/tools).
+
+[Browse every Tilde tool provider](/tool-providers/index) or [compare Tilde-managed and self-managed authentication](/tool-providers/managed-auth).

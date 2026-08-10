@@ -1,31 +1,422 @@
 ---
 title: "ChatKit"
-description: "Route conversations and events to your deployed agent."
+description: "Connect conversations and external events to your agent."
 icon: "messages"
 ---
 
-import AgentContext from '/snippets/agent-context.mdx';
+ChatKit connects an agent endpoint to the places where work begins. It stores sessions and messages, delivers each turn as a signed HTTPS request, and streams the agent's response back to the channel. There are three ways to trigger an agent run through ChatKit:
 
-<AgentContext />
+1. **Chat providers**: These are first-class integrations with third-party chat providers.
+2. **Vercel AI SDK chat provider**: This managed provider exposes your agent through a Vercel AI SDK-compatible endpoint for custom clients.
+3. **Signals**: These are events from third-party providers that Tilde delivers to your agent.
 
-ChatKit connects people and external events to your agent. It stores sessions and messages, routes work through channels, and calls your agent over a signed HTTPS request.
+Configure chat providers for conversations from Slack, GitHub, and other supported channels. Use signals when an external event should start or continue a session without first arriving as a chat message.
 
-Your HTTP agent should accept Vercel AI SDK UI messages and verify Tilde webhook signatures.
+## Set up ChatKit
 
-## Ask your agent to set up ChatKit
+<Steps>
+  <Step title="Create the endpoint">
+    Wrap your route with `chatKitEndpoint`. It verifies Tilde's signature and gives the handler the current session, new messages, provider metadata, and ChatKit client.
 
-Connect your agent to [Tilde MCP](/connect-your-agent), then send this prompt.
+    ```bash
+    pnpm add @ai-sdk/openai ai @trytilde/harness-sdk @trytilde/harness-sdk-vercel-ai-node
+    ```
 
-<Prompt description="Configure ChatKit" icon="messages" actions={["copy", "cursor"]}>
-Start by reading https://api.trytilde.ai/llms.txt. Then use https://docs.trytilde.ai/llms.txt to open the relevant production-hosted agent guides. Treat the frontend context and those guides as the canonical Tilde instructions. Set up Tilde ChatKit for my agent. Ask where conversations or events should come from and inspect the available ChatKit providers at runtime. Register my Vercel AI SDK compatible HTTPS endpoint, save the one-time API key and webhook signing key as server-side secrets, and configure the channel I choose. Give me any human approval steps. Create a test session and message, verify that the agent receives the signed request, and summarize the agent, provider, and channel IDs.
-</Prompt>
+    ```typescript app/api/agent/route.ts
+    import { openai } from "@ai-sdk/openai";
+    import {
+      chatKitEndpoint,
+      convertToAiSdkMessages,
+      createClient,
+    } from "@trytilde/harness-sdk-vercel-ai-node";
+    import { consumeStream, convertToModelMessages, streamText } from "ai";
 
-Use ChatKit channels for two-way conversations. Use Tilde signals when an external event should trigger work without starting as a conversation.
+    export const POST = chatKitEndpoint({
+      client: createClient({
+        apiKey: process.env.TILDE_API_KEY!,
+        orgId: process.env.TILDE_ORG_ID!,
+        teamId: process.env.TILDE_TEAM_ID!,
+      }),
+      webhookSigningKey: process.env.TILDE_WEBHOOK_SIGNING_KEY!,
+      async handler(request, context) {
+        const history = await context.session.history();
+        const messages = await convertToAiSdkMessages({
+          messages: [...history.items, ...context.messages],
+          chatkit: context.chatkit,
+        });
+        const result = streamText({
+          abortSignal: request.signal,
+          messages: await convertToModelMessages(messages),
+          model: openai("gpt-5.5"),
+        });
 
-<Accordion title="Set up ChatKit in Tilde yourself" icon="user">
-  Open Tilde and choose a team. Under **ChatKit**, register your agent's HTTPS endpoint, store the returned API key and signing key, then configure a provider or channel. Send a test message before using the integration in production.
-</Accordion>
+        return result.toUIMessageStreamResponse({
+          consumeSseStream: consumeStream,
+          originalMessages: messages,
+        });
+      },
+    });
+    ```
 
-<Tip>
-  Deploy the agent endpoint to Vercel, add the API and signing keys as sensitive environment variables, then update ChatKit to use the production URL.
-</Tip>
+    Keep the API key and webhook signing key in server-side environment variables.
+  </Step>
+
+  <Step title="Register the agent">
+    Open Tilde, select your workspace, and go to **ChatKit** → **Agents**. Register the endpoint and copy the one-time API key and webhook signing key into your app's environment.
+
+    For local development, enable **Local running endpoint** and run the app through a [Dev Tunnel](/dev-tunnels). For production, enter the deployed HTTPS endpoint.
+  </Step>
+
+  <Step title="Connect a channel and test">
+    Go to **ChatKit** → **Configure Chat Providers** and choose where people will talk to the agent. Link the provider to your registered agent, then open [Mission Control](https://api.trytilde.ai/mission-control) to start a test session.
+  </Step>
+</Steps>
+
+### Test your agent in Mission Control
+
+Use [Mission Control](https://api.trytilde.ai/mission-control) to invoke your agent directly and test conversations. Select the correct workspace and agent, then start a session and send a message.
+
+<Info>
+  Mission Control requires the **Vercel AI Endpoint** ChatKit provider to be enabled for your agent.
+</Info>
+
+### Provider-specific message metadata
+
+Supported chat providers add validated metadata to the endpoint context. Use the provider-specific property inside your `chatKitEndpoint` handler.
+
+<Tabs>
+  <Tab title="GitHub">
+    GitHub messages expose repository, issue, pull request, comment, and event metadata through `context.github`.
+
+    ```typescript app/api/code-review/route.ts
+    import {
+      chatKitEndpoint,
+      createClient,
+    } from "@trytilde/harness-sdk-vercel-ai-node";
+
+    export const POST = chatKitEndpoint({
+      client: createClient({
+        apiKey: process.env.TILDE_API_KEY!,
+        orgId: process.env.TILDE_ORG_ID!,
+        teamId: process.env.TILDE_TEAM_ID!,
+      }),
+      webhookSigningKey: process.env.TILDE_WEBHOOK_SIGNING_KEY!,
+      async handler(_request, context) {
+        console.log({
+          event: context.github?.event,
+          owner: context.github?.owner,
+          repo: context.github?.repo,
+          pullNumber: context.github?.pull_number,
+          issueNumber: context.github?.issue_number,
+        });
+
+        // ...rest of your agent code.
+      },
+    });
+    ```
+  </Tab>
+
+  <Tab title="Slack">
+    Slack messages expose the workspace, channel, thread, message, and sender metadata through `context.slack`.
+
+    ```typescript app/api/slack-agent/route.ts
+    import {
+      chatKitEndpoint,
+      createClient,
+    } from "@trytilde/harness-sdk-vercel-ai-node";
+
+    export const POST = chatKitEndpoint({
+      client: createClient({
+        apiKey: process.env.TILDE_API_KEY!,
+        orgId: process.env.TILDE_ORG_ID!,
+        teamId: process.env.TILDE_TEAM_ID!,
+      }),
+      webhookSigningKey: process.env.TILDE_WEBHOOK_SIGNING_KEY!,
+      async handler(_request, context) {
+        console.log({
+          teamId: context.slack?.team_id,
+          channelId: context.slack?.channel_id,
+          threadTimestamp: context.slack?.thread_ts,
+          userId: context.slack?.user,
+        });
+
+        // ...rest of your agent code.
+      },
+    });
+    ```
+  </Tab>
+</Tabs>
+
+## Work with session context
+
+`context.messages` contains the new input for the current turn. Load `context.session.history()` when the model needs the earlier conversation, then convert both collections together.
+
+```typescript
+const history = await context.session.history();
+const messages = await convertToAiSdkMessages({
+  messages: [...history.items, ...context.messages],
+  chatkit: context.chatkit,
+});
+```
+
+The context also includes `sessionId`, team and organization IDs, the invoking user when known, and typed metadata for supported providers such as `context.slack` and `context.github`.
+
+## Handle unprocessed content
+
+`convertToAiSdkMessages` automatically converts standard text and reasoning parts. It also caches transformed message parts for later model requests, improving prompt caching and agent performance. Use `onUnprocessed` for content that needs application-specific handling before it can be sent to a model.
+
+- `fileUpload` receives each unprocessed file part and its parent message.
+- `firecrawl` maps page-monitoring and completed-check signals to typed message converters.
+- `github` maps GitHub issue, pull request, and CI signal types to typed message converters.
+- `sentry` maps a signal type, such as `sentry.issue.created`, to a typed message converter.
+- Return an AI SDK message or part to include it. Return `null` to omit it.
+- Handlers can be asynchronous. If a handler throws, message conversion fails.
+
+ChatKit invokes `onUnprocessed` once for each unprocessed message, then caches the result. Subsequent conversions reuse the cached value instead of invoking the handler again.
+
+<Tabs>
+  <Tab title="File uploads">
+    Use `createChatKitAttachmentFilePartHandler` to download ChatKit attachments with Tilde authentication and convert them into model-safe AI SDK file parts.
+
+    ```typescript app/api/agent/route.ts
+    import type { Client } from "@trytilde/harness-sdk";
+    import {
+      type ChatKitEndpointContext,
+      convertToAiSdkMessages,
+      createChatKitAttachmentFilePartHandler,
+    } from "@trytilde/harness-sdk-vercel-ai-node";
+
+    async function convertTurn(
+      client: Client,
+      context: ChatKitEndpointContext,
+    ) {
+      const history = await context.session.history();
+
+      return convertToAiSdkMessages({
+        messages: [...history.items, ...context.messages],
+        chatkit: context.chatkit,
+        onUnprocessed: {
+          fileUpload: createChatKitAttachmentFilePartHandler(client, context),
+        },
+      });
+    }
+    ```
+
+    Supported media is downloaded and passed to the model as an inline file. Unsupported stored attachments become a text part containing the file name, media type, and download URL.
+  </Tab>
+
+  <Tab title="GitHub signals">
+    Add a handler for each GitHub event your agent should receive. The signal type narrows the webhook payload automatically.
+
+    ```typescript app/api/github-agent/route.ts
+    import {
+      type ChatKitEndpointContext,
+      convertToAiSdkMessages,
+      type GitHubSignalByType,
+    } from "@trytilde/harness-sdk-vercel-ai-node";
+    import type { UIMessage } from "ai";
+
+    type PullRequestOpened =
+      GitHubSignalByType["github.pull_request.opened"];
+
+    function pullRequestOpenedMessage(
+      signal: PullRequestOpened,
+    ): UIMessage {
+      const { repository, pull_request } = signal.data;
+
+      return {
+        id: signal.id,
+        role: "user",
+        parts: [{
+          type: "text",
+          text: `Review ${repository.full_name}#${pull_request.number}: ${pull_request.title}`,
+        }],
+      };
+    }
+
+    async function messagesForGitHubTurn(
+      context: ChatKitEndpointContext,
+    ) {
+      const history = await context.session.history();
+
+      return convertToAiSdkMessages({
+        messages: [...history.items, ...context.messages],
+        chatkit: context.chatkit,
+        onUnprocessed: {
+          github: {
+            "github.pull_request.opened": pullRequestOpenedMessage,
+          },
+        },
+      });
+    }
+    ```
+
+    GitHub chat provider messages still use the typed `context.github` metadata described above.
+  </Tab>
+
+  <Tab title="Firecrawl signals">
+    Handle Firecrawl Monitor events with typed access to the monitor, check, page, result, and webhook metadata.
+
+    ```typescript app/api/web-monitor/route.ts
+    import {
+      type ChatKitEndpointContext,
+      convertToAiSdkMessages,
+      type FirecrawlSignalByType,
+    } from "@trytilde/harness-sdk-vercel-ai-node";
+    import type { UIMessage } from "ai";
+
+    type PageChanged =
+      FirecrawlSignalByType["firecrawl.monitor.page.changed"];
+
+    function pageChangedMessage(signal: PageChanged): UIMessage {
+      const { monitor, page } = signal.data;
+
+      return {
+        id: signal.id,
+        role: "user",
+        parts: [{
+          type: "text",
+          text: `Review changes to ${page.url} from monitor ${monitor.id}.`,
+        }],
+      };
+    }
+
+    async function messagesForFirecrawlTurn(
+      context: ChatKitEndpointContext,
+    ) {
+      const history = await context.session.history();
+
+      return convertToAiSdkMessages({
+        messages: [...history.items, ...context.messages],
+        chatkit: context.chatkit,
+        onUnprocessed: {
+          firecrawl: {
+            "firecrawl.monitor.page.changed": pageChangedMessage,
+          },
+        },
+      });
+    }
+    ```
+
+    Firecrawl also exposes `same`, `new`, `removed`, and `error` page events, plus `firecrawl.monitor.check.completed` for the completed check summary.
+  </Tab>
+
+  <Tab title="Sentry signals">
+    Handle Sentry issue events through the matching typed signal branch.
+
+    ```typescript app/api/sentry-agent/route.ts
+    import {
+      type ChatKitEndpointContext,
+      convertToAiSdkMessages,
+      type SentrySignalByType,
+    } from "@trytilde/harness-sdk-vercel-ai-node";
+    import type { UIMessage } from "ai";
+
+    type IssueCreated =
+      SentrySignalByType["sentry.issue.created"];
+
+    function issueCreatedMessage(signal: IssueCreated): UIMessage {
+      const { issue } = signal.data.data;
+
+      return {
+        id: signal.id,
+        role: "user",
+        parts: [{
+          type: "text",
+          text: `Investigate ${issue.shortId ?? issue.id}: ${issue.title}`,
+        }],
+      };
+    }
+
+    async function messagesForSentryTurn(
+      context: ChatKitEndpointContext,
+    ) {
+      const history = await context.session.history();
+
+      return convertToAiSdkMessages({
+        messages: [...history.items, ...context.messages],
+        chatkit: context.chatkit,
+        onUnprocessed: {
+          sentry: {
+            "sentry.issue.created": issueCreatedMessage,
+          },
+        },
+      });
+    }
+    ```
+  </Tab>
+</Tabs>
+
+The Signals section below shows how typed handlers fit into the complete event workflow.
+
+## Choose how new turns are handled
+
+Each chat provider controls what happens when another message arrives while the agent is still working.
+
+| Policy | Behavior |
+| --- | --- |
+| **Queue** | Finish the current response, then process new messages in order. |
+| **Interrupt** | Stop the current response and immediately send the newest message. |
+| **Queue & batch** | Keep one pending turn and combine further messages into it. |
+
+## Trigger work from events via Signals
+
+Signals turn supported external events into ChatKit messages. A rule selects an event type, maps it to an agent, and determines whether related events reuse the same session.
+
+Use a stable session key when repeated events belong to the same body of work. For example, route every update for one Sentry issue into the same remediation session so the agent can continue from its existing history.
+
+Map typed signal messages while converting ChatKit history. This example turns a Sentry `issue.created` signal into the user message sent to the model.
+
+```typescript app/api/sentry-remediation/route.ts
+import {
+  chatKitEndpoint,
+  convertToAiSdkMessages,
+  createClient,
+  type SentrySignalByType,
+} from "@trytilde/harness-sdk-vercel-ai-node";
+import type { UIMessage } from "ai";
+
+type IssueCreatedSignal = SentrySignalByType["sentry.issue.created"];
+
+function sentryIssueCreatedMessage(signal: IssueCreatedSignal): UIMessage {
+  const { issue } = signal.data.data;
+
+  return {
+    id: signal.id,
+    role: "user",
+    parts: [
+      {
+        type: "text",
+        text: `Investigate Sentry issue ${issue.shortId ?? issue.id}: ${issue.title}`,
+      },
+    ],
+  };
+}
+
+export const POST = chatKitEndpoint({
+  client: createClient({
+    apiKey: process.env.TILDE_API_KEY!,
+    orgId: process.env.TILDE_ORG_ID!,
+    teamId: process.env.TILDE_TEAM_ID!,
+  }),
+  webhookSigningKey: process.env.TILDE_WEBHOOK_SIGNING_KEY!,
+  async handler(_request, context) {
+    const history = await context.session.history();
+    const messages = await convertToAiSdkMessages({
+      messages: [...history.items, ...context.messages],
+      chatkit: context.chatkit,
+      onUnprocessed: {
+        sentry: {
+          "sentry.issue.created": sentryIssueCreatedMessage,
+        },
+      },
+    });
+
+    // ...rest of your agent code.
+  },
+});
+```
+
+## ChatKit and memory
+
+ChatKit preserves the messages inside a session. [Memory](/memory) stores selected knowledge that should be available across sessions, channels, or agents. Use both when an agent needs conversational continuity and longer-lived organizational context.

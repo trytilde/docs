@@ -1,0 +1,98 @@
+---
+title: "Tilde-managed authentication for tool providers"
+sidebarTitle: "Managed authentication"
+description: "Learn how Tilde-managed OAuth connects AI agents to tool providers securely, and compare managed authentication with self-managed credentials."
+keywords:
+  - "Tilde managed OAuth"
+  - "AI agent authentication"
+  - "tool provider authentication"
+  - "managed OAuth"
+  - "self-managed OAuth"
+  - "MCP authentication"
+---
+
+Tilde-managed authentication lets a user connect an AI agent to a supported tool provider without requiring you to register an OAuth app or store its client credentials. Tilde runs the OAuth flow, encrypts the resulting tokens, and refreshes them when the provider supports it.
+
+<Info>
+  Look for the **Tilde-managed OAuth** badge in the [Tool Providers catalog](/tool-providers). You can use managed auth for one provider and your own credentials for another.
+</Info>
+
+## Self-managed vs Tilde-managed authentication
+
+<Columns cols={2}>
+  <Card title="Tilde-managed auth" icon="shield-check">
+    Use Tilde's OAuth app. You do not configure a client ID, client secret, redirect URL, or token refresh.
+
+    Use this option when you want the shortest path to connecting users and do not need a custom consent screen or provider-specific scopes.
+  </Card>
+  <Card title="Self-managed auth" icon="key-round">
+    Bring your own OAuth app, API key, access token, service account, or provider app credentials.
+
+    Use this option when you need your brand on the consent screen, custom scopes, a dedicated provider app, or an authentication method that Tilde does not manage.
+  </Card>
+</Columns>
+
+## How Tilde-managed OAuth works
+
+With Tilde-managed OAuth, you do not need to:
+
+- Register an OAuth app with the upstream provider.
+- Distribute a client ID or client secret.
+- Build an authorization callback route.
+- Store access or refresh tokens in your application.
+- Refresh expired access tokens.
+
+When your agent needs a connected account, Tilde starts a credential-brokering flow. The user authorizes access on the provider's site. Tilde stores the resulting credential outside the model context and associates it with the configured tool provider.
+
+<Steps>
+  <Step title="Choose a managed provider">
+    Open **Tools** → **Configure Tools** in Tilde. Select a provider with the **Tilde-managed OAuth** badge.
+  </Step>
+  <Step title="Add the provider">
+    Click **Add provider** and choose **Tilde-managed OAuth**. You do not enter OAuth app credentials.
+  </Step>
+  <Step title="Authorize access">
+    Continue to the provider's authorization page. Review the requested access and approve the connection.
+  </Step>
+  <Step title="Choose tools">
+    Open the configured provider and enable only the tools your agent needs. Add those tools to an MCP server when you are ready to expose them to an agent.
+  </Step>
+</Steps>
+
+## When to use self-managed authentication
+
+Use your own credentials when you need to:
+
+- Show your own app name and branding on the provider's consent screen.
+- Request scopes that differ from the Tilde-managed app.
+- Control the upstream app's installation or approval policy.
+- Connect with an API key, personal access token, service account, or another non-OAuth credential.
+- Use a provider that does not show the **Tilde-managed OAuth** badge.
+
+For OAuth apps, create the app with the upstream provider first. Tilde shows the callback URL to register. You then enter the client ID and client secret, name the connection, and authorize the user account. For API keys and tokens, enter the credential requested by the provider setup form.
+
+<Warning>
+  Self-managed authentication does not pass provider secrets to the model. Tilde encrypts stored credentials and injects them only when it invokes the selected tool.
+</Warning>
+
+## Compare managed and self-managed authentication
+
+| | Tilde-managed auth | Self-managed auth |
+|---|---|---|
+| OAuth app owner | Tilde | Your organization |
+| Client credentials | Managed by Tilde | Supplied by you |
+| Consent screen branding | Tilde's provider app | Your provider app |
+| Scopes | Tilde's supported defaults | Scopes configured in your app |
+| Token storage and refresh | Managed by Tilde | Managed by Tilde |
+| API keys and service accounts | Not applicable | Supplied by you |
+| Setup effort | Connect the user account | Configure credentials, then connect the account |
+
+## Mix managed and self-managed connections
+
+Authentication is selected per configured provider account. Your workspace can use Tilde-managed OAuth for Google Mail, a self-managed GitHub App for repository automation, and an API key for Stripe at the same time.
+
+Choose the narrowest upstream permissions that support the tools you enable. Keep separate provider accounts when agents need different access boundaries.
+
+<Card title="Browse available tool providers" href="/tool-providers" icon="arrow-left">
+  Check supported authentication methods and inspect the tools available from each provider.
+</Card>

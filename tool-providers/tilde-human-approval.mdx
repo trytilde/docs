@@ -1,0 +1,60 @@
+---
+title: "Tilde Human Approval tools for AI agents"
+sidebarTitle: "Tilde Human Approval"
+description: "Explore 1 Tilde Human Approval tools for AI agents in Tilde, including supported authentication and MCP capabilities."
+keywords:
+  - "Tilde Human Approval AI tools"
+  - "Tilde Human Approval MCP integration"
+  - "Tilde Human Approval tools for AI agents"
+  - "Tilde tool providers"
+  - "MCP tools"
+"og:title": "Tilde Human Approval tools for AI agents | Tilde"
+"og:description": "Explore 1 Tilde Human Approval tools for AI agents in Tilde, including supported authentication and MCP capabilities."
+mode: "wide"
+---
+
+import {
+  PUBLIC_CATALOG_URL,
+  iconAliases,
+  iconUrl,
+  providerFromApi,
+  ProviderLogo,
+  ToolProviderDetail,
+} from "/snippets/tool-provider-browser.jsx";
+
+export const provider = {
+  "name": "Tilde Human Approval",
+  "slug": "tilde_human_approval",
+  "initials": "TI",
+  "category": "Tilde",
+  "summary": "No-auth Tilde human approval tools that can be added to any MCP server so agents can wait for secure user approvals.",
+  "auth": [
+    "No Auth"
+  ],
+  "iconSources": [],
+  "toolCount": 1,
+  "tools": [
+    [
+      "wait_for_human_assistance_to_complete",
+      "Wait for a previously created human assistance request to be approved, denied, or expired. If the approval has already resolved, this returns immediately."
+    ]
+  ]
+};
+
+{/* GENERATED: scripts/generate-tool-provider-pages.mjs */}
+
+No-auth Tilde human approval tools that can be added to any MCP server so agents can wait for secure user approvals.
+
+Tilde exposes **1 Tilde Human Approval tool** for AI agents through MCP. Connect with No Auth.
+
+<ToolProviderDetail provider={provider} ProviderLogo={ProviderLogo} />
+
+## Popular Tilde Human Approval tools
+
+- **wait_for_human_assistance_to_complete** — Wait for a previously created human assistance request to be approved, denied, or expired. If the approval has already resolved, this returns immediately.
+
+## Connect Tilde Human Approval to an AI agent
+
+Add Tilde Human Approval from the [Tilde dashboard](https://api.trytilde.ai/tools/available-tool-providers), then enable the tools your agent needs on an MCP server. [Learn how tools work in Tilde](/tools).
+
+[Browse every Tilde tool provider](/tool-providers/index) or [compare Tilde-managed and self-managed authentication](/tool-providers/managed-auth).

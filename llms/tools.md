@@ -1,0 +1,53 @@
+# Configure tools over Tilde Global MCP
+
+Use `https://api.trytilde.ai/mcp`. Call `tilde_whoami`, select a workspace, and pass its `team_id` to every function below.
+
+## Recommended workflow
+
+1. Call `tilde_search_available_capabilities` with a specific intent such as `"GitHub pull request tools"`. Use `include_schemas: true` when you need provider or tool input details.
+2. Configure the source:
+   - Managed provider: `tilde_enable_toolkit_provider`.
+   - Provider app that Tilde should provision: `tilde_auto_provision_toolkit_provider`.
+   - Existing Streamable HTTP MCP server: `tilde_connect_proxied_mcp_server`.
+   - Harness SDK `toolEndpoint` backend: `tilde_register_custom_tool_backend`.
+3. If the response contains `approval_url`, send it to the user. Immediately invoke the returned `next_tool_name` with `next_tool_arguments`. Do not continue until it returns `approved`.
+4. Enable only the required provider functions with `tilde_set_toolkit_tool_enabled`.
+5. Create a runtime server with `tilde_create_mcp_server`. Supply a stable lowercase `id`, a human-readable `name`, and `is_dynamic_tool_discovery: true` unless the toolset is very small and fixed.
+6. Call `tilde_search_enabled_capabilities` to obtain the exact `tool_group_instance_id`, `tool_group_source_type_id`, and `tool_source_type_id` values.
+7. Map each function with `tilde_set_mcp_server_tool_enabled`.
+8. Call `tilde_search_enabled_capabilities` again, filtered by `mcp_server_instance_id`, to verify the final mapping.
+
+Do not confuse the global configuration MCP server with the runtime MCP server created in step 5.
+
+## Managed providers
+
+Never guess provider IDs or credential source IDs. Take them from `tilde_search_available_capabilities`.
+
+Call `tilde_enable_toolkit_provider` with:
+
+- `team_id`
+- `tool_group_source_type_id`
+- `credential_source_type_id`
+- `display_name`
+- an existing credential ID only when the user supplied one
+
+Use `tilde_auto_provision_toolkit_provider` when search results advertise an auto-provisioned provider app. It requires the provider and app identifiers returned by search.
+
+## Proxied MCP and custom HTTP tools
+
+Use `tilde_connect_proxied_mcp_server` for an existing Streamable HTTP MCP URL. Set its declared `auth_mode`; do not put secrets in names, URLs, or descriptions. Call `tilde_refresh_proxied_mcp_server` after the upstream tool catalog changes.
+
+Use `tilde_register_custom_tool_backend` for a signed discovery endpoint created with Harness SDK `toolEndpoint`. Save the one-time signing key in the tool server, then call `tilde_refresh_custom_tool_backend` after its manifest changes.
+
+For implementation patterns, inspect the [code review bot](https://github.com/trytilde/examples/tree/main/code-review-bot) and the rest of the [examples repository](https://github.com/trytilde/examples).
+
+## Reverse proxies
+
+Reverse proxies let application code call a provider's native API while Tilde injects its credential. Supported provider profiles are enabled by default.
+
+- Call `tilde_list_reverse_proxies` to find profile IDs and proxy base URLs.
+- Call `tilde_set_reverse_proxy_enabled` only when you need to change live traffic for a profile.
+
+## Connect the deployed agent
+
+Pass the runtime MCP server ID to Harness SDK `createMCPClient`. Follow the [human Tools guide](https://docs.trytilde.ai/tools) for the client code. The code review bot is the preferred reference for custom agents that combine MCP tools, local tools, and reverse proxies.

@@ -1,0 +1,52 @@
+---
+title: "Dev Tunnels"
+description: "Let Tilde reach an agent running on your local machine."
+---
+
+A Dev Tunnel gives your local application a stable public HTTPS endpoint. Tilde can use it to deliver ChatKit messages, webhooks, and tool invocations while you develop.
+
+## Open a tunnel
+
+<Steps>
+  <Step title="Install the Tilde CLI">
+    The CLI is published with the Harness SDK packages.
+
+    ```bash
+    pnpm add -D @trytilde/cli
+    ```
+  </Step>
+
+  <Step title="Sign in">
+    Authenticate before opening the tunnel. The login flow opens Tilde and asks you to select a workspace.
+
+    ```bash
+    pnpm exec tilde auth login
+    ```
+
+    Run `pnpm exec tilde auth set-team` later if you need to switch workspaces.
+  </Step>
+
+  <Step title="Run your application through the tunnel">
+    Replace `pnpm dev` with your normal development command.
+
+    ```bash
+    pnpm exec tilde tunnel -- pnpm dev
+    ```
+
+    The CLI opens a managed Cloudflare tunnel, chooses an available local port, and passes that port to your process as `PORT` and `TUNNEL_PORT`. It prints the public tunnel origin when the connection is ready.
+  </Step>
+
+  <Step title="Test through Tilde">
+    Keep the tunnel process running. Configure your local ChatKit agent with its endpoint path, then test it in [Mission Control](https://api.trytilde.ai/mission-control).
+
+    For a Next.js route at `app/api/agent/route.ts`, use `api/agent` as the local endpoint path in Tilde.
+  </Step>
+</Steps>
+
+Signed endpoint wrappers such as `chatKitEndpoint` verify Tilde's webhook signature before your agent code runs. Keep the signing key and other secrets on the server.
+
+<Warning>
+  The tunnel exposes every page and API route served by your development process—not only the agent endpoint—to the public internet. Disable unneeded routes or protect them with authentication before opening the tunnel.
+</Warning>
+
+Stop the CLI process to close the tunnel. Replace the tunnel with your production endpoint before launch.

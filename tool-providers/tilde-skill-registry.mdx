@@ -1,0 +1,75 @@
+---
+title: "Tilde Skill Registry tools for AI agents"
+sidebarTitle: "Tilde Skill Registry"
+description: "Explore 4 Tilde Skill Registry tools for AI agents in Tilde, including supported authentication and MCP capabilities."
+keywords:
+  - "Tilde Skill Registry AI tools"
+  - "Tilde Skill Registry MCP integration"
+  - "Tilde Skill Registry tools for AI agents"
+  - "Tilde tool providers"
+  - "MCP tools"
+"og:title": "Tilde Skill Registry tools for AI agents | Tilde"
+"og:description": "Explore 4 Tilde Skill Registry tools for AI agents in Tilde, including supported authentication and MCP capabilities."
+mode: "wide"
+---
+
+import {
+  PUBLIC_CATALOG_URL,
+  iconAliases,
+  iconUrl,
+  providerFromApi,
+  ProviderLogo,
+  ToolProviderDetail,
+} from "/snippets/tool-provider-browser.jsx";
+
+export const provider = {
+  "name": "Tilde Skill Registry",
+  "slug": "tilde_skill_registry",
+  "initials": "TI",
+  "category": "Tilde",
+  "summary": "Registry-specific Tilde skill discovery tools. The registry id is bound server-side on each enabled tool instance.",
+  "auth": [
+    "No Auth"
+  ],
+  "iconSources": [],
+  "toolCount": 4,
+  "tools": [
+    [
+      "list_skills",
+      "List skill names, descriptions, and versions in this bound registry."
+    ],
+    [
+      "search_skills",
+      "Search this bound skill registry and return concise summaries before reading full skill content."
+    ],
+    [
+      "read_skill_description",
+      "Read one skill description from this bound registry."
+    ],
+    [
+      "read_skill",
+      "Read full content for one skill from this bound registry after progressive discovery."
+    ]
+  ]
+};
+
+{/* GENERATED: scripts/generate-tool-provider-pages.mjs */}
+
+Registry-specific Tilde skill discovery tools. The registry id is bound server-side on each enabled tool instance.
+
+Tilde exposes **4 Tilde Skill Registry tools** for AI agents through MCP. Connect with No Auth.
+
+<ToolProviderDetail provider={provider} ProviderLogo={ProviderLogo} />
+
+## Popular Tilde Skill Registry tools
+
+- **list_skills** — List skill names, descriptions, and versions in this bound registry.
+- **search_skills** — Search this bound skill registry and return concise summaries before reading full skill content.
+- **read_skill_description** — Read one skill description from this bound registry.
+- **read_skill** — Read full content for one skill from this bound registry after progressive discovery.
+
+## Connect Tilde Skill Registry to an AI agent
+
+Add Tilde Skill Registry from the [Tilde dashboard](https://api.trytilde.ai/tools/available-tool-providers), then enable the tools your agent needs on an MCP server. [Learn how tools work in Tilde](/tools).
+
+[Browse every Tilde tool provider](/tool-providers/index) or [compare Tilde-managed and self-managed authentication](/tool-providers/managed-auth).

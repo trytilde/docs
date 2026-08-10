@@ -4,26 +4,86 @@ description: "Give agents reusable instructions that load only when needed."
 icon: "book-open"
 ---
 
-import AgentContext from '/snippets/agent-context.mdx';
+A skill is a focused set of instructions for a job. A skill registry groups related skills so an agent can discover short summaries first and load the full instructions only when needed.
 
-<AgentContext />
+## Create a skill registry
 
-A skill is a focused set of instructions for a job. Skill registries group skills so your agent can search short summaries first and load full instructions only when they are relevant.
+<Steps>
+  <Step title="Create the registry">
+    Open Tilde, select your workspace, and go to **Skills** → **Registries**. Create a registry with a clear name and description.
+  </Step>
 
-## Ask your agent to set up skills
+  <Step title="Add skills">
+    Add trusted skills from a configured provider or create a team-owned skill. Keep each registry focused on one agent or workflow.
+  </Step>
 
-Connect your agent to [Tilde MCP](/connect-your-agent), then send this prompt.
+  <Step title="Enable discovery tools">
+    When you create a registry, Tilde also creates and enables a private tool provider bound to it. Go to **Tools** → **Manage Enabled Tools** and find the provider named after your registry.
 
-<Prompt description="Configure skills" icon="book-open" actions={["copy", "cursor"]}>
-Start by reading https://api.trytilde.ai/llms.txt. Then use https://docs.trytilde.ai/llms.txt to open the relevant production-hosted agent guides. Treat the frontend context and those guides as the canonical Tilde instructions. Set up skills for my agent's job: [describe the job]. List the available skill registries and search skill summaries before reading full skills. Recommend the smallest useful set and explain each choice. If no skill fits, help me write one concise custom skill, then add the selected skills to a registry for this agent. Test that the agent can find the registry, load one selected skill, and follow its instructions.
-</Prompt>
+    It exposes four tools:
 
-This progressive discovery keeps large instruction files out of the agent context until they are useful.
+    - `list_skills` lists the skills in the registry.
+    - `search_skills` returns relevant skill summaries.
+    - `read_skill_description` reads one description before loading its instructions.
+    - `read_skill` loads the complete skill.
+  </Step>
 
-<Accordion title="Set up skills in Tilde yourself" icon="user">
-  Open Tilde and choose a team. Under **Skills**, create a registry. Add trusted provider skills or write a team-owned custom skill, then add only the skills your agent needs to that registry.
-</Accordion>
+  <Step title="Expose the tools to your agent">
+    Go to **Tools** → **MCP Servers** and open the server used by your agent. Add the registry's four discovery tools.
 
-<Tip>
-  For a cloud agent, deploy its endpoint to Vercel and confirm the production agent can search and read its Tilde skill registry.
-</Tip>
+    Tell the agent to search first, inspect the description, and read the complete skill only when it is relevant. This keeps large instruction files out of its context until they are useful.
+  </Step>
+</Steps>
+
+## Access skills programmatically
+
+Every signed `chatKitEndpoint` handler receives a typed `context.skills` client. Use it when your application already knows which registry and skill to load. Use the MCP discovery tools when the model should choose a skill itself.
+
+```typescript app/api/agent/route.ts
+import { openai } from "@ai-sdk/openai";
+import {
+  chatKitEndpoint,
+  convertToAiSdkMessages,
+  createClient,
+} from "@trytilde/harness-sdk-vercel-ai-node";
+import { consumeStream, convertToModelMessages, streamText } from "ai";
+
+const tilde = createClient({
+  apiKey: process.env.TILDE_API_KEY!,
+  orgId: process.env.TILDE_ORG_ID!,
+  teamId: process.env.TILDE_TEAM_ID!,
+});
+
+export const POST = chatKitEndpoint({
+  client: tilde,
+  webhookSigningKey: process.env.TILDE_WEBHOOK_SIGNING_KEY!,
+  async handler(request, context) {
+    const registry = await context.skills.registry(
+      process.env.TILDE_SKILL_REGISTRY_ID!,
+    );
+    const availableSkills = await registry.list();
+    const skill = await registry.find("pull-request-review");
+
+    console.log(availableSkills.map(({ name, description }) => ({ name, description })));
+
+    const history = await context.session.history();
+    const messages = await convertToAiSdkMessages({
+      messages: [...history.items, ...context.messages],
+      chatkit: context.chatkit,
+    });
+    const result = streamText({
+      abortSignal: request.signal,
+      messages: await convertToModelMessages(messages),
+      model: openai("gpt-5.5"),
+      system: skill.content,
+    });
+
+    return result.toUIMessageStreamResponse({
+      consumeSseStream: consumeStream,
+      originalMessages: messages,
+    });
+  },
+});
+```
+
+Set `TILDE_SKILL_REGISTRY_ID` to the registry ID shown in Tilde. `registry.find()` accepts a skill ID or its stable name.
