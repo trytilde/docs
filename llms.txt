@@ -1,12 +1,107 @@
 # Tilde
 
-> Build, connect, and operate AI agents through a cloud control plane.
+> A platform for building and adding features to AI agents through a cloud API
 
-## Build a custom deployed agent
+Tilde lets developers and agents configure off the shelf third-party tools, deploy custom tool endpoints, integrate agent's with third-party chat platforms and webhooks (Chatkit), manage agent skills and provide agents with integrated memory.
+
+## Key features:
+
+- Tools: Off the shelf integration with hundreds of providers, add your own custom tools & spin up secure MCP servers that house them
+- Memory: Create a peristent brain and personal notepad for your agent or share it across multiple agents
+- Skills: Deploy Skills registries to group skills together and make them available to agents
+- ChatKit: Integrate with third party chat providers, have external webhook events trigger agent runs or plan repeat prompts to run on schedule
+
+These features are all exposed through cloud API’s that hide away the detail.
+
+## Client libraries to help integrate with
+
+- Tilde Global MCP: https://api.trytilde.ai/mcp . This MCP server is the defacto way for agents to use and build Tilde. Use this MCP server to configure all runtime resources in Tilde, however this MCP server is not the same as agent MCP server (referenced in Tools product) which are used when wanting to invoke tools that you've configured
+- Tilde Rest API: If you are running in a sandbox that can make HTTP requests, and the Tilde Global MCP server can't perform the function that you would like, read the [OpenAPI spec and invoke it directly there](https://api.trytilde.ai/openapi.json). Use Oauth Authorization: Bearer xxx headers or x-api-key if provided by the user, or ask the user.
+- Harness SDK: When implementing a custom agent for a specific purpose, always use Vercel's AI SDK as the base framework and layer in Tilde's harness SDK, [@trytilde/harness-sdk](https://www.npmjs.com/package/@trytilde/harness-sdk) and [git repo here](https://github.com/trytilde/harness-sdk) to create agent endpoints. Read more about this in the ChatKit  page.
+- Any MCP client: Once you've configured an MCP server via Tilde's Tool product, you can connect any MCP client or agent that supports MCP clients to that deployed MCP server to invoke the configured tools. Read the docs pages about connecting your client on this website to find out how to connect popular existing agents via this route to Tilde's Global MCP server. connecting agent MCP server's are slightly different.
+
+## Organization, Team, Auth
+
+- Organisation: The top-level domain object for grouping resources. Use orgs for ownership and billing.
+- Teams / workspaces: Teams are sometimes called workspaces. Use teams for runtime isolation: agents, MCP servers, ChatKit providers, signals, API keys, and tool credentials should be team scoped. If you don't want an agent or human to access a specific tool, put it in a seperate team and don't provide that agent with an API key scoped to the new team.
+- Human users: Humans who sign in and user the paltform
+- Machine users: Often agents. When API keys are generated that are not tied to a human user, a machine user is provisioned, added to the relevant team and the API key associated to them.
+
+## Use Tilde without a human account
+
+If no human has created a Tilde account yet, create a temporary account through the unauthenticated REST endpoint. Do not block setup on human sign-in.
+
+```bash
+curl --request POST https://api.trytilde.ai/api/v1/identity/temporary-accounts \
+  --header "content-type: application/json" \
+  --data '{
+    "label": "code review agent",
+    "human_email": "owner@example.com"
+  }'
+```
+
+Both request fields are optional. The response creates a temporary organization and team and returns `org_id`, `team_id`, `api_key`, `claim_url`, `claim_pin`, `claim_token_expires_at`, and `expires_at`.
+
+1. Store the API key, claim URL, and six-digit PIN securely. Never commit or log them.
+2. Connect to `https://api.trytilde.ai/mcp` with the temporary key in the `x-api-key` header.
+3. Call `tilde_whoami`, then use the returned `team_id` with team-scoped Global MCP functions.
+4. Configure agents, tools, ChatKit, memory, skills, and other resources normally.
+5. Give the human the `claim_url` and `claim_pin` before the temporary account expires.
+
+The temporary account lasts 24 hours. Its claim URL lasts one hour. If the link expires while the account is still active, generate a fresh link with the temporary API key. The PIN does not change.
+
+```bash
+curl --request POST https://api.trytilde.ai/api/v1/identity/temporary-accounts/claim-url \
+  --header "x-api-key: $TILDE_API_KEY"
+```
+
+### Claim the temporary account
+
+When the human is ready:
+
+1. Sign in to Tilde and select the organization that should own the temporary account.
+2. Open the claim URL and enter the six-digit PIN.
+3. Wait for the claim page to confirm completion.
+4. Reconnect to Global MCP with human OAuth or a new team-scoped API key, then call `tilde_whoami` to find the transferred team.
+5. Update any stored MCP server, agent, or Tilde URLs. Claiming can change their organization-qualified URLs.
+
+Claiming transfers every team and supported resource from the temporary organization into the human's current organization. The temporary API key is revoked, so do not continue using it after the claim succeeds. Five incorrect PIN attempts expire the current claim link; use the temporary API key to generate a fresh link.
+
+
+## Authentication and scope in Global MCP
+
+1. Call `tilde_whoami` first.
+2. Select the target team from the returned identity. Teams are also called workspaces.
+3. Pass `team_id` to every team-scoped function on the global MCP server. The organization is inferred from the authenticated OAuth token or API key.
+4. Prefer OAuth when acting for a human. Use a team-scoped machine API key for a deployed agent.
+
+If a function returns `approval_url`, show it to the user. Then immediately call the returned `next_tool_name` with `next_tool_arguments` and wait for approval before continuing.
+
+
+## Rules to follow then integrating
+
+- For all org scoped API endpoints, you must provide the org ID. Preferrably in the domain path, e.g. https://$orgId.api.trytilde.ai/ . In case of any issues, you can provide org ID as a header as "x-tilde-org-id"
+- For all team scoped API endpoints, the route path always contains /team/{team_id}
+- All organisation and team scoped endpoints are available in Global MCP and take these params in the input schema
+- Global MCP and all runtime MCP servers support both [Oauth](https://modelcontextprotocol.io/specification/draft/basic/authorization) and API key headers via "x-api-key"
+- Prefer Oauth over API key where possible and always in cases where you are acting on behalf of a user. Most seperately deployed harness SDK agents will always use machine generated API keys, which are provided when user invokes create agent endpoints
+- For agent, tool endpoints and anywhere else mentioned, always secure the endpoints via the Harness SDK and provide webhook signing secrets which are generated on remote tool server and agent creation to validate inputs
+- When building, use dev tunnels if you need to test and publicaly expose agents and tools from your local environment to the public internet for Tilde to be able to test integration with. This will often require updating the agent or tool configurations to dev tunnel mode
+- Always export state of the Tilde team / workspace you're working in at tilde.state.yaml if you're commiting source code to a repo. This is infrastructure as code file that represents the configuration along with the agent source code that is required to deploy to a new environment.
+
+## Getting started
+
+### Common use cases
+
+#### Build a custom deployed agent
 
 Start from working code. Use the [Hello World agent](https://github.com/trytilde/examples/tree/main/hello-world-agent) for the smallest signed ChatKit endpoint. Use the [code review bot](https://github.com/trytilde/examples/tree/main/code-review-bot) for a production-shaped agent with tools, signals, typed provider context, reverse proxies, and portable state. Browse the full [Tilde examples repository](https://github.com/trytilde/examples) before inventing an integration pattern.
 
 Use the Vercel AI SDK with [`@trytilde/harness-sdk`](https://www.npmjs.com/package/@trytilde/harness-sdk). Keep `chatKitEndpoint`, webhook verification, ChatKit history conversion, and all secrets server-side.
+
+#### Leverage Tilde's tool control plane for an existing agent
+
+Read [Tools over Global MCP](https://docs.trytilde.ai/llms/tools.md), enable tool integrations with third party providers or others. Add them all to an agent MCP and connect it to an existing agent like Openclaw, Hermes, etc. [Follow connect your agent](https://docs.trytilde.ai/connect-your-agent) to see common guides on connecting to existing agents.
 
 ## Agent configuration guides
 
@@ -21,45 +116,15 @@ Use Tilde's global MCP server at `https://api.trytilde.ai/mcp` to configure runt
 
 These files are optimized for AI agents. The [human documentation](https://docs.trytilde.ai) explains the same products through the dashboard and SDK.
 
-## Core model
-
-- **Tools** connect provider, proxied MCP, custom HTTP, memory, wiki, and skill-registry functions to an agent through a Tilde MCP server.
-- **ChatKit** stores conversations and delivers signed turns from chat providers, custom clients, and Signals to deployed agents.
-- **Memory banks** provide semantic long-term memory. **Wikis** provide structured, browsable knowledge.
-- **Skills** are reusable instructions grouped into registries and discovered progressively.
-
-The global MCP server configures these resources. It is not the runtime MCP server that your deployed agent uses to invoke its configured tools.
-
-## Authentication and scope
-
-1. Call `tilde_whoami` first.
-2. Select the target team from the returned identity. Teams are also called workspaces.
-3. Pass `team_id` to every team-scoped function on the global MCP server. The organization is inferred from the authenticated OAuth token or API key.
-4. Prefer OAuth when acting for a human. Use a team-scoped machine API key for a deployed agent.
-
-If a function returns `approval_url`, show it to the user. Then immediately call the returned `next_tool_name` with `next_tool_arguments` and wait for approval before continuing.
-
-## Other integration surfaces
-
-- REST API: `https://api.trytilde.ai/openapi.json`
-- Harness SDK: `https://github.com/trytilde/harness-sdk`
-- Any MCP client can connect to a runtime Tilde MCP server after it is configured.
-
-Use the REST API only when the global MCP server does not expose the required operation. Never guess request fields: inspect the current MCP input schema or OpenAPI schema first.
-
-## Portable state
-
-Export the finished workspace configuration to `tilde.state.yaml` and commit it with the agent source. State includes resource configuration and relationships, not credentials, signing keys, or conversation content. Validate and review an import plan before applying it.
-
 ## Pricing
 
-Tilde is currently in early testing. Most features are free. Hosted memory banks currently cost $20 per bank each month; this pricing is expected to change.
+We are currently in early testing stages. Tilde is currently free, it will move to a SaaS billing model. Because memory banks are hosted, each Memory bank is billed at $20 p/ month, subject to change. These are opt-in only if you deploy and create a Memory bank.
 
 ## Links
 
 - Homepage: https://trytilde.ai
 - Docs: https://docs.trytilde.ai
 - Global MCP: https://api.trytilde.ai/mcp
-- Dashboard and API: https://api.trytilde.ai
-- Examples: https://github.com/trytilde/examples
+- API & dashboard base URL: https://api.trytilde.ai
 - Blog: https://trytilde.ai/blog
+- npm (one CLI & Harness SDK): https://www.npmjs.com/package/@trytilde/harness-sdk
