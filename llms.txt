@@ -101,20 +101,20 @@ Use the Vercel AI SDK with [`@trytilde/harness-sdk`](https://www.npmjs.com/packa
 
 #### Leverage Tilde's tool control plane for an existing agent
 
-Read [Tools over Global MCP](https://docs.trytilde.ai/llms/tools.md), enable tool integrations with third party providers or others. Add them all to an agent MCP and connect it to an existing agent like Openclaw, Hermes, etc. [Follow connect your agent](https://docs.trytilde.ai/connect-your-agent) to see common guides on connecting to existing agents.
+Read [Tools over Global MCP](https://trytilde.ai/docs/llms/tools.md), enable tool integrations with third party providers or others. Add them all to an agent MCP and connect it to an existing agent like Openclaw, Hermes, etc. [Follow connect your agent](https://trytilde.ai/docs/connect-your-agent) to see common guides on connecting to existing agents.
 
 ## Agent configuration guides
 
 Use Tilde's global MCP server at `https://api.trytilde.ai/mcp` to configure runtime resources. Read the guide for the product you need:
 
-- [Tools over Global MCP](https://docs.trytilde.ai/llms/tools.md)
-- [ChatKit and Signals over Global MCP](https://docs.trytilde.ai/llms/chatkit.md)
-- [Memory banks and wikis over Global MCP](https://docs.trytilde.ai/llms/memory.md)
-- [Skills and registries over Global MCP](https://docs.trytilde.ai/llms/skills.md)
-- [Local development with Dev Tunnels](https://docs.trytilde.ai/llms/dev-tunnels.md)
-- [State export and import over Global MCP](https://docs.trytilde.ai/llms/state.md)
+- [Tools over Global MCP](https://trytilde.ai/docs/llms/tools.md)
+- [ChatKit and Signals over Global MCP](https://trytilde.ai/docs/llms/chatkit.md)
+- [Memory banks and wikis over Global MCP](https://trytilde.ai/docs/llms/memory.md)
+- [Skills and registries over Global MCP](https://trytilde.ai/docs/llms/skills.md)
+- [Local development with Dev Tunnels](https://trytilde.ai/docs/llms/dev-tunnels.md)
+- [State export and import over Global MCP](https://trytilde.ai/docs/llms/state.md)
 
-These files are optimized for AI agents. The [human documentation](https://docs.trytilde.ai) explains the same products through the dashboard and SDK.
+These files are optimized for AI agents. The [human documentation](https://trytilde.ai/docs) explains the same products through the dashboard and SDK.
 
 ## Pricing
 
@@ -123,7 +123,7 @@ We are currently in early testing stages. Tilde is currently free, it will move 
 ## Links
 
 - Homepage: https://trytilde.ai
-- Docs: https://docs.trytilde.ai
+- Docs: https://trytilde.ai/docs
 - Global MCP: https://api.trytilde.ai/mcp
 - API & dashboard base URL: https://api.trytilde.ai
 - Blog: https://trytilde.ai/blog

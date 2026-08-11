@@ -30,4 +30,4 @@ Tell the runtime agent to search summaries first, read one description, and load
 - `tilde_read_skill_description`: inspect one candidate.
 - `tilde_read_skill`: load the complete content.
 
-Harness SDK also exposes programmatic access through `context.skills` inside `chatKitEndpoint`. Use it when application code already knows the registry or skill to load. See the [human Skills guide](https://docs.trytilde.ai/skills).
+Harness SDK also exposes programmatic access through `context.skills` inside `chatKitEndpoint`. Use it when application code already knows the registry or skill to load. See the [human Skills guide](https://trytilde.ai/docs/skills).

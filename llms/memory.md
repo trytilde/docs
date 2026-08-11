@@ -46,4 +46,4 @@ Creating a bank or wiki automatically enables a private tool provider. It does n
 3. Map each function to the agent's runtime MCP server with `tilde_set_mcp_server_tool_enabled`.
 4. Prefer dynamic mode for the full wiki toolset.
 
-Treat the wiki as the source of truth for structured and relational knowledge. A useful maintenance pattern is a daily agent run that reviews the previous 24 hours, updates the wiki first, and retains only concise durable facts that do not belong in the wiki. See the [human Memory guide](https://docs.trytilde.ai/memory).
+Treat the wiki as the source of truth for structured and relational knowledge. A useful maintenance pattern is a daily agent run that reviews the previous 24 hours, updates the wiki first, and retains only concise durable facts that do not belong in the wiki. See the [human Memory guide](https://trytilde.ai/docs/memory).

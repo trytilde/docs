@@ -27,4 +27,4 @@ For custom deployed agents, compare the state file and implementation with the [
 
 Never call import as a substitute for plan. Use the same exact state and variables for validation, planning, and application.
 
-See the [human portable state guide](https://docs.trytilde.ai/terraform) for dashboard, CLI, multi-environment, and Deploy with Tilde workflows.
+See the [human portable state guide](https://trytilde.ai/docs/terraform) for dashboard, CLI, multi-environment, and Deploy with Tilde workflows.

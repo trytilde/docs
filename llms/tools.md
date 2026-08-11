@@ -50,4 +50,4 @@ Reverse proxies let application code call a provider's native API while Tilde in
 
 ## Connect the deployed agent
 
-Pass the runtime MCP server ID to Harness SDK `createMCPClient`. Follow the [human Tools guide](https://docs.trytilde.ai/tools) for the client code. The code review bot is the preferred reference for custom agents that combine MCP tools, local tools, and reverse proxies.
+Pass the runtime MCP server ID to Harness SDK `createMCPClient`. Follow the [human Tools guide](https://trytilde.ai/docs/tools) for the client code. The code review bot is the preferred reference for custom agents that combine MCP tools, local tools, and reverse proxies.

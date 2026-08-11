@@ -31,4 +31,4 @@ Signed Harness SDK wrappers such as `chatKitEndpoint` reject ChatKit requests wi
 
 **Warning:** the tunnel exposes every page and API route served by the development process to the public internet. Disable unneeded routes or protect them with authentication.
 
-Test the registered agent in [Mission Control](https://api.trytilde.ai/mission-control). Select the same workspace before starting a session. See the [human Dev Tunnels guide](https://docs.trytilde.ai/dev-tunnels).
+Test the registered agent in [Mission Control](https://api.trytilde.ai/mission-control). Select the same workspace before starting a session. See the [human Dev Tunnels guide](https://trytilde.ai/docs/dev-tunnels).
