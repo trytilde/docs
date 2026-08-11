@@ -3,6 +3,19 @@
 
 export const providers = [
   {
+    "name": "AWS",
+    "slug": "aws",
+    "initials": "AW",
+    "category": "Cloud Infrastructure",
+    "summary": "AWS cloud operations, regional availability, documentation, skills, file transfer, and sandboxed multi-step API execution through the official AWS MCP Server. Requests are authenticated with encrypted AWS IAM credentials and SigV4.",
+    "auth": [
+      "AWS IAM credentials"
+    ],
+    "iconSources": [],
+    "toolCount": 9,
+    "tools": []
+  },
+  {
     "name": "E2B Sandbox",
     "slug": "e2b_sandbox",
     "initials": "E2",
@@ -263,7 +276,7 @@ export const providers = [
       "No Auth"
     ],
     "iconSources": [],
-    "toolCount": 67,
+    "toolCount": 79,
     "tools": []
   },
   {
