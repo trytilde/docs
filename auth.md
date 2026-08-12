@@ -30,6 +30,7 @@ A successful response creates a temporary organization, team, and machine user. 
 - `claim_token_expires_at` and `expires_at`
 
 The temporary account lasts 24 hours. The initial claim URL lasts one hour.
+In production, the claim URL opens the human claim page under `https://trytilde.ai/app/temporary-accounts/claim/` while the authenticated claim API remains on `https://api.trytilde.ai`.
 
 ## Use the credential
 
@@ -76,8 +77,8 @@ Claiming transfers the temporary team and supported resources into the human's s
 - Documentation: `https://trytilde.ai/docs`
 - OAuth protected-resource metadata: `https://trytilde.ai/.well-known/oauth-protected-resource`
 - OAuth authorization-server metadata: `https://trytilde.ai/.well-known/oauth-authorization-server`
-- OpenID Connect metadata: `https://trytilde.ai/.well-known/openid-configuration`
-- MCP server card: `https://trytilde.ai/.well-known/mcp/server-card.json`
-- Platform agent card: `https://trytilde.ai/.well-known/agent-card.json`
+- AI Catalog: `https://trytilde.ai/.well-known/ai-catalog.json`
+- MCP server card: `https://api.trytilde.ai/mcp/server-card`
+- Legacy MCP server-card discovery alias: `https://trytilde.ai/.well-known/mcp/server-card.json`
 
 Use OAuth when an agent acts on behalf of a signed-in human. Use a team-scoped machine API key for a deployed agent.
