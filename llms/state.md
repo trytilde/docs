@@ -4,6 +4,8 @@ Tilde resource state is portable even though Tilde does not require Terraform. K
 
 State does not contain API keys, signing keys, provider credentials, conversation history, or memory content.
 
+Curated hosted MCP connections export their stable catalog provider identity and declarative endpoint/authentication configuration. Dynamic OAuth client IDs, token endpoints discovered for that registration, access tokens, and refresh tokens are environment-specific and are not exported. On import, Tilde repeats discovery and dynamic client registration, then returns a one-time authorization URL. Manual OAuth configuration remains portable, while its user credential is reconnected through the normal pending-credential flow.
+
 Use `https://api.trytilde.ai/mcp`. Call `tilde_whoami`, select a workspace, and pass its `team_id` to every function below.
 
 ## Export
@@ -23,7 +25,8 @@ For custom deployed agents, compare the state file and implementation with the [
 5. Call `tilde_import_state` only after the plan is approved.
 6. Poll `tilde_get_state_import` with the returned `import_id` until the status is `applied`, `failed`, or `rolled_back`.
 7. Capture generated outputs the first time an applied result returns them. Applied outputs are one-time secrets and are cleared from later summary reads.
-8. Tell the user to complete any pending credential setup in Tilde.
+8. Save any one-time OAuth authorization URL returned in the import outputs and send it to the user immediately.
+9. Tell the user to complete any remaining pending credential setup in Tilde.
 
 Never call import as a substitute for plan. Use the same exact state and variables for validation, planning, and application.
 

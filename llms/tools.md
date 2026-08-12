@@ -37,6 +37,10 @@ Use `tilde_auto_provision_toolkit_provider` when search results advertise an aut
 
 Use `tilde_connect_proxied_mcp_server` for an existing Streamable HTTP MCP URL. Set its declared `auth_mode`; do not put secrets in names, URLs, or descriptions. Call `tilde_refresh_proxied_mcp_server` after the upstream tool catalog changes.
 
+For the server-authored hosted-provider catalog, direct the user to **Tools** → **Proxied MCP servers** → **Browse provider catalog**. Every published entry exposes reviewed tool definitions before credentials are supplied; providers without a validated snapshot are not published as connectable. Tilde records whether each snapshot is an exact public `tools/list` result or was inferred from official source or documentation; an authenticated `tools/list` response replaces the snapshot after connection.
+
+Do not ask the user to paste provider secrets into chat or into MCP arguments. OAuth client secrets, API keys, and bearer tokens must be entered through Tilde's credential setup. Dynamic OAuth client registrations are environment-specific and require authorization again after state import; pre-registered manual OAuth configurations remain declarative and their user credential is reconnected separately.
+
 Use `tilde_register_custom_tool_backend` for a signed discovery endpoint created with Harness SDK `toolEndpoint`. Save the one-time signing key in the tool server, then call `tilde_refresh_custom_tool_backend` after its manifest changes.
 
 For implementation patterns, inspect the [code review bot](https://github.com/trytilde/examples/tree/main/code-review-bot) and the rest of the [examples repository](https://github.com/trytilde/examples).
