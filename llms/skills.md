@@ -4,7 +4,11 @@ A skill is a focused instruction document. A registry groups skills and exposes 
 
 Tilde also synchronizes trusted upstream `SKILL.md` providers. Built-in sources are restricted to official repositories and, for monorepos such as Cursor plugins and YC Software QM, server-authored include and exclude paths. QM contributes only its portable `popular-web-designs` and `taste-skill` packages; runtime-specific QM administration, credential, connector, memory, browser, and publishing instructions are excluded. Do not construct arbitrary trusted-provider URLs or assume that every MCP provider publishes skills. Select only skills returned by Tilde's provider and skill listing functions.
 
-Successful provider syncs reconcile the upstream commit snapshot: deleted and renamed upstream skills stop being advertised. Exported state records the selected skills and registries, not a plaintext credential or an unverified repository payload.
+Successful provider syncs retain each complete bounded skill package: `SKILL.md` plus package-local references, templates, scripts, examples, and media. Relative paths and media types are preserved; unsafe paths and symbolic links are rejected. Sync is failure-atomic, so an unreadable or invalid file does not purge the last valid provider snapshot. Deleted and renamed upstream skills stop being advertised only after a complete successful reconciliation.
+
+Exported state embeds selected package files with checksums so import can verify and recreate every referenced asset in the target workspace. It never includes a plaintext credential or an unverified repository payload.
+
+When a loaded `SKILL.md` refers to another package file, call `GET /api/v1/team/{team_id}/skill/{skill_id}/package` to inspect the immutable manifest. Then call `POST /api/v1/team/{team_id}/skill/{skill_id}/package/download` with the exact manifest `path` to obtain a short-lived download URL. Do not invent a repository URL or resolve paths outside the manifest.
 
 Use `https://api.trytilde.ai/mcp`. Call `tilde_whoami`, select a workspace, and pass its `team_id` to every function below.
 
