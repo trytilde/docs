@@ -1,10 +1,11 @@
 (() => {
   window.dataLayer = window.dataLayer || [];
-  if (typeof window.gtag === "function") {
-    window.gtag("set", { surface: "docs" });
-  } else {
-    window.dataLayer.push(["set", { surface: "docs" }]);
-  }
+  window.gtag =
+    window.gtag ||
+    function gtag() {
+      window.dataLayer.push(arguments);
+    };
+  window.gtag("set", { surface: "docs" });
 
   let attempts = 0;
   const registerPostHogSurface = () => {
