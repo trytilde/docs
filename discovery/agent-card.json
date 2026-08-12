@@ -3,13 +3,13 @@
   "description": "Build and operate AI agents with secure tools, MCP servers, ChatKit, memory, skills, browser sessions, organisation controls, wallets, and portable state.",
   "url": "https://api.trytilde.ai/mcp",
   "version": "0.0.6",
-  "protocolVersion": "2025-06-18",
+  "protocolVersion": "2025-03-26",
   "preferredTransport": "Streamable HTTP",
   "supportedInterfaces": [
     {
       "url": "https://api.trytilde.ai/mcp",
       "protocolBinding": "MCP",
-      "protocolVersion": "2025-06-18"
+      "protocolVersion": "2025-03-26"
     }
   ],
   "provider": {
