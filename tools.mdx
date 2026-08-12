@@ -74,6 +74,15 @@ Tools let your agent act in external systems without exposing provider credentia
   </Step>
 </Steps>
 
+## Add another Tilde agent as a tool
+
+Registering a ChatKit agent automatically creates a credentialless **Message agent** tool provider bound to it. Open the MCP server that your parent agent uses and add both generated tools:
+
+- `message` sends Vercel AI SDK-compatible message parts and immediately returns a ticket plus a ChatKit session ID.
+- `wait_for_response` subscribes to ChatKit in real time, emits the child response as MCP progress or logging notifications, and returns the persisted canonical ChatKit message when the turn finishes.
+
+Pass the previous session ID to `message` to continue a child conversation. The target agent's queue, interrupt, or queue-and-batch policy applies automatically.
+
 ## Dynamic mode
 
 Dynamic mode exposes `SEARCH_TOOLS`, `GET_TOOL_SCHEMAS`, and `MULTI_EXECUTE_TOOL` instead of loading every tool schema into the model's context at once. The agent searches for relevant tools, loads only the schemas it needs, and can execute several tools together.
