@@ -19,6 +19,15 @@ Use `https://api.trytilde.ai/mcp`. Call `tilde_whoami`, select a workspace, and 
 
 Do not confuse the global configuration MCP server with the runtime MCP server created in step 5.
 
+## Add a registered agent as an MCP tool
+
+Each ChatKit agent registration creates one credentialless `chatkit_agent_message` provider bound to that target agent. Use the returned `message_tool_provider_id`, or find the provider with `tilde_search_enabled_capabilities`, then map both provider functions onto an existing runtime MCP server:
+
+- `chatkit_agent_message_send` persists an inbound ChatKit message and immediately returns `ticket_id`, `session_id`, `next_tool`, and `next_arguments`.
+- `chatkit_agent_message_wait_for_response` subscribes to the live ChatKit session, emits streaming and queue-status MCP notifications, and returns the final persisted ChatKit message.
+
+The model-facing tool names may be customized on the MCP server; follow the returned `next_tool` instruction rather than guessing. Pass a prior `session_id` to continue the same child conversation. The target agent's `concurrency_policy` controls queueing, interruption, and batching.
+
 ## Managed providers
 
 Never guess provider IDs or credential source IDs. Take them from `tilde_search_available_capabilities`.

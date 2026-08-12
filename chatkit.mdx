@@ -65,6 +65,8 @@ Configure chat providers for conversations from Slack, GitHub, and other support
     Open Tilde, select your workspace, and go to **ChatKit** → **Agents**. Register the endpoint and copy the one-time API key and webhook signing key into your app's environment.
 
     For local development, enable **Local running endpoint** and run the app through a [Dev Tunnel](/dev-tunnels). For production, enter the deployed HTTPS endpoint.
+
+    Registration also creates a credentialless **Message agent** tool provider bound to this agent. Add its `message` and `wait_for_response` tools to any Tilde MCP server when another agent should invoke it.
   </Step>
 
   <Step title="Connect a channel and test">
@@ -351,13 +353,24 @@ The Signals section below shows how typed handlers fit into the complete event w
 
 ## Choose how new turns are handled
 
-Each chat provider controls what happens when another message arrives while the agent is still working.
+Each chat provider can control what happens when another message arrives while the agent is still working. When a message comes from the agent's generated MCP provider, ChatKit uses the policy configured on the target agent.
 
 | Policy | Behavior |
 | --- | --- |
 | **Queue** | Finish the current response, then process new messages in order. |
 | **Interrupt** | Stop the current response and immediately send the newest message. |
 | **Queue & batch** | Keep one pending turn and combine further messages into it. |
+
+## Let agents invoke other agents through MCP
+
+Every registered agent has a generated **Message agent** tool provider. Add that provider to an existing MCP server just like any other credentialless provider. Its routing fields are fixed to the target agent, so callers only supply the message and, optionally, a ChatKit session ID.
+
+- `message` accepts Vercel AI SDK-compatible UI message parts, persists the inbound ChatKit message, and immediately returns a ticket and session ID.
+- `wait_for_response` accepts that ticket, subscribes to the live ChatKit session, streams response deltas through MCP progress notifications (or logging notifications when the caller did not supply a progress token), and returns the final canonical ChatKit message.
+- Reuse the returned session ID to continue the same child-agent conversation. Omit it to create a new session.
+- Queue status notifications include the target agent's concurrency policy and whether multiple messages were batched into the turn.
+
+The former pairwise internal-agent chat provider is no longer used. Agent-to-agent routing is now composed through ordinary MCP servers, so one generated provider can be reused by any authorized parent agent.
 
 ## Trigger work from events via Signals
 

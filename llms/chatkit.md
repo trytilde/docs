@@ -16,9 +16,21 @@ Call `tilde_register_chatkit_agent` with:
 - `display_name`
 - `endpoint_url`: an HTTPS URL in production, or an endpoint path such as `api/agent` for local development
 - `local_running_endpoint: true` for a Dev Tunnel endpoint
+- optional `concurrency_policy`: `queue`, `interrupt`, or `queue_and_batch` (defaults to `queue`)
 - optional `memory_bank_ids` to ingest this agent's conversations continuously
 
-The create response returns the plaintext Tilde API key and webhook signing key once. Give both to the human for secure storage in the agent's server environment. Never print them into source, state, logs, or chat history.
+The create response returns the plaintext Tilde API key and webhook signing key once, plus `message_tool_provider_id`. Give both secrets to the human for secure storage in the agent's server environment. Never print them into source, state, logs, or chat history. The message provider is credentialless and already bound to the new agent.
+
+## Enable agent-to-agent messaging
+
+1. Take `message_tool_provider_id` from the child agent's registration response, or find its `chatkit_agent_message` provider with `tilde_search_enabled_capabilities`.
+2. Add both `chatkit_agent_message_send` and `chatkit_agent_message_wait_for_response` from that provider to the parent agent's runtime MCP server with `tilde_set_mcp_server_tool_enabled`.
+3. Call the exposed `message` tool with `message.parts` and optional `message.metadata`. Pass `session_id` only to continue an existing child conversation.
+4. Immediately call the exposed `wait_for_response` tool with the returned `ticket_id`.
+5. Keep the MCP request open. Consume `message_streaming` and `agent_turn_status` progress notifications. Clients that omit an MCP progress token receive the same structured payload through `tilde.agent_response` logging notifications.
+6. Use the final `response` as the canonical persisted ChatKit message. Terminal `status` is `completed`, `failed`, or `cancelled`; queue notifications report `pending` or `running`, the applied concurrency policy, trigger count, and whether the turn was batched.
+
+Bound tenant, target-agent, and ingress-channel fields are supplied by Tilde and cannot be overridden by the caller. Do not configure the removed pairwise internal-agent ChatKit channel.
 
 ## Configure a ChatKit provider
 
