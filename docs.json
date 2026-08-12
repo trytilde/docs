@@ -61,6 +61,27 @@
     }
   },
   "name": "Tilde documentation",
+  "navbar": {
+    "links": [
+      {
+        "label": "Blog",
+        "href": "https://trytilde.ai/blog"
+      },
+      {
+        "label": "Home",
+        "href": "https://trytilde.ai"
+      },
+      {
+        "label": "Talk to a human",
+        "href": "https://calendly.com/daniel-trytilde/30min"
+      }
+    ],
+    "primary": {
+      "type": "button",
+      "label": "Get started",
+      "href": "https://api.trytilde.ai"
+    }
+  },
   "navigation": {
     "groups": [
       {
