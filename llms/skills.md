@@ -2,6 +2,10 @@
 
 A skill is a focused instruction document. A registry groups skills and exposes progressive discovery tools so an agent loads full instructions only when relevant.
 
+Tilde also synchronizes trusted upstream `SKILL.md` providers. Built-in sources are restricted to official repositories and, for monorepos such as Cursor plugins, server-authored include and exclude paths. Do not construct arbitrary trusted-provider URLs or assume that every MCP provider publishes skills. Select only skills returned by Tilde's provider and skill listing functions.
+
+Successful provider syncs reconcile the upstream commit snapshot: deleted and renamed upstream skills stop being advertised. Exported state records the selected skills and registries, not a plaintext credential or an unverified repository payload.
+
 Use `https://api.trytilde.ai/mcp`. Call `tilde_whoami`, select a workspace, and pass its `team_id` to every function below.
 
 ## Create a registry from team-owned skills

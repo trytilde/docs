@@ -149,16 +149,27 @@ export const providers = [
     "tools": []
   },
   {
+    "name": "Message agent",
+    "slug": "chatkit_agent_message",
+    "initials": "ME",
+    "category": "Chat",
+    "summary": "Send a ChatKit message to the agent bound to this provider and stream its response.",
+    "auth": [
+      "No Auth"
+    ],
+    "iconSources": [],
+    "toolCount": 2,
+    "tools": []
+  },
+  {
     "name": "Message internal agent",
     "slug": "chatkit_internal_agent",
     "initials": "ME",
     "category": "Chat",
     "summary": "Send messages between paired ChatKit agents through an internal ChatKit session.",
-    "auth": [
-      "No Auth"
-    ],
+    "auth": [],
     "iconSources": [],
-    "toolCount": 1,
+    "toolCount": 0,
     "tools": []
   },
   {
