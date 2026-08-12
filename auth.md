@@ -74,7 +74,10 @@ Claiming transfers the temporary team and supported resources into the human's s
 - OpenAPI: `https://trytilde.ai/openapi.json`
 - Agent context: `https://trytilde.ai/llms.txt`
 - Documentation: `https://trytilde.ai/docs`
-- OAuth protected-resource metadata: `https://api.trytilde.ai/.well-known/oauth-protected-resource`
-- OAuth authorization-server metadata: `https://api.trytilde.ai/.well-known/oauth-authorization-server`
+- OAuth protected-resource metadata: `https://trytilde.ai/.well-known/oauth-protected-resource`
+- OAuth authorization-server metadata: `https://trytilde.ai/.well-known/oauth-authorization-server`
+- OpenID Connect metadata: `https://trytilde.ai/.well-known/openid-configuration`
+- MCP server card: `https://trytilde.ai/.well-known/mcp/server-card.json`
+- Platform agent card: `https://trytilde.ai/.well-known/agent-card.json`
 
 Use OAuth when an agent acts on behalf of a signed-in human. Use a team-scoped machine API key for a deployed agent.

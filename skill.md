@@ -17,7 +17,7 @@ Tilde is a TypeScript-first platform for building and operating AI agents. It pr
 1. Read the canonical agent context at https://trytilde.ai/llms.txt.
 2. Follow the Quickstart at https://trytilde.ai/docs/quickstart.
 3. Use the global Tilde MCP server at https://api.trytilde.ai/mcp for configuration tasks.
-4. Read the OpenAPI description at https://api.trytilde.ai/openapi.json when implementing direct API integrations.
+4. Read the canonical OpenAPI description at https://trytilde.ai/openapi.json when implementing direct API integrations.
 
 ## Choose the right surface
 
@@ -46,4 +46,4 @@ Tilde is a TypeScript-first platform for building and operating AI agents. It pr
 - Skills: https://trytilde.ai/docs/skills
 - Dev Tunnels: https://trytilde.ai/docs/dev-tunnels
 - Portable state: https://trytilde.ai/docs/terraform
-- API description: https://api.trytilde.ai/openapi.json
+- API description: https://trytilde.ai/openapi.json

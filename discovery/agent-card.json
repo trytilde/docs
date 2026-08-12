@@ -1,0 +1,85 @@
+{
+  "name": "Tilde",
+  "description": "Build and operate AI agents with secure tools, MCP servers, ChatKit, memory, skills, browser sessions, organisation controls, wallets, and portable state.",
+  "url": "https://api.trytilde.ai/mcp",
+  "version": "0.0.6",
+  "protocolVersion": "2025-06-18",
+  "preferredTransport": "Streamable HTTP",
+  "supportedInterfaces": [
+    {
+      "url": "https://api.trytilde.ai/mcp",
+      "protocolBinding": "MCP",
+      "protocolVersion": "2025-06-18"
+    }
+  ],
+  "provider": {
+    "organization": "Tilde",
+    "url": "https://trytilde.ai"
+  },
+  "documentationUrl": "https://trytilde.ai/docs",
+  "capabilities": {
+    "streaming": true,
+    "pushNotifications": false,
+    "tools": true,
+    "resources": false,
+    "prompts": false
+  },
+  "defaultInputModes": [
+    "application/json"
+  ],
+  "defaultOutputModes": [
+    "application/json",
+    "text/event-stream"
+  ],
+  "skills": [
+    {
+      "id": "configure-tilde",
+      "name": "Configure Tilde",
+      "description": "Discover and configure Tilde tools, credentials, MCP servers, ChatKit, memory, skills, browser sessions, wallets, and portable state.",
+      "tags": [
+        "tools",
+        "mcp",
+        "chatkit",
+        "memory",
+        "skills",
+        "browser",
+        "wallets",
+        "state"
+      ],
+      "url": "https://trytilde.ai/.well-known/agent-skills/tilde/skill.md"
+    }
+  ],
+  "authentication": {
+    "requiredForExecution": true,
+    "oauthProtectedResource": "https://trytilde.ai/.well-known/oauth-protected-resource/mcp",
+    "oauthAuthorizationServer": "https://trytilde.ai/.well-known/oauth-authorization-server",
+    "apiKeyHeader": "x-api-key",
+    "agentRegistration": "https://trytilde.ai/auth.md"
+  },
+  "services": [
+    {
+      "id": "global-mcp",
+      "type": "mcp",
+      "purpose": "Configure and manage Tilde resources",
+      "endpoint": "https://api.trytilde.ai/mcp",
+      "serverCard": "https://trytilde.ai/.well-known/mcp/server-card.json"
+    },
+    {
+      "id": "rest-api",
+      "type": "openapi",
+      "purpose": "Use Tilde through its HTTP API",
+      "endpoint": "https://api.trytilde.ai",
+      "description": "https://trytilde.ai/openapi.json"
+    },
+    {
+      "id": "documentation",
+      "type": "documentation",
+      "endpoint": "https://trytilde.ai/docs",
+      "agentContext": "https://trytilde.ai/llms.txt"
+    }
+  ],
+  "tenantContext": {
+    "organization": "Use an organisation-scoped API hostname or x-tilde-org-id where required.",
+    "team": "Use the team_id returned by tilde_whoami for team-scoped tools and API routes."
+  }
+}
