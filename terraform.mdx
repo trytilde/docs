@@ -11,6 +11,10 @@ Well, not exactly. Tilde does not require a Terraform provider, but all Tilde re
 
 State files can declare variables for values that change between environments, such as an agent endpoint URL. They do not contain API keys, signing keys, third-party credentials, conversation history, or other runtime content. An import returns generated values separately and leaves credential-backed resources pending until you connect the corresponding accounts.
 
+Hosted MCP provider connections preserve their catalog provider identity, endpoint configuration, authentication mode, tool provider, and MCP mappings. API keys, bearer tokens, OAuth client secrets, access tokens, and refresh tokens remain encrypted credential references rather than state values.
+
+OAuth providers that use dynamic client registration must register a new client in the destination environment because the redirect URI and client registration belong to the source environment. Import recreates the provider and returns a one-time authorization URL. Manual OAuth providers keep their pre-registered client configuration and ask you to reconnect the user credential separately.
+
 Commit `tilde.state.yaml` with your application so reviewers can see which Tilde resources it expects.
 
 ## Export state from a workspace

@@ -50,6 +50,16 @@
       "weight": 500
     }
   },
+  "integrations": {
+    "ga4": {
+      "measurementId": "G-CJ95VP7M2T"
+    },
+    "posthog": {
+      "apiKey": "phc_mb9RXiNXL3YpmJkUWy4zqKaePZEAcgdBcD4tJdZyTUyN",
+      "apiHost": "https://eu.i.posthog.com",
+      "sessionRecording": false
+    }
+  },
   "name": "Tilde documentation",
   "navigation": {
     "groups": [

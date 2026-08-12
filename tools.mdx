@@ -83,6 +83,23 @@ Registering a ChatKit agent automatically creates a credentialless **Message age
 
 Pass the previous session ID to `message` to continue a child conversation. The target agent's queue, interrupt, or queue-and-batch policy applies automatically.
 
+## Connect a hosted MCP provider
+
+Open **Tools** → **Proxied MCP servers** → **Browse provider catalog** to connect a hosted MCP provider. The catalog includes ready-to-configure providers such as Notion, Granola, Browserbase, Parallel, Intercom, Zoom, Salesforce, Clay, Apollo, and HubSpot, alongside public documentation MCP servers.
+
+Tilde loads a reviewed tool-definition snapshot before you connect credentials, so the provider's tools can be inspected and selected in the same way as managed provider tools. After authentication, Tilde calls the upstream server's `tools/list` method and reconciles the deployed definitions with the live catalog. Providers are published in the connectable catalog only after a validated snapshot exists.
+
+The catalog records whether a snapshot came from an unauthenticated `tools/list` response, an official source repository, or official provider documentation. Definitions inferred from source or documentation are replaced by the authenticated upstream response as soon as the provider permits discovery.
+
+Authentication follows the upstream server:
+
+- OAuth providers use PKCE and published authorization metadata. Providers that support dynamic client registration create a new client for the current Tilde environment.
+- Manual OAuth providers ask for the provider's registered client ID and client secret.
+- API-key and bearer-token providers ask for the secret and the header or query-string placement required by the server.
+- Public documentation servers connect without credentials.
+
+OAuth tokens, client secrets, API keys, and bearer tokens are encrypted by Tilde's credential system. They are never stored in a tool definition or exported as plaintext state.
+
 ## Dynamic mode
 
 Dynamic mode exposes `SEARCH_TOOLS`, `GET_TOOL_SCHEMAS`, and `MULTI_EXECUTE_TOOL` instead of loading every tool schema into the model's context at once. The agent searches for relevant tools, loads only the schemas it needs, and can execute several tools together.

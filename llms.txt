@@ -16,7 +16,7 @@ These features are all exposed through cloud API’s that hide away the detail.
 ## Client libraries to help integrate with
 
 - Tilde Global MCP: https://api.trytilde.ai/mcp . This MCP server is the defacto way for agents to use and build Tilde. Use this MCP server to configure all runtime resources in Tilde, however this MCP server is not the same as agent MCP server (referenced in Tools product) which are used when wanting to invoke tools that you've configured
-- Tilde Rest API: If you are running in a sandbox that can make HTTP requests, and the Tilde Global MCP server can't perform the function that you would like, read the [OpenAPI spec and invoke it directly there](https://api.trytilde.ai/openapi.json). Use Oauth Authorization: Bearer xxx headers or x-api-key if provided by the user, or ask the user.
+- Tilde Rest API: If you are running in a sandbox that can make HTTP requests, and the Tilde Global MCP server can't perform the function that you would like, read the [canonical OpenAPI spec](https://trytilde.ai/openapi.json) and invoke the API at `https://api.trytilde.ai`. Use Oauth Authorization: Bearer xxx headers or x-api-key if provided by the user, or ask the user.
 - Harness SDK: When implementing a custom agent for a specific purpose, always use Vercel's AI SDK as the base framework and layer in Tilde's harness SDK, [@trytilde/harness-sdk](https://www.npmjs.com/package/@trytilde/harness-sdk) and [git repo here](https://github.com/trytilde/harness-sdk) to create agent endpoints. Read more about this in the ChatKit  page.
 - Any MCP client: Once you've configured an MCP server via Tilde's Tool product, you can connect any MCP client or agent that supports MCP clients to that deployed MCP server to invoke the configured tools. Read the docs pages about connecting your client on this website to find out how to connect popular existing agents via this route to Tilde's Global MCP server. connecting agent MCP server's are slightly different.
 
@@ -49,6 +49,7 @@ Both request fields are optional. The response creates a temporary organization 
 5. Give the human the `claim_url` and `claim_pin` before the temporary account expires.
 
 The temporary account lasts 24 hours. Its claim URL lasts one hour. If the link expires while the account is still active, generate a fresh link with the temporary API key. The PIN does not change.
+Production claim links open under `https://trytilde.ai/app/temporary-accounts/claim/`; the claim API itself remains on `https://api.trytilde.ai`.
 
 ```bash
 curl --request POST https://api.trytilde.ai/api/v1/identity/temporary-accounts/claim-url \

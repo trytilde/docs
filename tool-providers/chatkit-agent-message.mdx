@@ -1,0 +1,65 @@
+---
+title: "Message agent tools for AI agents"
+sidebarTitle: "Message agent"
+description: "Explore 2 Message agent tools for AI agents in Tilde, including supported authentication and MCP capabilities."
+keywords:
+  - "Message agent AI tools"
+  - "Message agent MCP integration"
+  - "Message agent tools for AI agents"
+  - "Tilde tool providers"
+  - "MCP tools"
+"og:title": "Message agent tools for AI agents | Tilde"
+"og:description": "Explore 2 Message agent tools for AI agents in Tilde, including supported authentication and MCP capabilities."
+mode: "wide"
+---
+
+import {
+  PUBLIC_CATALOG_URL,
+  iconAliases,
+  iconUrl,
+  providerFromApi,
+  ProviderLogo,
+  ToolProviderDetail,
+} from "/snippets/tool-provider-browser.jsx";
+
+export const provider = {
+  "name": "Message agent",
+  "slug": "chatkit_agent_message",
+  "initials": "ME",
+  "category": "Chat",
+  "summary": "Send a ChatKit message to the agent bound to this provider and stream its response.",
+  "auth": [
+    "No Auth"
+  ],
+  "iconSources": [],
+  "toolCount": 2,
+  "tools": [
+    [
+      "message",
+      "Send a message to this agent. Returns immediately with a ticket; call wait_for_response with that ticket."
+    ],
+    [
+      "wait_for_response",
+      "Subscribe to the child agent's real-time ChatKit response. Streaming deltas are delivered as MCP progress notifications (or logging notifications when no progress token is supplied) and the final result is the canonical ChatKit message."
+    ]
+  ]
+};
+
+{/* GENERATED: scripts/generate-tool-provider-pages.mjs */}
+
+Send a ChatKit message to the agent bound to this provider and stream its response.
+
+Tilde exposes **2 Message agent tools** for AI agents through MCP. Connect with No Auth.
+
+<ToolProviderDetail provider={provider} ProviderLogo={ProviderLogo} />
+
+## Popular Message agent tools
+
+- **message** — Send a message to this agent. Returns immediately with a ticket; call wait_for_response with that ticket.
+- **wait_for_response** — Subscribe to the child agent's real-time ChatKit response. Streaming deltas are delivered as MCP progress notifications (or logging notifications when no progress token is supplied) and the final result is the canonical ChatKit message.
+
+## Connect Message agent to an AI agent
+
+Add Message agent from the [Tilde dashboard](https://api.trytilde.ai/tools/available-tool-providers), then enable the tools your agent needs on an MCP server. [Learn how tools work in Tilde](/tools).
+
+[Browse every Tilde tool provider](/tool-providers/index) or [compare Tilde-managed and self-managed authentication](/tool-providers/managed-auth).
