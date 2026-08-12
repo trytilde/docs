@@ -49,8 +49,26 @@
     actionContainer.prepend(nav);
   };
 
+  const orderMobileNav = () => {
+    const hrefs = [...headerLinks.map((link) => link.href), dashboardUrl];
+    const items = hrefs.map((href) =>
+      document.querySelector(`li[data-title] > a[href="${href}"]`)?.closest("li"),
+    );
+    if (items.some((item) => !item)) return;
+
+    const orderedItems = items.filter((item) => item instanceof HTMLLIElement);
+    const list = orderedItems[0]?.parentElement;
+    if (!list || orderedItems.some((item) => item.parentElement !== list)) return;
+
+    const currentItems = Array.from(list.children).filter((item) => orderedItems.includes(item));
+    if (currentItems.every((item, index) => item === orderedItems[index])) return;
+
+    for (const item of orderedItems) list.append(item);
+  };
+
   const updateCta = () => {
     createHeaderNav();
+    orderMobileNav();
 
     const ctas = document.querySelectorAll(
       `[data-tilde-auth-cta], #topbar-cta-button, li[data-title] > a[href="${dashboardUrl}"]`,
