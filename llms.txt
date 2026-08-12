@@ -49,6 +49,7 @@ Both request fields are optional. The response creates a temporary organization 
 5. Give the human the `claim_url` and `claim_pin` before the temporary account expires.
 
 The temporary account lasts 24 hours. Its claim URL lasts one hour. If the link expires while the account is still active, generate a fresh link with the temporary API key. The PIN does not change.
+Production claim links open under `https://trytilde.ai/app/temporary-accounts/claim/`; the claim API itself remains on `https://api.trytilde.ai`.
 
 ```bash
 curl --request POST https://api.trytilde.ai/api/v1/identity/temporary-accounts/claim-url \
