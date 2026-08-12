@@ -8,7 +8,35 @@ Successful provider syncs retain each complete bounded skill package: `SKILL.md`
 
 Exported state embeds selected package files with checksums so import can verify and recreate every referenced asset in the target workspace. It never includes a plaintext credential or an unverified repository payload.
 
-When a loaded `SKILL.md` refers to another package file, call `GET /api/v1/team/{team_id}/skill/{skill_id}/package` to inspect the immutable manifest. Then call `POST /api/v1/team/{team_id}/skill/{skill_id}/package/download` with the exact manifest `path` to obtain a short-lived download URL. Do not invent a repository URL or resolve paths outside the manifest.
+When a loaded `SKILL.md` refers to another package file, call `GET /api/v1/team/{team_id}/skill/{skill_id}/package` to inspect the immutable manifest. Then call `POST /api/v1/team/{team_id}/skill/{skill_id}/package/download` with the manifest `path` to obtain a short-lived download URL.
+
+For example, if the manifest contains `examples/analyze.py`, download and access it like this:
+
+```bash
+API_BASE="https://api.trytilde.ai/api/v1"
+
+MANIFEST=$(curl --fail --silent --show-error \
+  -H "x-api-key: $TILDE_API_KEY" \
+  "$API_BASE/team/$TILDE_TEAM_ID/skill/$TILDE_SKILL_ID/package")
+
+PYTHON_PATH=$(printf '%s' "$MANIFEST" | \
+  jq -r '.files[] | select(.path == "examples/analyze.py") | .path')
+PYTHON_SHA256=$(printf '%s' "$MANIFEST" | \
+  jq -r '.files[] | select(.path == "examples/analyze.py") | .checksum_sha256')
+
+DOWNLOAD_URL=$(curl --fail --silent --show-error \
+  -X POST \
+  -H "x-api-key: $TILDE_API_KEY" \
+  -H "content-type: application/json" \
+  --data "$(jq -n --arg path "$PYTHON_PATH" '{path: $path}')" \
+  "$API_BASE/team/$TILDE_TEAM_ID/skill/$TILDE_SKILL_ID/package/download" | \
+  jq -r '.url')
+
+curl --fail --silent --show-error "$DOWNLOAD_URL" -o /tmp/analyze.py
+printf '%s  %s\n' "$PYTHON_SHA256" /tmp/analyze.py | sha256sum --check
+sed -n '1,160p' /tmp/analyze.py
+python3 /tmp/analyze.py
+```
 
 Use `https://api.trytilde.ai/mcp`. Call `tilde_whoami`, select a workspace, and pass its `team_id` to every function below.
 

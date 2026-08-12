@@ -16,6 +16,36 @@ Portable state embeds the selected package files with content checksums. Import 
 
 Call `GET /api/v1/team/{team_id}/skill/{skill_id}/package` to inspect the immutable package manifest and its entrypoint, paths, media types, sizes, checksums, executable flags, and Git provenance. To retrieve one referenced file, call `POST /api/v1/team/{team_id}/skill/{skill_id}/package/download` with its exact manifest `path`. Tilde returns a short-lived download URL; use the manifest checksum when persisting or executing downloaded content.
 
+For example, suppose the manifest lists a Python helper at `examples/analyze.py`:
+
+```bash
+API_BASE="https://api.trytilde.ai/api/v1"
+
+MANIFEST=$(curl --fail --silent --show-error \
+  -H "x-api-key: $TILDE_API_KEY" \
+  "$API_BASE/team/$TILDE_TEAM_ID/skill/$TILDE_SKILL_ID/package")
+
+PYTHON_PATH=$(printf '%s' "$MANIFEST" | \
+  jq -r '.files[] | select(.path == "examples/analyze.py") | .path')
+PYTHON_SHA256=$(printf '%s' "$MANIFEST" | \
+  jq -r '.files[] | select(.path == "examples/analyze.py") | .checksum_sha256')
+
+DOWNLOAD_URL=$(curl --fail --silent --show-error \
+  -X POST \
+  -H "x-api-key: $TILDE_API_KEY" \
+  -H "content-type: application/json" \
+  --data "$(jq -n --arg path "$PYTHON_PATH" '{path: $path}')" \
+  "$API_BASE/team/$TILDE_TEAM_ID/skill/$TILDE_SKILL_ID/package/download" | \
+  jq -r '.url')
+
+curl --fail --silent --show-error "$DOWNLOAD_URL" -o /tmp/analyze.py
+printf '%s  %s\n' "$PYTHON_SHA256" /tmp/analyze.py | sha256sum --check
+sed -n '1,160p' /tmp/analyze.py
+python3 /tmp/analyze.py
+```
+
+Set `TILDE_TEAM_ID` and `TILDE_SKILL_ID` to the workspace and skill identifiers. The first request reads the manifest, the second asks Tilde for a short-lived URL for that exact file, and the final commands inspect and run the downloaded example.
+
 ## Create a skill registry
 
 <Steps>
