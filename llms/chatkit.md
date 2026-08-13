@@ -42,6 +42,12 @@ Bound tenant, target-agent, and ingress-channel fields are supplied by Tilde and
 
 Use the Vercel AI Endpoint provider when the user wants to test the agent in [Mission Control](https://api.trytilde.ai/mission-control).
 
+## Schedule recurring prompts
+
+ChatKit Routines send a saved prompt to a registered agent on a recurring UTC schedule. Configure them in **ChatKit** → **Routines**. Prefer the plain-English schedule choices; use raw cron only when the required minute-level schedule is not represented by a preset.
+
+Every run creates a Mission Control session named after the Routine. Routine configuration is portable state: title, prompt, schedule, enabled state, and the target-agent reference round-trip. Do not expect cached next-run times, run history, generated sessions, errors, or scheduler locks to survive an export and import.
+
 ## Trigger work with Signals
 
 Signals turn provider events into ChatKit messages.

@@ -9,7 +9,7 @@ Tilde lets developers and agents configure off the shelf third-party tools, depl
 - Tools: Off the shelf integration with hundreds of providers, add your own custom tools & spin up secure MCP servers that house them
 - Memory: Create a peristent brain and personal notepad for your agent or share it across multiple agents
 - Skills: Deploy Skills registries to group skills together and make them available to agents
-- ChatKit: Integrate with third party chat providers, have external webhook events trigger agent runs or plan repeat prompts to run on schedule
+- ChatKit: Integrate with third-party chat providers, trigger agent runs from external events, or schedule recurring prompts with Routines
 
 These features are all exposed through cloud API’s that hide away the detail.
 

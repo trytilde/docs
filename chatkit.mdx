@@ -4,11 +4,12 @@ description: "Connect conversations and external events to your agent."
 icon: "messages"
 ---
 
-ChatKit connects an agent endpoint to the places where work begins. It stores sessions and messages, delivers each turn as a signed HTTPS request, and streams the agent's response back to the channel. There are three ways to trigger an agent run through ChatKit:
+ChatKit connects an agent endpoint to the places where work begins. It stores sessions and messages, delivers each turn as a signed HTTPS request, and streams the agent's response back to the channel. There are four ways to trigger an agent run through ChatKit:
 
 1. **Chat providers**: These are first-class integrations with third-party chat providers.
 2. **Vercel AI SDK chat provider**: This managed provider exposes your agent through a Vercel AI SDK-compatible endpoint for custom clients.
 3. **Signals**: These are events from third-party providers that Tilde delivers to your agent.
+4. **Routines**: These send a saved prompt to an agent on a recurring schedule.
 
 Configure chat providers for conversations from Slack, GitHub, and other supported channels. Use signals when an external event should start or continue a session without first arriving as a chat message.
 
@@ -81,6 +82,19 @@ Use [Mission Control](https://api.trytilde.ai/mission-control) to invoke your ag
 <Info>
   Mission Control requires the **Vercel AI Endpoint** ChatKit provider to be enabled for your agent.
 </Info>
+
+### Schedule a routine
+
+Use a Routine when an agent should start the same kind of work on a recurring schedule, such as reviewing overnight alerts every weekday morning.
+
+1. Go to **ChatKit** → **Routines** and click **New routine**.
+2. Select the agent and enter a title and prompt.
+3. Choose a plain-English schedule or switch to raw cron syntax for a custom schedule.
+4. Save the Routine. Select it from the grid later to edit, disable, or delete it.
+
+Routine schedules use UTC and run with minute-level precision. Each run creates a Mission Control session named after the Routine and sends the saved prompt to the selected agent. The Routine page shows its next run, latest run, and latest error.
+
+Routines are included in portable workspace state. Their title, prompt, schedule, enabled state, and agent relationship are exported. Run history, generated sessions, cached next-run time, and scheduler locks are runtime state and are not exported.
 
 ### Provider-specific message metadata
 

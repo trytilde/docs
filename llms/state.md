@@ -1,8 +1,10 @@
 # Export and import Tilde state over Global MCP
 
-Tilde resource state is portable even though Tilde does not require Terraform. Keep `tilde.state.yaml` beside a custom agent so another workspace can reproduce its agents, ChatKit providers, tools, MCP servers, skills, wikis, memory bindings, reverse proxies, and relationships.
+Tilde resource state is portable even though Tilde does not require Terraform. Keep `tilde.state.yaml` beside a custom agent so another workspace can reproduce its agents, ChatKit providers and Routines, tools, MCP servers, skills, wikis, memory bindings, reverse proxies, and relationships.
 
 State does not contain API keys, signing keys, provider credentials, conversation history, or memory content.
+
+For a ChatKit Routine, state contains the title, prompt, UTC schedule, enabled state, and target-agent reference. It excludes the cached next run, previous runs and sessions, errors, and scheduler locks.
 
 Curated hosted MCP connections export their stable catalog provider identity and declarative endpoint/authentication configuration. Dynamic OAuth client IDs, token endpoints discovered for that registration, access tokens, and refresh tokens are environment-specific and are not exported. On import, Tilde repeats discovery and dynamic client registration, then returns a one-time authorization URL. Manual OAuth configuration remains portable, while its user credential is reconnected through the normal pending-credential flow.
 
