@@ -1,0 +1,59 @@
+---
+title: "Host OpenBot with Tilde Cloud"
+description: "Create an isolated OpenBot installation, Vercel runtime, persistent Computer, and OIDC-backed AI Gateway access in one API call."
+---
+
+Tilde Cloud can provision a complete [OpenBot](https://github.com/trytilde/openbot) installation from a title and a unique slug. The caller must be a system administrator or an administrator of the owning organization.
+
+```bash
+curl --request POST \
+  "https://api.trytilde.ai/api/v1/identity/organizations/$TILDE_ORG_ID/openbot/deployments" \
+  --header "authorization: Bearer $TILDE_ACCESS_TOKEN" \
+  --header "content-type: application/json" \
+  --data '{
+    "title": "Research workspace",
+    "slug": "research-workspace"
+  }'
+```
+
+The request creates or reconciles:
+
+- a dedicated Tilde team named `openbot-<slug>`;
+- an instance-only machine API key and OpenBot OIDC audience;
+- separate Vercel control and agent projects;
+- a persistent Vercel Sandbox used as the writable OpenBot Computer;
+- project-scoped Vercel OIDC for AI Gateway, Sandbox, and VCR access;
+- a deterministic `openbot-<slug>-control.vercel.app` hostname; and
+- a non-interactive OpenBot initialization and production deployment command.
+
+The response has `status: "provisioning"` and includes the team ID, hostname, deployment URL, Vercel project names, Sandbox name, bootstrap command ID, and public OIDC registration. A repeated request with the same organization and slug reconciles the deterministic resources. A slug already owned by another organization is rejected.
+
+<Note>
+  Custom `trytilde-fs.com` and `trytilde-dev-fs.com` hostnames are a follow-up. Provisioning currently uses the Vercel project domain so DNS does not block a working installation.
+</Note>
+
+## Source control and credentials
+
+Hosted instances use OpenBot's `LocalGitProvider`. The writable checkout and its bare `file://` origin both remain on the persistent Sandbox filesystem; no GitHub account or GitHub token is required.
+
+Tilde's Vercel account token remains exclusively in the Tilde deployment worker. It is never passed to the Sandbox, Git repository, OpenBot SOPS document, or tenant project environment. Deployed agents use project OIDC for AI Gateway, while OpenBot sends content-addressed prebuilt releases through its team-scoped Tilde capability.
+
+Runtime configuration accepts user-owned model, agent, and generated Computer values. Tilde derives the API key, organization, team, hosted-instance identity, OAuth metadata, public origin, and Computer identity from the authenticated instance record rather than trusting caller-supplied values.
+
+## Managed release API
+
+After building `.vercel/output`, OpenBot creates a release for either `control` or `agents`, uploads each unique SHA-1 file through Tilde, finalizes the release, and polls it until `ready` or `failed`.
+
+| Method | Route | Purpose |
+| --- | --- | --- |
+| `GET` | `/api/v1/team/{team_id}/identity/openbot/instances/{instance_id}` | Read project, Sandbox, image, hostname, and lifecycle state |
+| `PUT` | `/api/v1/team/{team_id}/identity/openbot/instances/{instance_id}/configuration` | Install allowlisted tenant runtime values; platform credentials are rejected |
+| `PUT` | `/api/v1/team/{team_id}/identity/openbot/instances/{instance_id}/computer-image` | Record an immutable VCR digest owned by the instance control project |
+| `POST` | `/api/v1/team/{team_id}/identity/openbot/instances/{instance_id}/releases` | Create a control or agent release and declare its Build Output API manifest |
+| `PUT` | `/api/v1/team/{team_id}/identity/openbot/instances/{instance_id}/releases/{release_id}/files/{sha1}` | Upload one declared content-addressed file |
+| `POST` | `/api/v1/team/{team_id}/identity/openbot/instances/{instance_id}/releases/{release_id}/finalize` | Deploy all uploaded files to the server-bound Vercel project |
+| `GET` | `/api/v1/team/{team_id}/identity/openbot/instances/{instance_id}/releases/{release_id}` | Poll upload and Vercel deployment status |
+
+The release API never accepts a Vercel project ID from the caller. Tilde resolves the control or agent project from the authenticated hosted-instance record.
+
+Slugs must be lowercase DNS labels containing 3–48 letters, digits, or single hyphens. Titles must contain 1–100 characters.

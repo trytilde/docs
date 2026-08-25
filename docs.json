@@ -132,7 +132,8 @@
       {
         "group": "Guides",
         "pages": [
-          "guides/code-review-agent"
+          "guides/code-review-agent",
+          "guides/hosted-openbot"
         ]
       }
     ]
