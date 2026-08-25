@@ -96,6 +96,32 @@ When creating a private session, the creator becomes its owner automatically. Th
   Mission Control requires the **Vercel AI Endpoint** ChatKit provider to be enabled for your agent.
 </Info>
 
+### Search conversations
+
+Use consolidated ChatKit search to find session titles, agents participating in sessions, and message content across a workspace. Results include the session context needed to open the matching conversation.
+
+```bash
+curl --get \
+  --header "Authorization: Bearer $TILDE_API_KEY" \
+  --data-urlencode "q=deployment rollback" \
+  --data-urlencode "page_size=25" \
+  "https://api.trytilde.ai/api/v1/team/$TILDE_TEAM_ID/chatkit/mission-control/search"
+```
+
+Each result has a `kind` of `session_title`, `agent`, or `message`. Message results include the canonical ChatKit message. Use the opaque `next_page_token` to continue in relevance order.
+
+To search messages inside one conversation, add its `session_id`. Session-scoped search returns message results only and returns `404` if the session does not belong to the selected workspace.
+
+```bash
+curl --get \
+  --header "Authorization: Bearer $TILDE_API_KEY" \
+  --data-urlencode "q=customer reference" \
+  --data-urlencode "session_id=$TILDE_SESSION_ID" \
+  "https://api.trytilde.ai/api/v1/team/$TILDE_TEAM_ID/chatkit/mission-control/search"
+```
+
+Search uses case-insensitive full-text terms. It does not provide fuzzy, typo-tolerant, or substring matching.
+
 ### Provider-specific message metadata
 
 Supported chat providers add validated metadata to the endpoint context. Use the provider-specific property inside your `chatKitEndpoint` handler.
