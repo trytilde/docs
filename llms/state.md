@@ -4,6 +4,8 @@ Tilde resource state is portable even though Tilde does not require Terraform. K
 
 State does not contain API keys, signing keys, provider credentials, conversation history, or memory content.
 
+Portable resources use tagged `team`, `user`, or `user_team` ownership. Team export remains team-only by default. Personal and private-team resources require explicit inclusion and authorization, and import requires an `owner_mappings` entry from every source user ID to its target user ID. Missing mappings fail validation; never remove ownership or convert it to team ownership to make an import pass.
+
 Selected skills are exported as checksum-bound packages. Their `SKILL.md` entrypoint and package-local references, templates, scripts, examples, and media are embedded so import can verify and recreate the complete package without fetching mutable upstream content. Provider source and revision metadata remain attached as provenance.
 
 Curated hosted MCP connections export their stable catalog provider identity and declarative endpoint/authentication configuration. Dynamic OAuth client IDs, token endpoints discovered for that registration, access tokens, and refresh tokens are environment-specific and are not exported. On import, Tilde repeats discovery and dynamic client registration, then returns a one-time authorization URL. Manual OAuth configuration remains portable, while its user credential is reconnected through the normal pending-credential flow.

@@ -6,6 +6,12 @@ icon: "brain"
 
 Tilde provides two related ways to manage knowledge for agents.
 
+Memory banks and wikis can be workspace-owned or personal. A personal resource has no team ID: its owner has full create, read, update, delete, list, and administration rights, while organization and system administrators retain administrative access. A workspace resource remains visible to members of that workspace. Pages, revisions, assets, memories, and lifecycle records inherit the ownership of their bank or wiki.
+
+Personal targets may read an accessible workspace source, but a workspace target cannot bind a personal source. Before removing someone from a workspace, Tilde requires durable personal projections and cross-workspace bindings to be detached or removed.
+
+Owners can promote a personal memory bank or wiki to a workspace they belong to. Workspace administrators may make one personal to themselves. Detach and purge source bindings or durable projections first so changing ownership cannot widen an existing audience.
+
 | Resource | Use it for | Agent access |
 | --- | --- | --- |
 | **Memory bank** | Durable facts, decisions, preferences, and work summaries that agents can recall semantically. | `retain`, `recall`, `reflect`, and `delete_document` tools. |

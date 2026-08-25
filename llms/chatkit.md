@@ -1,6 +1,6 @@
 # Configure ChatKit over Tilde Global MCP
 
-Use `https://api.trytilde.ai/mcp`. Call `tilde_whoami`, select a workspace, and pass its `team_id` to every function below.
+Use `https://api.trytilde.ai/mcp`. Call `tilde_whoami` first. Team ChatKit sessions and routines use `team` ownership; private sessions and routines use `user_team`, retaining both the effective user and execution team. Every message, attachment, event, task, reply, and queued turn inherits its session.
 
 ## Build the endpoint first
 
@@ -45,6 +45,8 @@ Use the Vercel AI Endpoint provider when the user wants to test the agent in [Mi
 ## Trigger work with Signals
 
 Signals turn provider events into ChatKit messages.
+
+Signal providers and rules may be personal `user` resources with no owning team. A personal rule must supply `target_team_id`, and the owner must belong to that team. It cannot bind a fixed shared session; sessions it creates are `user_team` sessions for the same owner. Personal webhook providers currently use polling ingress, while team providers may use webhook or polling ingress.
 
 1. Call `tilde_list_signal_providers` and inspect the selected provider's signal schemas and authentication requirements.
 2. Call `tilde_create_signal_provider` with the provider-specific `body`.

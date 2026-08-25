@@ -1,6 +1,8 @@
 # Configure tools over Tilde Global MCP
 
-Use `https://api.trytilde.ai/mcp`. Call `tilde_whoami`, select a workspace, and pass its `team_id` to every function below.
+Use `https://api.trytilde.ai/mcp`. Call `tilde_whoami`. Team operations target a workspace; personal REST operations use `/api/v1/user/{user_id}/...` and infer the effective user for ordinary creates.
+
+Configured tool accounts and MCP servers support `team` or `user` ownership. Personal resources have no team ID. Runtime MCP servers use `user_tool_federation_mode: none | all | selected`, defaulting to `none`. Selected policies contain provider/tool-definition pairs only—not credentials, aliases, bound parameters, or user account IDs. At connection time Tilde authenticates and pins the effective user to the MCP session, then exposes the caller's active matching personal accounts under stable `user__<provider>__<account>__<tool>` names.
 
 ## Recommended workflow
 
@@ -18,6 +20,10 @@ Use `https://api.trytilde.ai/mcp`. Call `tilde_whoami`, select a workspace, and 
 8. Call `tilde_search_enabled_capabilities` again, filtered by `mcp_server_instance_id`, to verify the final mapping.
 
 Do not confuse the global configuration MCP server with the runtime MCP server created in step 5.
+
+Static MCP mappings may reference workspace configured tools only. Personal configured tools are federation-only.
+
+Ownership-change endpoints never accept a different target owner. Personal-to-team promotion requires membership in the target team; narrowing a team resource requires team-or-higher administration and targets the effective user. Remove static mappings before narrowing an MCP server.
 
 ## Add a registered agent as an MCP tool
 

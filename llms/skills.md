@@ -38,7 +38,7 @@ sed -n '1,160p' /tmp/analyze.py
 python3 /tmp/analyze.py
 ```
 
-Use `https://api.trytilde.ai/mcp`. Call `tilde_whoami`, select a workspace, and pass its `team_id` to every function below.
+Use `https://api.trytilde.ai/mcp`. Call `tilde_whoami` first. Skills and registries may be `team` or personal `user` resources; personal REST routes use `/api/v1/user/{user_id}/...` and have no team ID. Packages and registry memberships inherit their root owner, and a team registry cannot include a personal skill.
 
 ## Create a registry from team-owned skills
 

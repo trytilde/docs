@@ -6,6 +6,22 @@ description: "Connect your agent to tools through a Tilde MCP server."
 
 Tools let your agent act in external systems without exposing provider credentials to the model.
 
+## Personal and workspace ownership
+
+Configured tool accounts and MCP servers can belong either to a workspace or to you personally. Personal resources are organization-bound for billing and administration, but they are not attached to a team. Only you and organization or system administrators can manage them.
+
+A workspace MCP server can optionally federate personal tools for each connecting user:
+
+- **None** exposes only the server's workspace tools.
+- **All personal tools** adds every active personal tool owned by the caller.
+- **Selected personal tools** adds only allowed provider and tool definitions that the caller has configured.
+
+The selection stores definitions, not credentials or account IDs. When two people connect to the same server, each sees the same workspace tools plus only their own permitted personal accounts. Account-qualified tool names prevent collisions. A personal MCP server exposes personal tools only.
+
+Owners can promote a personal MCP server to a workspace they belong to. A workspace administrator can make a server personal to themselves only after removing every static workspace-tool mapping; personal tools are always federation-only.
+
+To configure this, open an MCP server, choose its personal-tool federation mode, and use **Add tools** in selected mode. The picker shows every available provider definition; the actual runtime catalog is the intersection of that policy and the connecting user's active personal accounts.
+
 [Enable off-the-shelf tool providers](/tool-providers), add custom tools, or proxy upstream APIs. Group them in an MCP server, then connect your agent with the Harness SDK.
 
 <Steps>
@@ -24,6 +40,7 @@ Tools let your agent act in external systems without exposing provider credentia
     2. Name the server. Enable dynamic mode if the agent should search a large tool catalog instead of loading every tool definition into context.
     3. Open the server and add tools from your configured providers, proxied MCP servers, or custom tool providers.
     4. Adjust tool names, descriptions, parameters, or fixed inputs as needed.
+    5. If callers should bring their own personal tools, choose **All personal tools** or **Selected personal tools**. The default is **None**.
 
     Keep the MCP server ID. You will pass it to the Harness SDK in the next step.
   </Step>

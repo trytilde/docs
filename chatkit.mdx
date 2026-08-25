@@ -12,6 +12,10 @@ ChatKit connects an agent endpoint to the places where work begins. It stores se
 
 Configure chat providers for conversations from Slack, GitHub, and other supported channels. Use signals when an external event should start or continue a session without first arriving as a chat message.
 
+ChatKit sessions and routines are either shared `team` resources or private `user_team` resources. A private session remains in its execution team but has one owner; that owner and team, organization, or system administrators can manage it. Messages, attachments, events, tasks, replies, and turn queues inherit the session's scope.
+
+Signal provider instances and rules may also be personal. A personal rule names the team where its agent action runs. Sessions created by that rule are `user_team` sessions for the same owner, preventing the rule from turning personal activity into a team-visible conversation.
+
 ## Set up ChatKit
 
 <Steps>

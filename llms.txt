@@ -23,7 +23,9 @@ These features are all exposed through cloud API’s that hide away the detail.
 ## Organization, Team, Auth
 
 - Organisation: The top-level domain object for grouping resources. Use orgs for ownership and billing.
-- Teams / workspaces: Teams are sometimes called workspaces. Use teams for runtime isolation: agents, MCP servers, ChatKit providers, signals, API keys, and tool credentials should be team scoped. If you don't want an agent or human to access a specific tool, put it in a seperate team and don't provide that agent with an API key scoped to the new team.
+- Teams / workspaces: Teams are sometimes called workspaces. Team resources are shared with members of that workspace.
+- Personal resources: Configured tool accounts, MCP servers, skills, registries, signal providers and rules, memory banks, and wikis may be owned by an individual user without a team ID. ChatKit private sessions and routines use `user_team`, retaining both their owner and execution team. Child records inherit their root's ownership.
+- Administration: Owners have CRUDL and resource-administration rights. Team admins administer `team` and `user_team` resources; organization and system admins may also administer personal `user` resources. Inaccessible resources return not found and list queries filter them before returning rows.
 - Human users: Humans who sign in and user the paltform
 - Machine users: Often agents. When API keys are generated that are not tied to a human user, a machine user is provisioned, added to the relevant team and the API key associated to them.
 
@@ -73,7 +75,7 @@ Claiming transfers every team and supported resource from the temporary organiza
 
 1. Call `tilde_whoami` first.
 2. Select the target team from the returned identity. Teams are also called workspaces.
-3. Pass `team_id` to every team-scoped function on the global MCP server. The organization is inferred from the authenticated OAuth token or API key.
+3. Pass `team_id` to team-scoped functions. Personal REST routes use `/api/v1/user/{user_id}/...`; ordinary personal creates infer the effective user and cannot nominate another owner. The organization is inferred from the authenticated OAuth token or API key.
 4. Prefer OAuth when acting for a human. Use a team-scoped machine API key for a deployed agent.
 
 If a function returns `approval_url`, show it to the user. Then immediately call the returned `next_tool_name` with `next_tool_arguments` and wait for approval before continuing.
