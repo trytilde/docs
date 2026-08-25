@@ -22,6 +22,14 @@ Owners can promote a personal MCP server to a workspace they belong to. A worksp
 
 To configure this, open an MCP server, choose its personal-tool federation mode, and use **Add tools** in selected mode. The picker shows every available provider definition; the actual runtime catalog is the intersection of that policy and the connecting user's active personal accounts.
 
+## Share without giving up control
+
+Tool groups, proxied MCP servers, custom tool providers, MCP server instances, and managed credential roots use independent visibility and ownership planes. For tool and MCP roots, visibility controls safe discovery and use. Ownership controls configuration, tool selection, federation policy, grant management, and deletion. Set either plane to **Team** or **Private**, then add private grants for an Identity user or group. Ownership and administrator access do not make a private resource visible.
+
+Credential visibility exposes only redacted metadata needed for discovery. It never authorizes secret retrieval or returns plaintext or decrypted values. Secret configuration, brokering, rotation, and deletion require ownership, while a bound consuming resource receives only the exact capability it needs at execution time. Global MCP and runtime MCP responses do not reveal stored provider secrets.
+
+Definitions, configured tools, and runtime mappings inherit their owning tool or MCP root. A shared MCP server resolves caller-specific personal federation after authentication, so one user's accounts and credentials cannot appear in another user's catalog.
+
 [Enable off-the-shelf tool providers](/tool-providers), add custom tools, or proxy upstream APIs. Group them in an MCP server, then connect your agent with the Harness SDK.
 
 <Steps>

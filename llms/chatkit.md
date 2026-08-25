@@ -1,6 +1,8 @@
 # Configure ChatKit over Tilde Global MCP
 
-Use `https://api.trytilde.ai/mcp`. Call `tilde_whoami` first. Team ChatKit sessions and routines use `team` ownership; private sessions and routines use `user_team`, retaining both the effective user and execution team. Every message, attachment, event, task, reply, and queued turn inherits its session.
+Use `https://api.trytilde.ai/mcp`. Call `tilde_whoami` first. Team ChatKit sessions, routines, and agents use `team` ownership; private resources use `user_team`, retaining both the effective owner and execution team. A private session may grant conversation access to selected team users. Every message, attachment, event, task, reply, and queued turn inherits its session audience.
+
+Agents, sessions, routines, signal providers, and signal rules have independent visibility and ownership modes. Visibility governs discovery, conversation/delivery reads, messaging, and realtime delivery. Ownership governs settings, membership, grants, target policy, and deletion. Ownership and administrator authority never imply visibility. Use the standard REST mode and user/group grant operations under the exact resource path published by OpenAPI.
 
 ## Build the endpoint first
 
@@ -13,6 +15,7 @@ Use Vercel AI SDK and Harness SDK `chatKitEndpoint`. Preserve webhook signature 
 Call `tilde_register_chatkit_agent` with:
 
 - `team_id`
+- optional `access_scope`: `team` (default) or `user_team`; private agent ownership is inferred from the effective caller
 - `display_name`
 - `endpoint_url`: an HTTPS URL in production, or an endpoint path such as `api/agent` for local development
 - `local_running_endpoint: true` for a Dev Tunnel endpoint
@@ -20,6 +23,16 @@ Call `tilde_register_chatkit_agent` with:
 - optional `memory_bank_ids` to ingest this agent's conversations continuously
 
 The create response returns the plaintext Tilde API key and webhook signing key once, plus `message_tool_provider_id`. Give both secrets to the human for secure storage in the agent's server environment. Never print them into source, state, logs, or chat history. The message provider is credentialless and already bound to the new agent.
+
+Team agent create, update, and delete events are broadcast to authenticated Mission Control connections for the team. Private agent lifecycle events are sent to current user or group visibility grantees.
+
+Realtime audiences are derived from current visibility and session membership on every event. A private visibility grant may admit an authorized user or group to the root, while private-session members receive that session's message and agent-turn stream. Client payloads do not expose authorization grants or internal audience identifiers.
+
+## Manage private session members
+
+Private sessions use `user_team` ownership. The creator is inserted as the owner automatically, and an optional `member_user_ids` list may add other users from the same team during creation. Use the private-session membership API to list, add, or remove non-owner members later. Do not confuse these authorization members with ChatKit inbox participants.
+
+Owners and team, organization, or system administrators manage membership. Members may list/read the session, send messages and attachments, and receive its Mission Control WebSocket message, streaming, task, and agent-turn events. Members cannot change ownership or manage other members. A grant stops authorizing new access when the user is removed from the execution team.
 
 ## Enable agent-to-agent messaging
 
@@ -47,6 +60,8 @@ Use the Vercel AI Endpoint provider when the user wants to test the agent in [Mi
 Signals turn provider events into ChatKit messages.
 
 Signal providers and rules may be personal `user` resources with no owning team. A personal rule must supply `target_team_id`, and the owner must belong to that team. It cannot bind a fixed shared session; sessions it creates are `user_team` sessions for the same owner. Personal webhook providers currently use polling ingress, while team providers may use webhook or polling ingress.
+
+Provider/rule visibility controls discovery and delivery reads. Ownership controls configuration, target/session policy, grants, state-changing retries, and deletion. Deliveries inherit their rule; do not grant individual delivery rows.
 
 1. Call `tilde_list_signal_providers` and inspect the selected provider's signal schemas and authentication requirements.
 2. Call `tilde_create_signal_provider` with the provider-specific `body`.

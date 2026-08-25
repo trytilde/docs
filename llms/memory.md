@@ -7,7 +7,9 @@ Tilde has two related knowledge resources:
 
 Use `https://api.trytilde.ai/mcp`. Call `tilde_whoami` first. Memory banks and wikis may be `team` or personal `user` resources; personal REST routes use `/api/v1/user/{user_id}/...` and do not carry a team ID.
 
-Children inherit the root's ownership. A personal target may consume a workspace source the caller can access, but a workspace target cannot bind a personal source. Do not copy a personal source into durable workspace projections.
+Both roots have independent visibility and ownership modes. Visibility is required for list/get/read and memory or wiki content operations. Ownership is required for bank configuration, source policy, wiki schema/settings, grants, lifecycle, and deletion. User/group ownership grants and administrator status do not imply visibility. Pages, revisions, assets, memories, source projections, and generated tools inherit the root planes.
+
+Use the standard REST `/{id}/visibility`, `/{id}/ownership`, and `/{id}/{plane}/grants` operations under the team or personal bank/wiki path. Private group grants must name a same-tenant Identity group. A personal target may consume a workspace source the caller can see, but a workspace target cannot bind a personal source. Do not copy a personal source into durable workspace projections.
 
 Memory-bank and wiki ownership can move between `user` and `team` through their dedicated `/ownership` operation. Detach and purge source bindings first. The API does not expose transfer to a different user.
 

@@ -24,8 +24,9 @@ These features are all exposed through cloud API’s that hide away the detail.
 
 - Organisation: The top-level domain object for grouping resources. Use orgs for ownership and billing.
 - Teams / workspaces: Teams are sometimes called workspaces. Team resources are shared with members of that workspace.
-- Personal resources: Configured tool accounts, MCP servers, skills, registries, signal providers and rules, memory banks, and wikis may be owned by an individual user without a team ID. ChatKit private sessions and routines use `user_team`, retaining both their owner and execution team. Child records inherit their root's ownership.
-- Administration: Owners have CRUDL and resource-administration rights. Team admins administer `team` and `user_team` resources; organization and system admins may also administer personal `user` resources. Inaccessible resources return not found and list queries filter them before returning rows.
+- Personal resources: Configured tool accounts, MCP servers, skills, registries, signal providers and rules, memory banks, and wikis may be owned by an individual user without a team ID. ChatKit private sessions, routines, and agents use `user_team`, retaining both their owner and execution team. Private sessions may grant conversation access to selected current team users; child records and realtime events inherit the session audience.
+- Authorization planes: Resource placement (`team`, `user`, or `user_team`) is separate from two independent modes. Visibility governs discover/list/get/read/use; ownership governs settings, membership, grants, lifecycle, and deletion. Each mode is `team` or `private`, and private grants target same-tenant Identity users or groups. Ownership and administrator authority never imply visibility.
+- Administration: Owners and administrators can manage the resources in their scope, but they need independent visibility to read private content. Children inherit their root's planes. Inaccessible resources return not found and list queries filter them before pagination.
 - Human users: Humans who sign in and user the paltform
 - Machine users: Often agents. When API keys are generated that are not tied to a human user, a machine user is provisioned, added to the relevant team and the API key associated to them.
 
@@ -79,6 +80,8 @@ Claiming transfers every team and supported resource from the temporary organiza
 4. Prefer OAuth when acting for a human. Use a team-scoped machine API key for a deployed agent.
 
 If a function returns `approval_url`, show it to the user. Then immediately call the returned `next_tool_name` with `next_tool_arguments` and wait for approval before continuing.
+
+For authorization-bearing REST resources, set one plane with `POST .../{resource_id}/visibility` or `/ownership` and `{ "mode": "team" | "private" }`. List or add grants at `.../{plane}/grants`; remove one at `.../{plane}/grants/{principal_type}/{principal_id}`. Grant bodies use `principal_type: user | group` and a same-tenant `principal_id`. Consult OpenAPI for each exact resource root. Database row-level security is deferred defense in depth; callers must rely on the authenticated API, not direct database access.
 
 
 ## Rules to follow then integrating

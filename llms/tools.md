@@ -4,6 +4,10 @@ Use `https://api.trytilde.ai/mcp`. Call `tilde_whoami`. Team operations target a
 
 Configured tool accounts and MCP servers support `team` or `user` ownership. Personal resources have no team ID. Runtime MCP servers use `user_tool_federation_mode: none | all | selected`, defaulting to `none`. Selected policies contain provider/tool-definition pairs only—not credentials, aliases, bound parameters, or user account IDs. At connection time Tilde authenticates and pins the effective user to the MCP session, then exposes the caller's active matching personal accounts under stable `user__<provider>__<account>__<tool>` names.
 
+Tool groups, proxied/custom providers, MCP server instances, resource-server credentials, and user credentials have independent visibility and ownership modes. For tool and MCP roots, visibility governs discovery and permitted use; ownership governs settings, mappings, grants, and deletion. Credential visibility governs redacted metadata discovery only. Credential ownership or an exact consuming-resource capability governs brokering, rotation, deletion, and secret material. Private user/group grants never cross the root organization or team. An ownership grant or administrator role does not grant visibility.
+
+Credential list/get responses never include plaintext or decrypted values. Secret material is available only to ownership-authorized configuration flows or an exact bound consuming-resource capability. Never ask Global MCP to display, export, or relay a stored credential.
+
 ## Recommended workflow
 
 1. Call `tilde_search_available_capabilities` with a specific intent such as `"GitHub pull request tools"`. Use `include_schemas: true` when you need provider or tool input details.
@@ -24,6 +28,8 @@ Do not confuse the global configuration MCP server with the runtime MCP server c
 Static MCP mappings may reference workspace configured tools only. Personal configured tools are federation-only.
 
 Ownership-change endpoints never accept a different target owner. Personal-to-team promotion requires membership in the target team; narrowing a team resource requires team-or-higher administration and targets the effective user. Remove static mappings before narrowing an MCP server.
+
+For REST automation, use the standard `/{resource_id}/visibility`, `/{resource_id}/ownership`, and `/{resource_id}/{plane}/grants` operations described in OpenAPI. Use `principal_type: group` to share with a tenant-scoped Identity group. Child definitions and mappings inherit their root; do not try to grant them separately.
 
 ## Add a registered agent as an MCP tool
 

@@ -4,6 +4,37 @@ Tilde supports anonymous, agent-first registration followed by an optional human
 
 This flow issues an API key directly. It is not an OAuth identity-assertion or token-exchange flow.
 
+## Resource visibility and ownership
+
+Tilde authorization-bearing resources have two independent access planes:
+
+- **Visibility** controls discovery, listing, reading, and using the resource or its inherited content.
+- **Ownership** controls settings, membership, lifecycle operations, deletion, and grant management.
+
+Each plane is either `team` or `private`. For a team-scoped resource, `team` admits current members of that team. For a personal resource without a team ID, it admits current members of the containing organization. `private` admits only explicitly granted Identity users and groups from the same tenant.
+
+Visibility and ownership never imply one another. An administrator or ownership grantee can manage a private resource without being able to read its content unless the visibility plane also admits them. Lists are filtered before pagination, and direct reads return not found or authorization errors when visibility is absent.
+
+New private resources retain an effective-creator grant. Tilde commits validated initial grants with the resource and prevents removal of the last private ownership grant. Group access follows current Identity membership, so removing a user from the group or tenant stops authorizing future requests.
+
+### Standard authorization operations
+
+Authorization-bearing REST roots use the same operation family under their team or personal resource path:
+
+```text
+POST   /{resource_id}/visibility             { "mode": "team" | "private" }
+POST   /{resource_id}/ownership              { "mode": "team" | "private" }
+GET    /{resource_id}/{plane}/grants
+POST   /{resource_id}/{plane}/grants         { "principal_type": "user" | "group", "principal_id": "..." }
+DELETE /{resource_id}/{plane}/grants/{principal_type}/{principal_id}
+```
+
+The exact root path is published in the [OpenAPI specification](https://trytilde.ai/openapi.json). Grant listing and mutation require ownership access. Re-adding or removing the same grant is idempotent, subject to the last-private-owner guard.
+
+<Info>
+  These checks are enforced by the authenticated API and tenant-scoped persistence queries. Database row-level security is planned as an additional defense-in-depth layer; it is not currently the public authorization boundary.
+</Info>
+
 ## Register anonymously
 
 Send an unauthenticated request to:
