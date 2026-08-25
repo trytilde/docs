@@ -114,6 +114,7 @@ Use Tilde's global MCP server at `https://api.trytilde.ai/mcp` to configure runt
 - [Skills and registries over Global MCP](https://trytilde.ai/docs/llms/skills.md)
 - [Local development with Dev Tunnels](https://trytilde.ai/docs/llms/dev-tunnels.md)
 - [State export and import over Global MCP](https://trytilde.ai/docs/llms/state.md)
+- [Hosted OpenBot provisioning](https://trytilde.ai/docs/llms/openbot.md)
 
 These files are optimized for AI agents. The [human documentation](https://trytilde.ai/docs) explains the same products through the dashboard and SDK.
 
