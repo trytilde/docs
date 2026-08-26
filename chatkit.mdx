@@ -12,6 +12,18 @@ ChatKit connects an agent endpoint to the places where work begins. It stores se
 
 Configure chat providers for conversations from Slack, GitHub, and other supported channels. Use signals when an external event should start or continue a session without first arriving as a chat message.
 
+ChatKit sessions, routines, and agents are either shared `team` resources or private `user_team` resources. A private resource remains in its execution team and has one owner. Private sessions may also include selected team users as conversation members: members can see the session, read its history, send messages, and receive its live events, while the owner and team, organization, or system administrators manage membership and session administration. Messages, attachments, events, tasks, replies, and turn queues inherit the session's audience.
+
+Agents, sessions, and routines also expose independent visibility and ownership modes. Visibility controls discovery, history, messaging, and the realtime audience. Ownership controls settings, membership, grants, and deletion. Private user/group grants are tenant-scoped, and ownership or administrator authority alone does not reveal a private conversation. Session membership remains the conversation-specific way to admit additional team users.
+
+Session members are Tilde authorization principals, not ChatKit delivery participants. Adding an agent, Slack channel, or other inbox participant determines where messages flow; adding a Tilde user as a session member determines who may open the private conversation. Removing a member revokes subsequent history and event access, and leaving the execution team invalidates the grant.
+
+Each Mission Control WebSocket retains its authenticated effective user and current Identity groups. Team agent lifecycle changes are sent to every connected team member. Private agent lifecycle changes are sent to users and groups admitted by its visibility plane. Private-session message, streaming, task, and agent-turn events use the session's current visibility grants and conversation membership. Internal audience identifiers are not included in client event payloads.
+
+Signal provider instances and rules may also be personal. A personal rule names the team where its agent action runs. Sessions created by that rule are `user_team` sessions for the same owner, preventing the rule from turning personal activity into a team-visible conversation.
+
+Signal providers and rules use the same two planes. Visibility controls discovery and delivery inspection; ownership controls configuration, target/session policy, grants, state-changing retries, and deletion. Deliveries and sessions inherit the rule and target authorization rather than defining independent grants.
+
 ## Set up ChatKit
 
 <Steps>
@@ -62,7 +74,7 @@ Configure chat providers for conversations from Slack, GitHub, and other support
   </Step>
 
   <Step title="Register the agent">
-    Open Tilde, select your workspace, and go to **ChatKit** → **Agents**. Register the endpoint and copy the one-time API key and webhook signing key into your app's environment.
+    Open Tilde, select your workspace, and go to **ChatKit** → **Agents**. Choose **Team** when every team member should discover the agent, or **Private** when discovery and lifecycle updates should be limited to its visibility grantees. Register the endpoint and copy the one-time API key and webhook signing key into your app's environment.
 
     For local development, enable **Local running endpoint** and run the app through a [Dev Tunnel](/dev-tunnels). For production, enter the deployed HTTPS endpoint.
 
@@ -77,6 +89,8 @@ Configure chat providers for conversations from Slack, GitHub, and other support
 ### Test your agent in Mission Control
 
 Use [Mission Control](https://api.trytilde.ai/mission-control) to invoke your agent directly and test conversations. Select the correct workspace and agent, then start a session and send a message.
+
+When creating a private session, the creator becomes its owner automatically. The create request may include additional team user IDs, and the session membership endpoints can list, add, or remove non-owner members afterward. Members receive the same live message and agent-turn stream for that session; they do not gain permission to change ownership or manage other members.
 
 <Info>
   Mission Control requires the **Vercel AI Endpoint** ChatKit provider to be enabled for your agent.

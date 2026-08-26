@@ -38,7 +38,9 @@ sed -n '1,160p' /tmp/analyze.py
 python3 /tmp/analyze.py
 ```
 
-Use `https://api.trytilde.ai/mcp`. Call `tilde_whoami`, select a workspace, and pass its `team_id` to every function below.
+Use `https://api.trytilde.ai/mcp`. Call `tilde_whoami` first. Skills and registries may be `team` or personal `user` resources; personal REST routes use `/api/v1/user/{user_id}/...` and have no team ID. Packages and registry memberships inherit their root owner, and a team registry cannot include a personal skill.
+
+Skills and registries each have independent visibility and ownership modes. Visibility governs list/get/search, package files, descriptions, and full skill reads. Ownership governs root settings, registry membership selection, mode/grant management, lifecycle, and deletion. An ownership grant or administrator role never supplies visibility. Use same-tenant user/group grants through the standard REST `/{id}/{plane}/grants` family; packages and registry-bound discovery tools inherit their root planes.
 
 ## Create a registry from team-owned skills
 

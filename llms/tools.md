@@ -1,6 +1,24 @@
 # Configure tools over Tilde Global MCP
 
-Use `https://api.trytilde.ai/mcp`. Call `tilde_whoami`, select a workspace, and pass its `team_id` to every function below.
+Use `https://api.trytilde.ai/mcp`. Call `tilde_whoami`. Team operations target a workspace; personal REST operations use `/api/v1/user/{user_id}/...` and infer the effective user for ordinary creates.
+
+Configured tool accounts and MCP servers support `team` or `user` ownership. Personal resources have no team ID. Runtime MCP servers use `user_tool_federation_mode: none | all | selected`, defaulting to `none`. Selected policies contain provider/tool-definition pairs only—not credentials, aliases, bound parameters, or user account IDs. At connection time Tilde authenticates and pins the effective user to the MCP session, then exposes the caller's active matching personal accounts under stable `user__<provider>__<account>__<tool>` names.
+
+Tool groups, proxied/custom providers, MCP server instances, resource-server credentials, and user credentials have independent visibility and ownership modes. For tool and MCP roots, visibility governs discovery and permitted use; ownership governs settings, mappings, grants, and deletion. Credential visibility governs redacted metadata discovery only. Credential ownership or an exact consuming-resource capability governs brokering, rotation, deletion, and secret material. Private user/group grants never cross the root organization or team. An ownership grant or administrator role does not grant visibility.
+
+Credential list/get responses never include plaintext or decrypted values. Secret material is available only to ownership-authorized configuration flows or an exact bound consuming-resource capability. Never ask Global MCP to display, export, or relay a stored credential.
+
+Common-provider installations are live policy parents for the MCP tool group,
+ChatKit provider, signal provider, and reverse-proxy profiles generated from one
+provider setup. Their initial modes and grants come from the source
+resource-server credential, but later policy changes are made only through the
+installation's standard visibility/ownership APIs. Bound children cannot widen
+the parent. Credential rotation and secret administration remain separate.
+
+Cross-root use is an intersection: MCP invocation requires visibility of both
+the server and tool group (or its installation parent). Reverse-proxy invocation
+requires profile visibility and uses an internal exact credential-consumption
+capability; it does not require or confer credential ownership.
 
 ## Recommended workflow
 
@@ -18,6 +36,12 @@ Use `https://api.trytilde.ai/mcp`. Call `tilde_whoami`, select a workspace, and 
 8. Call `tilde_search_enabled_capabilities` again, filtered by `mcp_server_instance_id`, to verify the final mapping.
 
 Do not confuse the global configuration MCP server with the runtime MCP server created in step 5.
+
+Static MCP mappings may reference workspace configured tools only. Personal configured tools are federation-only.
+
+Ownership-change endpoints never accept a different target owner. Personal-to-team promotion requires membership in the target team; narrowing a team resource requires team-or-higher administration and targets the effective user. Remove static mappings before narrowing an MCP server.
+
+For REST automation, use the standard `/{resource_id}/visibility`, `/{resource_id}/ownership`, and `/{resource_id}/{plane}/grants` operations described in OpenAPI. Use `principal_type: group` to share with a tenant-scoped Identity group. Child definitions and mappings inherit their root; do not try to grant them separately.
 
 ## Add a registered agent as an MCP tool
 

@@ -6,6 +6,10 @@ icon: "book-open"
 
 A skill is a focused set of instructions for a job. A skill registry groups related skills so an agent can discover short summaries first and load the full instructions only when needed.
 
+Skills and registries can be workspace-owned or personal. Each has independent visibility and ownership modes. Visibility controls discovery, package inspection, and reading skill content. Ownership controls root settings, registry membership, grants, and deletion. Set a plane to **Private** and grant a same-tenant Identity user or group when sharing should be narrower than the workspace.
+
+Ownership and administrator access do not imply visibility. Packages inherit their skill, while registry discovery tools and membership views inherit the registry. A personal registry may include personal skills owned by that same user, while a workspace registry cannot widen access by including a personal skill.
+
 Tilde synchronizes trusted upstream skill providers from official GitHub repositories. The built-in sources include Cursor's first-party plugins and canvases, Notion, Granola, Parallel, Superpowers, Browserbase, Apollo, Zoom, Stripe, Neon, Vercel, AWS, Anthropic, Microsoft, Cloudflare, and YC Software QM's portable general-purpose design skills where those projects publish valid `SKILL.md` files. Monorepo sources are path-scoped so unrelated third-party plugins and QM runtime-specific skills are not imported.
 
 Each synchronization is tied to an upstream commit. Tilde stores the complete bounded skill package, not only `SKILL.md`: package-local references, templates, scripts, examples, and media are retained with their relative paths and media types. Unsafe paths and symbolic links are rejected, and a partial upstream fetch never replaces the previous successful snapshot. Skills removed or renamed upstream are removed from the provider catalog on the next complete sync, while team-owned copies and registry membership remain explicit Tilde resources.
