@@ -55,6 +55,18 @@ Bound tenant, target-agent, and ingress-channel fields are supplied by Tilde and
 
 Use the Vercel AI Endpoint provider when the user wants to test the agent in [Mission Control](https://api.trytilde.ai/mission-control).
 
+## Search ChatKit conversations
+
+Use `GET /api/v1/team/{team_id}/chatkit/mission-control/search` with the selected workspace's `team_id` and a required `q` parameter. Authenticate with the same API key or bearer token used for Mission Control.
+
+- Omit `session_id` to search visible session titles, visible agent IDs and display names, and message bodies across the workspace. Private resources require a matching visibility grant.
+- Pass `session_id` to search messages only inside that session.
+- Set `page_size` from 1 to 100. The default is 25.
+- Pass the returned opaque `next_page_token` unchanged to fetch the next relevance-ordered page.
+- Inspect each result's `kind`: `session_title`, `agent`, or `message`. Every result carries session context; agent and message details appear only for their matching kinds.
+
+Queries must contain 1 to 256 non-whitespace characters. Search is case-insensitive full-text matching, not fuzzy or substring matching. A session scope that is hidden from the caller or outside the selected organization and workspace returns `404` without revealing whether it exists elsewhere.
+
 ## Trigger work with Signals
 
 Signals turn provider events into ChatKit messages.
