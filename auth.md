@@ -52,6 +52,21 @@ action, and encryption scope after domain authorization.
   These checks are enforced by the authenticated API and tenant-scoped persistence queries. Database row-level security is planned as an additional defense-in-depth layer; it is not currently the public authorization boundary.
 </Info>
 
+## Profile avatars
+
+Human and machine-user profiles store one avatar source at a time:
+
+- `type: "image"` contains metadata for an uploaded PNG, JPEG, or WebP object.
+- `type: "icon"` contains the versioned `shape`, `eyes`, `shade`, and `background` IDs used to compose an animated avatar.
+
+Icon IDs come from the public catalog at
+[`https://trytilde.ai/avatar-assets/v1/manifest.json`](https://trytilde.ai/avatar-assets/v1/manifest.json).
+Persist the descriptor, not copied asset bytes or arbitrary URLs. Selecting an
+icon replaces the uploaded image metadata atomically, and uploading an image
+replaces the icon descriptor. Avatar reads and updates inherit the containing
+user or agent profile's existing authorization checks; the asset catalog itself
+is public and contains no user data.
+
 ## Register anonymously
 
 Send an unauthenticated request to:

@@ -23,15 +23,16 @@ For custom deployed agents, compare the state file and implementation with the [
 ## Import
 
 1. Read the complete state file as text.
-2. Call `tilde_validate_state` with `state`, `format: "yaml"`, and any declared string `variables`. Stop if `valid` is false.
-3. Call `tilde_plan_state_import` with the identical state, format, and variables.
-4. Show the plan to the user. Do not apply conflicts, destructive changes, or unexpected replacements without approval.
-5. Call `tilde_import_state` only after the plan is approved.
-6. Poll `tilde_get_state_import` with the returned `import_id` until the status is `applied`, `failed`, or `rolled_back`.
-7. Capture generated outputs the first time an applied result returns them. Applied outputs are one-time secrets and are cleared from later summary reads.
-8. Save any one-time OAuth authorization URL returned in the import outputs and send it to the user immediately.
-9. Tell the user to complete any remaining pending credential setup in Tilde.
+2. Inspect each resource's `ownership`. For every `user` or `user_team` owner, build one `owner_mappings` object whose keys are source user IDs from the state and whose values are destination Tilde user IDs, for example `{ "source-user-id": "destination-user-id" }`. An empty object is valid only when the state has no user-owned resources.
+3. Call `tilde_validate_state` with `state`, `format: "yaml"`, any declared string `variables`, and that `owner_mappings` object. Stop if `valid` is false.
+4. Call `tilde_plan_state_import` with the identical `state`, `format`, `variables`, and `owner_mappings` fields.
+5. Show the plan to the user. Do not apply conflicts, destructive changes, or unexpected replacements without approval.
+6. Call `tilde_import_state` only after the plan is approved, again passing the same `owner_mappings` object beside `state`, `format`, and `variables`.
+7. Poll `tilde_get_state_import` with the returned `import_id` until the status is `applied`, `failed`, or `rolled_back`.
+8. Capture generated outputs the first time an applied result returns them. Applied outputs are one-time secrets and are cleared from later summary reads.
+9. Save any one-time OAuth authorization URL returned in the import outputs and send it to the user immediately.
+10. Tell the user to complete any remaining pending credential setup in Tilde.
 
-Never call import as a substitute for plan. Use the same exact state and variables for validation, planning, and application.
+Never call import as a substitute for plan. Use the same exact state, variables, and owner mappings for validation, planning, and application.
 
 See the [human portable state guide](https://trytilde.ai/docs/terraform) for dashboard, CLI, multi-environment, and Deploy with Tilde workflows.
