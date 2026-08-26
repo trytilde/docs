@@ -31,6 +31,23 @@ DELETE /{resource_id}/{plane}/grants/{principal_type}/{principal_id}
 
 The exact root path is published in the [OpenAPI specification](https://trytilde.ai/openapi.json). Grant listing and mutation require ownership access. Re-adding or removing the same grant is idempotent, subject to the last-private-owner guard.
 
+Common-provider installations are authorization roots for provider bundles.
+Their policy is initialized from the source resource-server credential, then
+becomes the live policy inherited by the generated MCP, ChatKit, Signals, and
+reverse-proxy surfaces. Change a bound surface's visibility, ownership, or
+grants through the installation endpoints; sibling surfaces do not copy policy
+from one another.
+
+Operations spanning independent roots require every applicable visibility
+check. For example, an MCP invocation requires both server and tool visibility,
+a signal delivery requires provider and rule visibility, and chat content
+requires the provider or agent plus session visibility.
+
+Billing entitlements and encryption key records are infrastructure, not
+shareable roots, so they do not expose these mode/grant operations. Resource
+secret use receives a server-only capability bound to the exact resource,
+action, and encryption scope after domain authorization.
+
 <Info>
   These checks are enforced by the authenticated API and tenant-scoped persistence queries. Database row-level security is planned as an additional defense-in-depth layer; it is not currently the public authorization boundary.
 </Info>

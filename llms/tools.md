@@ -8,6 +8,18 @@ Tool groups, proxied/custom providers, MCP server instances, resource-server cre
 
 Credential list/get responses never include plaintext or decrypted values. Secret material is available only to ownership-authorized configuration flows or an exact bound consuming-resource capability. Never ask Global MCP to display, export, or relay a stored credential.
 
+Common-provider installations are live policy parents for the MCP tool group,
+ChatKit provider, signal provider, and reverse-proxy profiles generated from one
+provider setup. Their initial modes and grants come from the source
+resource-server credential, but later policy changes are made only through the
+installation's standard visibility/ownership APIs. Bound children cannot widen
+the parent. Credential rotation and secret administration remain separate.
+
+Cross-root use is an intersection: MCP invocation requires visibility of both
+the server and tool group (or its installation parent). Reverse-proxy invocation
+requires profile visibility and uses an internal exact credential-consumption
+capability; it does not require or confer credential ownership.
+
 ## Recommended workflow
 
 1. Call `tilde_search_available_capabilities` with a specific intent such as `"GitHub pull request tools"`. Use `include_schemas: true` when you need provider or tool input details.

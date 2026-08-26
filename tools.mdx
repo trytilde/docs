@@ -30,6 +30,18 @@ Credential visibility exposes only redacted metadata needed for discovery. It ne
 
 Definitions, configured tools, and runtime mappings inherit their owning tool or MCP root. A shared MCP server resolves caller-specific personal federation after authentication, so one user's accounts and credentials cannot appear in another user's catalog.
 
+When Tilde provisions several surfaces for one common provider, the
+common-provider installation is their policy root. Its live visibility and
+ownership policy applies to the generated tool group, ChatKit provider, signal
+provider, and reverse-proxy profiles. Manage the policy at
+`/api/v1/team/{team_id}/credential/common-provider-installation/{id}`; a bound
+child cannot widen it independently. Credential secret administration remains
+separate from provider-bundle visibility.
+
+MCP authorization is intersected at execution time: visibility of an MCP
+server does not by itself authorize a private tool group, and visibility of a
+tool group does not authorize connection through a private server.
+
 [Enable off-the-shelf tool providers](/tool-providers), add custom tools, or proxy upstream APIs. Group them in an MCP server, then connect your agent with the Harness SDK.
 
 <Steps>
@@ -217,6 +229,13 @@ Local tools execute in the agent process. Their credentials and other sensitive 
 ## Reverse proxy
 
 Use a reverse proxy when your application or a third-party SDK needs the provider's native API instead of an MCP tool. Tilde injects the credential attached to the reverse-proxy profile, so the upstream credential does not need to enter your agent's environment.
+
+Reverse-proxy profiles have independent visibility and ownership. Visibility
+controls discovery and proxy invocation. Ownership controls the upstream URL,
+credential bindings, injected headers, enabled state, grants, and deletion.
+Seeing or invoking a profile never grants access to the credential's metadata,
+secret, or settings; the proxy receives only an exact internal consumption
+capability after profile authorization.
 
 The [code review bot](https://github.com/trytilde/examples/tree/main/code-review-bot) uses this pattern to clone repositories through a GitHub Git HTTPS profile and connect to Modal through a gRPC profile.
 
