@@ -98,7 +98,7 @@ When creating a private session, the creator becomes its owner automatically. Th
 
 ### Search conversations
 
-Use consolidated ChatKit search to find session titles, agents participating in sessions, and message content across a workspace. Results include the session context needed to open the matching conversation.
+Use consolidated ChatKit search to find session titles, agents participating in sessions, and message content that you can view in a workspace. Results include the session context needed to open the matching conversation.
 
 ```bash
 curl --get \
@@ -110,7 +110,7 @@ curl --get \
 
 Each result has a `kind` of `session_title`, `agent`, or `message`. Message results include the canonical ChatKit message. Use the opaque `next_page_token` to continue in relevance order.
 
-To search messages inside one conversation, add its `session_id`. Session-scoped search returns message results only and returns `404` if the session does not belong to the selected workspace.
+To search messages inside one conversation, add its `session_id`. Session-scoped search returns message results only and returns `404` if the session is not visible to you or does not belong to the selected workspace.
 
 ```bash
 curl --get \
