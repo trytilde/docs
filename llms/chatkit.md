@@ -30,17 +30,19 @@ The create response returns the plaintext Tilde API key and webhook signing key 
 
 Use the Vercel AI Endpoint provider when the user wants to test the agent in [Mission Control](https://api.trytilde.ai/mission-control).
 
-## Trigger work with Signals
+## Trigger work with Routines and Signals
 
-Signals turn provider events into ChatKit messages.
+Routines unify scheduled and provider-event automation. Signals still owns provider setup, normalized deliveries, deduplication, inspection, and retry.
 
 1. Call `tilde_list_signal_providers` and inspect the selected provider's signal schemas and authentication requirements.
 2. Call `tilde_create_signal_provider` with the provider-specific `body`.
-3. Call `tilde_create_signal_rule` with a `body` that selects the event type, target agent, action, and stable session-key mapping.
+3. Call `tilde_create_routine` with a `body` containing shared fields and one to eight triggers. For an event trigger include `kind: "event"`, `signal_provider_instance_id`, `signal_type`, `filter`, `session_policy`, `action`, and `instruction_policy`. For a schedule trigger include `kind: "schedule"` and a UTC `schedule` cron expression.
 4. Use one stable session key when related events should continue the same body of work, such as all updates to one Sentry issue or GitHub pull request.
 5. Call `tilde_trigger_fake_signal` to test routing where the provider supports it.
 6. Inspect execution with `tilde_list_signal_deliveries`. Use `tilde_retry_signal_delivery` only for a failed delivery that is safe to repeat.
 
-Use `tilde_list_signal_provider_instances` and `tilde_list_signal_rules` before updating or deleting resources. Their mutation functions are `tilde_update_signal_provider`, `tilde_delete_signal_provider`, `tilde_update_signal_rule`, and `tilde_delete_signal_rule`.
+Use `tilde_list_signal_provider_instances` and `tilde_list_routines` before updating or deleting resources. Provider mutations are `tilde_update_signal_provider` and `tilde_delete_signal_provider`. Routine mutations are `tilde_update_routine` and `tilde_delete_routine`; pass the current `version` as `expected_version` when replacing triggers.
+
+Use `enabled` on the Routine as a global override and `enabled` on each trigger for individual control. Event triggers preserve fixed-session, keyed-session, and new-session-per-delivery policies plus both agent-invocation and message-only actions. Use `signal_and_instruction` when the shared Routine instruction must be delivered beside the normalized signal; use `signal_only` to preserve signal-only execution.
 
 In application code, handle typed GitHub, Slack, Sentry, and Firecrawl metadata as shown in the [human ChatKit guide](https://trytilde.ai/docs/chatkit). `onUnprocessed` runs once per unprocessed message; later conversions reuse its cached result.

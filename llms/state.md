@@ -1,6 +1,6 @@
 # Export and import Tilde state over Global MCP
 
-Tilde resource state is portable even though Tilde does not require Terraform. Keep `tilde.state.yaml` beside a custom agent so another workspace can reproduce its agents, ChatKit providers, tools, MCP servers, skills, wikis, memory bindings, reverse proxies, and relationships.
+Tilde resource state is portable even though Tilde does not require Terraform. Keep `tilde.state.yaml` beside a custom agent so another workspace can reproduce its agents, ChatKit providers, unified Routines and their triggers, tools, MCP servers, skills, wikis, memory bindings, reverse proxies, and relationships.
 
 State does not contain API keys, signing keys, provider credentials, conversation history, or memory content.
 

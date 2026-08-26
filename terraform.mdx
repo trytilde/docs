@@ -7,7 +7,7 @@ Well, not exactly. Tilde does not require a Terraform provider, but all Tilde re
 
 ## The `tilde.state.yaml` file
 
-`tilde.state.yaml` describes the desired configuration for resources in a workspace. It can include ChatKit agents and providers, MCP servers, tool providers, skill registries, wikis, memory-bank bindings, reverse proxies, and their relationships.
+`tilde.state.yaml` describes the desired configuration for resources in a workspace. It can include ChatKit agents, providers, unified Routines with schedule and event triggers, MCP servers, tool providers, skill registries, wikis, memory-bank bindings, reverse proxies, and their relationships.
 
 State files can declare variables for values that change between environments, such as an agent endpoint URL. They do not contain API keys, signing keys, third-party credentials, conversation history, or other runtime content. An import returns generated values separately and leaves credential-backed resources pending until you connect the corresponding accounts.
 
