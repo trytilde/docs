@@ -8,6 +8,10 @@ Agents, sessions, routines, signal providers, and signal rules have independent 
 
 Start from the [Hello World agent](https://github.com/trytilde/examples/tree/main/hello-world-agent). For a provider-rich implementation, use the [code review bot](https://github.com/trytilde/examples/tree/main/code-review-bot). Browse the full [examples repository](https://github.com/trytilde/examples) before creating a new pattern.
 
+For Linq, create one common-provider installation from either ChatKit or Tools. Obtain the Partner API token from `https://dashboard.linqapp.com/api-tooling`; Tilde then provisions ChatKit, tools, Signals, and Reverse Proxy together and creates the signed Linq webhook subscription automatically. Do not ask the user to create a second webhook for the managed path. Use `/guides/linq` for phone-line scoping and the standalone Signals fallback.
+
+In `@trytilde/sdk-vercel-ai-node`, use `context.linq` / `LinqChatKitMessageMetadata` for inbound Linq ChatKit metadata and `LinqSignalByType["linq.message.received"]` (or another `LinqSignalType`) for event-narrowed Signal handlers under `onUnprocessed.linq`.
+
 Use Vercel AI SDK and Harness SDK `chatKitEndpoint`. Preserve webhook signature verification, `context.session.history()`, `convertToAiSdkMessages`, streaming, and server-side secrets.
 
 ## Register an agent

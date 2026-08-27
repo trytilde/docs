@@ -1,0 +1,115 @@
+---
+title: "Linq tools for AI agents"
+sidebarTitle: "Linq"
+description: "Explore 23 Linq tools for AI agents in Tilde, including supported authentication and MCP capabilities."
+keywords:
+  - "Linq AI tools"
+  - "Linq MCP integration"
+  - "Linq tools for AI agents"
+  - "Tilde tool providers"
+  - "MCP tools"
+"og:title": "Linq tools for AI agents | Tilde"
+"og:description": "Explore 23 Linq tools for AI agents in Tilde, including supported authentication and MCP capabilities."
+mode: "wide"
+---
+
+import {
+  PUBLIC_CATALOG_URL,
+  iconAliases,
+  iconUrl,
+  providerFromApi,
+  ProviderLogo,
+  ToolProviderDetail,
+} from "/snippets/tool-provider-browser.jsx";
+
+export const provider = {
+  "name": "Linq",
+  "slug": "linq",
+  "initials": "LI",
+  "category": "Chat",
+  "summary": "Send and manage Linq iMessage, RCS, and SMS conversations, reactions, polls, phone lines, contact cards, capabilities, block lists, and webhook subscriptions through the Partner API V3.",
+  "auth": [
+    "Linq API token"
+  ],
+  "iconSources": [],
+  "toolCount": 23,
+  "tools": [
+    [
+      "Send a Linq message",
+      "Send to recipients without choosing a from line. This is the recommended Linq path because it reuses healthy chats and load-balances/fails over across the account's line pool."
+    ],
+    [
+      "Send to an existing Linq chat",
+      "Send a message in an existing Linq chat after checking its current health status. A 2024 opt-out response is terminal and must not be retried."
+    ],
+    [
+      "List Linq chats",
+      "Call the corresponding Linq Partner API V3 operation using the managed account credential."
+    ],
+    [
+      "Get a Linq chat",
+      "Call the corresponding Linq Partner API V3 operation using the managed account credential."
+    ],
+    [
+      "List messages in a Linq chat",
+      "Call the corresponding Linq Partner API V3 operation using the managed account credential."
+    ],
+    [
+      "Get a Linq message",
+      "Call the corresponding Linq Partner API V3 operation using the managed account credential."
+    ],
+    [
+      "Edit a Linq message",
+      "Call the corresponding Linq Partner API V3 operation using the managed account credential."
+    ],
+    [
+      "Delete a Linq message",
+      "Call the corresponding Linq Partner API V3 operation using the managed account credential."
+    ],
+    [
+      "Add or remove a Linq reaction",
+      "Call the corresponding Linq Partner API V3 operation using the managed account credential."
+    ],
+    [
+      "Create a Linq poll",
+      "Call the corresponding Linq Partner API V3 operation using the managed account credential."
+    ],
+    [
+      "Get a Linq poll",
+      "Call the corresponding Linq Partner API V3 operation using the managed account credential."
+    ],
+    [
+      "Toggle a Linq poll vote",
+      "Call the corresponding Linq Partner API V3 operation using the managed account credential."
+    ]
+  ]
+};
+
+{/* GENERATED: scripts/generate-tool-provider-pages.mjs */}
+
+Send and manage Linq iMessage, RCS, and SMS conversations, reactions, polls, phone lines, contact cards, capabilities, block lists, and webhook subscriptions through the Partner API V3.
+
+Tilde exposes **23 Linq tools** for AI agents through MCP. Connect with Linq API token.
+
+<ToolProviderDetail provider={provider} ProviderLogo={ProviderLogo} />
+
+## Popular Linq tools
+
+- **Send a Linq message** — Send to recipients without choosing a from line. This is the recommended Linq path because it reuses healthy chats and load-balances/fails over across the account's line pool.
+- **Send to an existing Linq chat** — Send a message in an existing Linq chat after checking its current health status. A 2024 opt-out response is terminal and must not be retried.
+- **List Linq chats** — Call the corresponding Linq Partner API V3 operation using the managed account credential.
+- **Get a Linq chat** — Call the corresponding Linq Partner API V3 operation using the managed account credential.
+- **List messages in a Linq chat** — Call the corresponding Linq Partner API V3 operation using the managed account credential.
+- **Get a Linq message** — Call the corresponding Linq Partner API V3 operation using the managed account credential.
+- **Edit a Linq message** — Call the corresponding Linq Partner API V3 operation using the managed account credential.
+- **Delete a Linq message** — Call the corresponding Linq Partner API V3 operation using the managed account credential.
+- **Add or remove a Linq reaction** — Call the corresponding Linq Partner API V3 operation using the managed account credential.
+- **Create a Linq poll** — Call the corresponding Linq Partner API V3 operation using the managed account credential.
+- **Get a Linq poll** — Call the corresponding Linq Partner API V3 operation using the managed account credential.
+- **Toggle a Linq poll vote** — Call the corresponding Linq Partner API V3 operation using the managed account credential.
+
+## Connect Linq to an AI agent
+
+Add Linq from the [Tilde dashboard](https://api.trytilde.ai/tools/available-tool-providers), then enable the tools your agent needs on an MCP server. [Learn how tools work in Tilde](/tools).
+
+[Browse every Tilde tool provider](/tool-providers/index) or [compare Tilde-managed and self-managed authentication](/tool-providers/managed-auth).

@@ -65,6 +65,12 @@ Add the button to a project's `README.md` when its repository contains a `tilde.
 
 Clicking the button opens Tilde, asks the user to select a workspace, reads the state file from GitHub, collects its variables, and shows the import plan before creating resources.
 
+Common-provider integrations are exported as one installation plus a pending
+credential setup reference. For example, importing Linq restores the desired
+Tool, ChatKit, Signals, and Reverse Proxy bundle without exporting its API token
+or webhook signing secret. Reconnect the Linq credential once after import to
+materialize every generated surface.
+
 Use this Markdown and replace both query parameters with your repository and state-file path:
 
 ```markdown README.md

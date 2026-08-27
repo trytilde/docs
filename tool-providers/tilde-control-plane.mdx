@@ -1,7 +1,7 @@
 ---
 title: "Tilde Control Plane tools for AI agents"
 sidebarTitle: "Tilde Control Plane"
-description: "Explore 79 Tilde Control Plane tools for AI agents in Tilde, including supported authentication and MCP capabilities."
+description: "Explore 80 Tilde Control Plane tools for AI agents in Tilde, including supported authentication and MCP capabilities."
 keywords:
   - "Tilde Control Plane AI tools"
   - "Tilde Control Plane MCP integration"
@@ -9,7 +9,7 @@ keywords:
   - "Tilde tool providers"
   - "MCP tools"
 "og:title": "Tilde Control Plane tools for AI agents | Tilde"
-"og:description": "Explore 79 Tilde Control Plane tools for AI agents in Tilde, including supported authentication and MCP capabilities."
+"og:description": "Explore 80 Tilde Control Plane tools for AI agents in Tilde, including supported authentication and MCP capabilities."
 mode: "wide"
 ---
 
@@ -32,7 +32,7 @@ export const provider = {
     "No Auth"
   ],
   "iconSources": [],
-  "toolCount": 79,
+  "toolCount": 80,
   "tools": [
     [
       "tilde_whoami",
@@ -49,6 +49,10 @@ export const provider = {
     [
       "tilde_set_toolkit_tool_enabled",
       "Enable or disable one tool inside a configured toolkit provider instance. This does not expose the tool on an MCP server; use tilde_set_mcp_server_tool_enabled for that mapping."
+    ],
+    [
+      "tilde_enable_and_bind_provider_tools",
+      "Enable every provider tool or an explicit selection, then bind the enabled tools to one or more Tilde MCP servers in one idempotent operation. Use all_tools instead of listing ids when every provider tool is required."
     ],
     [
       "tilde_connect_proxied_mcp_server",
@@ -77,10 +81,6 @@ export const provider = {
     [
       "tilde_configure_chatkit_provider",
       "Create a ChatKit provider/channel, or update the reconciled channel when an explicit id is supplied."
-    ],
-    [
-      "tilde_create_mcp_server",
-      "Create a Tilde MCP server instance for a team. This creates the server container that can expose enabled toolkit, proxied MCP, and custom backend functions."
     ]
   ]
 };
@@ -89,7 +89,7 @@ export const provider = {
 
 Authenticated team-scoped Tilde control-plane tools. Team context is inferred from the MCP server/tool instance; org and team administration tools are intentionally hidden.
 
-Tilde exposes **79 Tilde Control Plane tools** for AI agents through MCP. Connect with No Auth.
+Tilde exposes **80 Tilde Control Plane tools** for AI agents through MCP. Connect with No Auth.
 
 <ToolProviderDetail provider={provider} ProviderLogo={ProviderLogo} />
 
@@ -99,6 +99,7 @@ Tilde exposes **79 Tilde Control Plane tools** for AI agents through MCP. Connec
 - **tilde_enable_toolkit_provider** — Create or configure a toolkit provider instance for a team. Choose a credential_source_type_id from capability search results. When credentials are required, send approval_url to the user and immediately invoke the returned next_tool_name with next_tool_arguments; do not invoke provider tools until the wait completes.
 - **tilde_auto_provision_toolkit_provider** — Provision an upstream provider app and its toolkit provider instance. When browser setup is required, send approval_url to the user and immediately invoke the returned next_tool_name with next_tool_arguments. The wait resolves only after provider app setup and any required user credential brokering activate the provider.
 - **tilde_set_toolkit_tool_enabled** — Enable or disable one tool inside a configured toolkit provider instance. This does not expose the tool on an MCP server; use tilde_set_mcp_server_tool_enabled for that mapping.
+- **tilde_enable_and_bind_provider_tools** — Enable every provider tool or an explicit selection, then bind the enabled tools to one or more Tilde MCP servers in one idempotent operation. Use all_tools instead of listing ids when every provider tool is required.
 - **tilde_connect_proxied_mcp_server** — Connect an upstream MCP server as a Tilde toolkit provider. When credentials are required, send approval_url to the user and immediately invoke the returned next_tool_name with next_tool_arguments; discovery remains blocked until the wait completes.
 - **tilde_refresh_proxied_mcp_server** — Refresh discovery for an existing proxied MCP server after upstream tool changes and redeploy its discovered tools.
 - **tilde_register_custom_tool_backend** — Register a custom HTTP tool backend from a signed discovery manifest and deploy its tools immediately.
@@ -106,7 +107,6 @@ Tilde exposes **79 Tilde Control Plane tools** for AI agents through MCP. Connec
 - **tilde_generate_api_key** — Generate a Tilde API key for a team.
 - **tilde_register_chatkit_agent** — Register a Vercel AI SDK compatible HTTP ChatKit agent.
 - **tilde_configure_chatkit_provider** — Create a ChatKit provider/channel, or update the reconciled channel when an explicit id is supplied.
-- **tilde_create_mcp_server** — Create a Tilde MCP server instance for a team. This creates the server container that can expose enabled toolkit, proxied MCP, and custom backend functions.
 
 ## Connect Tilde Control Plane to an AI agent
 

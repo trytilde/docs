@@ -20,6 +20,8 @@ Use `https://api.trytilde.ai/mcp`. Call `tilde_whoami`, select a workspace, and 
 
 For custom deployed agents, compare the state file and implementation with the [Hello World agent](https://github.com/trytilde/examples/tree/main/hello-world-agent), the [code review bot](https://github.com/trytilde/examples/tree/main/code-review-bot), and the rest of the [examples repository](https://github.com/trytilde/examples).
 
+Common providers such as Linq export as one `common_provider/installation` root plus a `credential/setup_item`. Generated Tool, ChatKit, Signal, and Reverse Proxy resources are common-owned aliases, not independent installations. Never place API tokens, webhook subscription IDs, or signing secrets in state. After import, complete the pending credential once so reconciliation restores the whole bundle.
+
 ## Import
 
 1. Read the complete state file as text.
