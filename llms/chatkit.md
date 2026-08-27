@@ -47,7 +47,22 @@ Bound tenant, target-agent, and ingress-channel fields are supplied by Tilde and
 
 Delegation is authorized by a visibility check on the target agent. A caller that cannot see an agent cannot message it and must not be told it exists.
 
-Scope the runtime's MCP connection to the calling session by sending the `x-tilde-chatkit-session-id` header, or by passing `chatkit: { sessionId }` to `createMCPClient` in `@trytilde/sdk-vercel-ai-node`. Tilde then records the delegated conversation as a child of that session, so Mission Control can show the delegation tree. A header naming a session the caller may not use rejects the connection rather than silently dropping the scoped tools, and a personal MCP server cannot be session-scoped at all.
+## Delegate through a session-scoped connection
+
+Preferred over adding a per-agent provider. Scope the runtime's MCP connection to the calling session by sending the `x-tilde-chatkit-session-id` header, or by passing `chatkit: { sessionId }` to `createMCPClient` in `@trytilde/sdk-vercel-ai-node`. Tilde then offers four extra tools on that connection:
+
+| Tool | Purpose |
+| --- | --- |
+| `chatkit_list_agents` | Agents you may delegate to. Agents you cannot see are not returned. |
+| `chatkit_delegate` | Ask an agent to do something. Opens a private child conversation off the current session and returns a `ticket_id` and `session_id`. |
+| `chatkit_wait_for_response` | Wait for that ticket. Streams progress notifications and returns the final message. |
+| `chatkit_list_participants` | Who is in the current conversation, including external participants. |
+
+None of them accept `org_id`, `team_id`, or a session id: the session comes from the connection, so a session you were not authorized for cannot be addressed. Reuse the `session_id` returned by `chatkit_delegate` to continue the same delegation; omit it to start a new one.
+
+Delegation is recorded as a child of the connection's session, so Mission Control shows the two together. A header naming a session the caller may not use rejects the connection rather than silently dropping the scoped tools, and a personal MCP server cannot be session-scoped at all.
+
+Reaching a newly created agent needs no provisioning step; it appears in `chatkit_list_agents` as soon as you have visibility on it. The per-agent `chatkit_agent_message` provider still exists for a deliberately fixed direct line, but it is no longer created automatically.
 
 ## Identify who is speaking
 

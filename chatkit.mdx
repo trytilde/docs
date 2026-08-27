@@ -414,7 +414,9 @@ The former pairwise internal-agent chat provider is no longer used. Agent-to-age
 
 An agent may only message an agent it can see. Delegation runs the same visibility check the dashboard uses when it lists agents, so removing a visibility grant also removes the ability to delegate.
 
-When the calling runtime scopes its MCP connection to a ChatKit session, the delegated conversation is recorded as a child of that session and Mission Control shows the two together instead of as unrelated conversations.
+When the calling runtime scopes its MCP connection to a ChatKit session, Tilde offers that connection a small set of session tools — list the agents you may delegate to, delegate, wait for the reply, and see who is in the conversation. The delegated conversation is recorded as a child of the calling session, so Mission Control shows the two together instead of as unrelated conversations.
+
+This is the preferred way to let agents reach each other. It needs no setup per target agent: an agent becomes reachable as soon as the caller has visibility on it. The **Message agent** provider above remains for the case where you want a deliberately fixed, single direct line.
 
 ## Know who is in the conversation
 
