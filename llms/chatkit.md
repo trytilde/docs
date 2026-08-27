@@ -24,7 +24,7 @@ Call `tilde_register_chatkit_agent` with:
 
 The create response returns the plaintext Tilde API key and webhook signing key once, plus `message_tool_provider_id`. Give both secrets to the human for secure storage in the agent's server environment. Never print them into source, state, logs, or chat history. The message provider is credentialless and already bound to the new agent.
 
-Team agent create, update, and delete events are broadcast to authenticated Mission Control connections for the team. Private agent lifecycle events are sent to current user or group visibility grantees.
+Team agent create, update, and delete events are broadcast to authenticated ChatKit realtime connections for the team. Private agent lifecycle events are sent to current user or group visibility grantees.
 
 Realtime audiences are derived from current visibility and session membership on every event. A private visibility grant may admit an authorized user or group to the root, while private-session members receive that session's message and agent-turn stream. Client payloads do not expose authorization grants or internal audience identifiers.
 
@@ -32,7 +32,9 @@ Realtime audiences are derived from current visibility and session membership on
 
 Private sessions use `user_team` ownership. The creator is inserted as the owner automatically, and an optional `member_user_ids` list may add other users from the same team during creation. Use the private-session membership API to list, add, or remove non-owner members later. Do not confuse these authorization members with ChatKit inbox participants.
 
-Owners and team, organization, or system administrators manage membership. Members may list/read the session, send messages and attachments, and receive its Mission Control WebSocket message, streaming, task, and agent-turn events. Members cannot change ownership or manage other members. A grant stops authorizing new access when the user is removed from the execution team.
+Owners and team, organization, or system administrators manage membership. Members may list/read the session, send messages and attachments, and receive its ChatKit realtime message, delta, queue, turn, task, and error events. Members cannot change ownership or manage other members. A grant stops authorizing new access when the user is removed from the execution team.
+
+Realtime clients consume the closed `agent.*`, `session.*`, `message.*`, `queue_item.*`, `turn.*`, `activity.*`, `task.*`, and `chat.error` union. They must refresh the workspace projection after `access.changed`. Use `PUT /api/v1/team/{team_id}/chatkit/workspace/sessions/{session_id}/read-state` with `{ "unread": false }` after presenting a session and `{ "unread": true }` for a manual unread override. Read state is per user and must never be copied into shared session metadata.
 
 ## Enable agent-to-agent messaging
 
@@ -53,11 +55,11 @@ Bound tenant, target-agent, and ingress-channel fields are supplied by Tilde and
 4. If setup requires human authorization, present the returned approval URL and wait with the returned continuation tool.
 5. Call `tilde_search_enabled_capabilities` with `kinds: ["chatkit_channel", "chatkit_agent"]` to verify both resources.
 
-Use the Vercel AI Endpoint provider when the user wants to test the agent in [Mission Control](https://api.trytilde.ai/mission-control).
+Use the Vercel AI Endpoint provider when the user wants to test the agent in [ChatKit workspace](https://api.trytilde.ai/chatkit-workspace).
 
 ## Search ChatKit conversations
 
-Use `GET /api/v1/team/{team_id}/chatkit/mission-control/search` with the selected workspace's `team_id` and a required `q` parameter. Authenticate with the same API key or bearer token used for Mission Control.
+Use `GET /api/v1/team/{team_id}/chatkit/workspace/search` with the selected workspace's `team_id` and a required `q` parameter. Authenticate with the same API key or bearer token used for ChatKit workspace.
 
 - Omit `session_id` to search visible session titles, visible agent IDs and display names, and message bodies across the workspace. Private resources require a matching visibility grant.
 - Pass `session_id` to search messages only inside that session.
