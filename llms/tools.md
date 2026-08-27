@@ -72,6 +72,8 @@ Use `tilde_connect_proxied_mcp_server` for an existing Streamable HTTP MCP URL. 
 
 For the server-authored hosted-provider catalog, direct the user to **Tools** → **Proxied MCP servers** → **Browse provider catalog**. Every published entry exposes reviewed tool definitions before credentials are supplied; providers without a validated snapshot are not published as connectable. Tilde records whether each snapshot is an exact public `tools/list` result or was inferred from official source or documentation; an authenticated `tools/list` response replaces the snapshot after connection.
 
+AgentMail is the `agentmail` catalog entry at `https://mcp.agentmail.to/mcp`. It is self-managed only: use an inbox-scoped AgentMail API key in the `x-api-key` header. The checked-in official manifest exposes inbox, thread, message, draft, attachment, and auth tools. The AgentMail Reverse Proxy uses `https://api.agentmail.to/v0` and injects the same API key as a bearer token.
+
 Do not ask the user to paste provider secrets into chat or into MCP arguments. OAuth client secrets, API keys, and bearer tokens must be entered through Tilde's credential setup. Dynamic OAuth client registrations are environment-specific and require authorization again after state import; pre-registered manual OAuth configurations remain declarative and their user credential is reconnected separately.
 
 Use `tilde_register_custom_tool_backend` for a signed discovery endpoint created with Harness SDK `toolEndpoint`. Save the one-time signing key in the tool server, then call `tilde_refresh_custom_tool_backend` after its manifest changes.

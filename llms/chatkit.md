@@ -50,6 +50,8 @@ Bound tenant, target-agent, and ingress-channel fields are supplied by Tilde and
 1. Call `tilde_search_available_capabilities` with `kinds: ["chatkit_provider"]` and `include_schemas: true`.
 2. Select the provider ID from the results.
 3. Call `tilde_configure_chatkit_provider` with `provider_id`, `display_name`, the registered agent inbox ID, and any provider-specific configuration from the returned schema.
+
+For AgentMail, select `chatkit.chat_channel.agentmail` / `chatkit.channel.agentmail` and the self-managed API-key auth method. The user must create the AgentMail inbox and an inbox-scoped API key first. Start setup with `inbox_id`; Tilde returns a direct webhook URL and a resume form. In AgentMail, create an inbox-filtered webhook for all four `message.received*` events at that exact URL, then resume with `api_key` and the returned `whsec_...` `webhook_secret`. Never request or configure a Tilde-managed AgentMail account. One AgentMail `thread_id` maps to one ChatKit session. ChatKit prefers extracted plain text, records HTML and attachment metadata, and sends automatic replies as plain text; use the AgentMail MCP provider for file transfer.
 4. If setup requires human authorization, present the returned approval URL and wait with the returned continuation tool.
 5. Call `tilde_search_enabled_capabilities` with `kinds: ["chatkit_channel", "chatkit_agent"]` to verify both resources.
 
@@ -80,6 +82,8 @@ Provider/rule visibility controls discovery and delivery reads. Ownership contro
 3. Call `tilde_create_signal_rule` with a `body` that selects the event type, target agent, action, and stable session-key mapping.
 4. Use one stable session key when related events should continue the same body of work, such as all updates to one Sentry issue or GitHub pull request.
 5. Call `tilde_trigger_fake_signal` to test routing where the provider supports it.
+
+The `agentmail` Signals provider supports `domain.verified`, message delivery/lifecycle events, all four received-message variants, and the three Agent Armor security metadata events. Configure the generated Tilde webhook URL directly in AgentMail and paste the endpoint's `whsec_...` signing secret into Tilde. Keys used to configure spam, blocked, or unauthenticated event subscriptions need the corresponding label-read permissions. Do not add an intermediary webhook relay.
 6. Inspect execution with `tilde_list_signal_deliveries`. Use `tilde_retry_signal_delivery` only for a failed delivery that is safe to repeat.
 
 Use `tilde_list_signal_provider_instances` and `tilde_list_signal_rules` before updating or deleting resources. Their mutation functions are `tilde_update_signal_provider`, `tilde_delete_signal_provider`, `tilde_update_signal_rule`, and `tilde_delete_signal_rule`.
