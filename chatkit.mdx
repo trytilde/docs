@@ -83,6 +83,8 @@ Signal providers and rules use the same two planes. Visibility controls discover
 
   <Step title="Connect a channel and test">
     Go to **ChatKit** → **Configure Chat Providers** and choose where people will talk to the agent. Link the provider to your registered agent, then open [Mission Control](https://api.trytilde.ai/mission-control) to start a test session.
+
+    For **AgentMail**, create the inbox in AgentMail first and create an inbox-scoped API key with message and thread read/write permissions. Enter the inbox ID in Tilde. Tilde then shows the exact tenant-scoped webhook URL to register in AgentMail. Create an AgentMail webhook that points directly to that URL, restrict it to the inbox, and subscribe to `message.received`, `message.received.spam`, `message.received.blocked`, and `message.received.unauthenticated`. Resume setup with the inbox API key and the webhook's `whsec_...` signing secret. Each AgentMail email thread becomes one ChatKit session, and agent responses reply to the same email thread. ChatKit uses extracted plain text and retains HTML/attachment metadata; automatic replies are plain text. Use AgentMail's MCP tools for attachment download or file-bearing sends.
   </Step>
 </Steps>
 

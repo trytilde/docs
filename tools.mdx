@@ -122,7 +122,7 @@ Pass the previous session ID to `message` to continue a child conversation. The 
 
 ## Connect a hosted MCP provider
 
-Open **Tools** → **Proxied MCP servers** → **Browse provider catalog** to connect a hosted MCP provider. The catalog includes ready-to-configure providers such as Notion, Granola, Browserbase, Parallel, Intercom, Zoom, Salesforce, Clay, Apollo, and HubSpot, alongside public documentation MCP servers.
+Open **Tools** → **Proxied MCP servers** → **Browse provider catalog** to connect a hosted MCP provider. The catalog includes ready-to-configure providers such as AgentMail, Notion, Granola, Browserbase, Parallel, Intercom, Zoom, Salesforce, Clay, Apollo, and HubSpot, alongside public documentation MCP servers.
 
 Tilde loads a reviewed tool-definition snapshot before you connect credentials, so the provider's tools can be inspected and selected in the same way as managed provider tools. After authentication, Tilde calls the upstream server's `tools/list` method and reconciles the deployed definitions with the live catalog. Providers are published in the connectable catalog only after a validated snapshot exists.
 
@@ -133,6 +133,8 @@ Authentication follows the upstream server:
 - OAuth providers use PKCE and published authorization metadata. Providers that support dynamic client registration create a new client for the current Tilde environment.
 - Manual OAuth providers ask for the provider's registered client ID and client secret.
 - API-key and bearer-token providers ask for the secret and the header or query-string placement required by the server.
+
+AgentMail uses `https://mcp.agentmail.to/mcp` with an inbox-scoped API key in the `x-api-key` header. Tilde also offers an AgentMail Reverse Proxy profile for `https://api.agentmail.to/v0`, where the same key is injected as `Authorization: Bearer ...`.
 - Public documentation servers connect without credentials.
 
 OAuth tokens, client secrets, API keys, and bearer tokens are encrypted by Tilde's credential system. They are never stored in a tool definition or exported as plaintext state.

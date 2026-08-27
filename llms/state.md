@@ -35,3 +35,11 @@ For custom deployed agents, compare the state file and implementation with the [
 Never call import as a substitute for plan. Use the same exact state and variables for validation, planning, and application.
 
 See the [human portable state guide](https://trytilde.ai/docs/terraform) for dashboard, CLI, multi-environment, and Deploy with Tilde workflows.
+
+## AgentMail state
+
+AgentMail state is portable across environments without exporting plaintext
+secrets. ChatKit exports `agentmailInboxId` and credential/MCP references, then
+derives the webhook URL in the target environment. AgentMail Signals exports an
+`AGENTMAIL_WEBHOOK_SECRET_*` string variable; obtain the target endpoint's
+`whsec_...` value from AgentMail and provide it only as an import variable.

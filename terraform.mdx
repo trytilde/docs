@@ -80,3 +80,13 @@ Keep one reviewed state file as the shared baseline. Use variables for environme
 <Warning>
   State imports can update or replace existing configuration. Review conflicts, destructive changes, requested variables, and pending credentials before applying a plan.
 </Warning>
+
+### AgentMail portability
+
+AgentMail provider bundles export without plaintext credentials. The ChatKit
+provider keeps its inbox ID plus references to the AgentMail API-key,
+webhook-secret, and hosted MCP resources; the target environment regenerates
+the direct webhook URL. AgentMail Signals exports an
+`AGENTMAIL_WEBHOOK_SECRET_*` deploy variable because AgentMail creates a new
+`whsec_...` secret for the target webhook endpoint. Supply that variable during
+import, then configure AgentMail to send directly to the imported endpoint.
