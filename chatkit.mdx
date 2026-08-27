@@ -18,7 +18,11 @@ Agents, sessions, and routines also expose independent visibility and ownership 
 
 Session members are Tilde authorization principals, not ChatKit delivery participants. Adding an agent, Slack channel, or other inbox participant determines where messages flow; adding a Tilde user as a session member determines who may open the private conversation. Removing a member revokes subsequent history and event access, and leaving the execution team invalidates the grant.
 
-Each Mission Control WebSocket retains its authenticated effective user and current Identity groups. Team agent lifecycle changes are sent to every connected team member. Private agent lifecycle changes are sent to users and groups admitted by its visibility plane. Private-session message, streaming, task, and agent-turn events use the session's current visibility grants and conversation membership. Internal audience identifiers are not included in client event payloads.
+Each ChatKit realtime WebSocket retains its authenticated effective user and current Identity groups. Team agent lifecycle changes are sent to every connected team member. Private agent and session events follow their current visibility grants and conversation membership. Authorization changes emit an `access.changed` invalidation so clients refresh their personalized workspace projection.
+
+Realtime events use a closed, client-facing union: `agent.*`, `session.*`, `message.*`, `queue_item.*`, `turn.*`, `activity.*`, `task.*`, and `chat.error`. Streaming content arrives through sequenced `message.delta` events. Internal event-bus payloads and audience identifiers are never forwarded.
+
+Read state belongs to the user-session relationship. `PUT /api/v1/team/{team_id}/chatkit/workspace/sessions/{session_id}/read-state` accepts `{ "unread": false }` when a user opens a session or `{ "unread": true }` to mark it manually. Other users sharing the session keep independent state.
 
 Signal provider instances and rules may also be personal. A personal rule names the team where its agent action runs. Sessions created by that rule are `user_team` sessions for the same owner, preventing the rule from turning personal activity into a team-visible conversation.
 
@@ -82,18 +86,18 @@ Signal providers and rules use the same two planes. Visibility controls discover
   </Step>
 
   <Step title="Connect a channel and test">
-    Go to **ChatKit** → **Configure Chat Providers** and choose where people will talk to the agent. Link the provider to your registered agent, then open [Mission Control](https://api.trytilde.ai/mission-control) to start a test session.
+    Go to **ChatKit** → **Configure Chat Providers** and choose where people will talk to the agent. Link the provider to your registered agent, then open [ChatKit workspace](https://api.trytilde.ai/chatkit-workspace) to start a test session.
   </Step>
 </Steps>
 
-### Test your agent in Mission Control
+### Test your agent in ChatKit workspace
 
-Use [Mission Control](https://api.trytilde.ai/mission-control) to invoke your agent directly and test conversations. Select the correct workspace and agent, then start a session and send a message.
+Use [ChatKit workspace](https://api.trytilde.ai/chatkit-workspace) to invoke your agent directly and test conversations. Select the correct workspace and agent, then start a session and send a message.
 
 When creating a private session, the creator becomes its owner automatically. The create request may include additional team user IDs, and the session membership endpoints can list, add, or remove non-owner members afterward. Members receive the same live message and agent-turn stream for that session; they do not gain permission to change ownership or manage other members.
 
 <Info>
-  Mission Control requires the **Vercel AI Endpoint** ChatKit provider to be enabled for your agent.
+  ChatKit workspace requires the **Vercel AI Endpoint** ChatKit provider to be enabled for your agent.
 </Info>
 
 ### Search conversations
@@ -105,7 +109,7 @@ curl --get \
   --header "Authorization: Bearer $TILDE_API_KEY" \
   --data-urlencode "q=deployment rollback" \
   --data-urlencode "page_size=25" \
-  "https://api.trytilde.ai/api/v1/team/$TILDE_TEAM_ID/chatkit/mission-control/search"
+  "https://api.trytilde.ai/api/v1/team/$TILDE_TEAM_ID/chatkit/workspace/search"
 ```
 
 Each result has a `kind` of `session_title`, `agent`, or `message`. Message results include the canonical ChatKit message. Use the opaque `next_page_token` to continue in relevance order.
@@ -117,7 +121,7 @@ curl --get \
   --header "Authorization: Bearer $TILDE_API_KEY" \
   --data-urlencode "q=customer reference" \
   --data-urlencode "session_id=$TILDE_SESSION_ID" \
-  "https://api.trytilde.ai/api/v1/team/$TILDE_TEAM_ID/chatkit/mission-control/search"
+  "https://api.trytilde.ai/api/v1/team/$TILDE_TEAM_ID/chatkit/workspace/search"
 ```
 
 Search uses case-insensitive full-text terms. It does not provide fuzzy, typo-tolerant, or substring matching.

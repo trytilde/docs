@@ -24,7 +24,7 @@ This guide shows you how to build and test a signed ChatKit endpoint using Next.
         Send this prompt to the connected agent.
 
         <Prompt description="Build the Hello World agent" icon="sparkles" actions={["copy", "cursor"]}>
-Start by reading https://trytilde.ai/llms.txt and use https://trytilde.ai/docs/llms.txt to open the production-hosted agent guides. Use https://github.com/trytilde/examples/tree/main/hello-world-agent only as a reference and create the app and files in my project. Explain the route before changing it, then ask what I want my agent to do. Keep Tilde webhook verification, ChatKit history, and server-side secrets intact. Register the local endpoint at /api/hello-world as a ChatKit agent, save the returned Tilde API key and webhook signing key in .env.local, sign in with `tilde auth login`, run the app through a Tilde Dev Tunnel, and test it in Mission Control.
+Start by reading https://trytilde.ai/llms.txt and use https://trytilde.ai/docs/llms.txt to open the production-hosted agent guides. Use https://github.com/trytilde/examples/tree/main/hello-world-agent only as a reference and create the app and files in my project. Explain the route before changing it, then ask what I want my agent to do. Keep Tilde webhook verification, ChatKit history, and server-side secrets intact. Register the local endpoint at /api/hello-world as a ChatKit agent, save the returned Tilde API key and webhook signing key in .env.local, sign in with `tilde auth login`, run the app through a Tilde Dev Tunnel, and test it in ChatKit workspace.
         </Prompt>
       </Step>
     </Steps>
@@ -131,7 +131,7 @@ Start by reading https://trytilde.ai/llms.txt and use https://trytilde.ai/docs/l
       </Step>
 
       <Step title="Test the agent">
-        Open [**Mission Control**](https://api.trytilde.ai/mission-control), select the workspace where you registered **Hello World**, start a session with the agent, and send:
+        Open [**ChatKit workspace**](https://api.trytilde.ai/chatkit-workspace), select the workspace where you registered **Hello World**, start a session with the agent, and send:
 
         ```text
         Say hello in one sentence.
