@@ -45,6 +45,26 @@ Owners and team, organization, or system administrators manage membership. Membe
 
 Bound tenant, target-agent, and ingress-channel fields are supplied by Tilde and cannot be overridden by the caller. Do not configure the removed pairwise internal-agent ChatKit channel.
 
+Delegation is authorized by a visibility check on the target agent. A caller that cannot see an agent cannot message it and must not be told it exists.
+
+Scope the runtime's MCP connection to the calling session by sending the `x-tilde-chatkit-session-id` header, or by passing `chatkit: { sessionId }` to `createMCPClient` in `@trytilde/sdk-vercel-ai-node`. Tilde then records the delegated conversation as a child of that session, so Mission Control can show the delegation tree. A header naming a session the caller may not use rejects the connection rather than silently dropping the scoped tools, and a personal MCP server cannot be session-scoped at all.
+
+## Identify who is speaking
+
+Every session participant resolves to a ChatKit identity: a Tilde user, an agent, or an external chat address such as a GitHub login, an email address, or a mobile number. Addresses are unique per provider account, so the same handle in two GitHub organizations stays two people.
+
+Messages delivered to an agent carry an `identity` block with `display_name`, `kind`, `external_id`, `is_agent`, and a pre-rendered `speaker_label`. Use the block, not the label, when branching: a display name is chosen by whoever sent the message. `@trytilde/sdk-vercel-ai-node` prefixes the first text part with the label automatically and leaves the agent's own replies unlabelled.
+
+`tilde_user_id` appears only when a verified flow linked the address to a Tilde user. Its absence means the sender proved nothing about who they are. Treat that participant as anonymous and never derive permissions from an address, a display name, or an email header.
+
+## Reply to external platforms
+
+When a session originated on an external ChatKit provider, Tilde delivers the agent's final message back to that platform itself. The request body carries a `session` block with `provider_display_name` and `replies_route_to_provider`; when the flag is set, put a line in the system prompt telling the model its reply is delivered to the participants on that platform. `sessionProvenanceInstruction` in `@trytilde/sdk-vercel-ai-node` builds that line.
+
+Do not also post the reply with a provider write tool for the thread the session owns, or the recipient receives it twice. Provider tools remain available for every other thread.
+
+Delivery is queued per recipient and retried with backoff. Reasoning and tool-call content is stripped before anything leaves the platform boundary, and files become attachments or links depending on what the channel accepts.
+
 ## Configure a ChatKit provider
 
 1. Call `tilde_search_available_capabilities` with `kinds: ["chatkit_provider"]` and `include_schemas: true`.
