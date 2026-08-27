@@ -149,6 +149,19 @@ export const providers = [
     "tools": []
   },
   {
+    "name": "Linq",
+    "slug": "linq",
+    "initials": "LI",
+    "category": "Chat",
+    "summary": "Send and manage Linq iMessage, RCS, and SMS conversations, reactions, polls, phone lines, contact cards, capabilities, block lists, and webhook subscriptions through the Partner API V3.",
+    "auth": [
+      "Linq API token"
+    ],
+    "iconSources": [],
+    "toolCount": 23,
+    "tools": []
+  },
+  {
     "name": "Message agent",
     "slug": "chatkit_agent_message",
     "initials": "ME",
@@ -287,7 +300,7 @@ export const providers = [
       "No Auth"
     ],
     "iconSources": [],
-    "toolCount": 79,
+    "toolCount": 80,
     "tools": []
   },
   {

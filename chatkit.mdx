@@ -10,7 +10,7 @@ ChatKit connects an agent endpoint to the places where work begins. It stores se
 2. **Vercel AI SDK chat provider**: This managed provider exposes your agent through a Vercel AI SDK-compatible endpoint for custom clients.
 3. **Signals**: These are events from third-party providers that Tilde delivers to your agent.
 
-Configure chat providers for conversations from Slack, GitHub, and other supported channels. Use signals when an external event should start or continue a session without first arriving as a chat message.
+Configure chat providers for conversations from Slack, GitHub, Linq, and other supported channels. Use signals when an external event should start or continue a session without first arriving as a chat message. [Connect Linq messaging](/guides/linq) once to provision its ChatKit channel, tools, Signals, and Reverse Proxy together.
 
 ChatKit sessions, routines, and agents are either shared `team` resources or private `user_team` resources. A private resource remains in its execution team and has one owner. Private sessions may also include selected team users as conversation members: members can see the session, read its history, send messages, and receive its live events, while the owner and team, organization, or system administrators manage membership and session administration. Messages, attachments, events, tasks, replies, and turn queues inherit the session's audience.
 

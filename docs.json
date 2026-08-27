@@ -133,6 +133,7 @@
         "group": "Guides",
         "pages": [
           "guides/code-review-agent",
+          "guides/linq",
           "guides/hosted-openbot"
         ]
       }

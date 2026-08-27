@@ -23,6 +23,8 @@ capability; it does not require or confer credential ownership.
 ## Recommended workflow
 
 1. Call `tilde_search_available_capabilities` with a specific intent such as `"GitHub pull request tools"`. Use `include_schemas: true` when you need provider or tool input details.
+
+Linq is a common provider: provisioning it from Tools or ChatKit creates the same credential-backed Tool, ChatKit, Signals, and Reverse Proxy bundle. Get the token from `https://dashboard.linqapp.com/api-tooling`. Tilde creates the managed webhook subscription; do not instruct users to add a second webhook unless they deliberately chose a standalone Signals provider. See `/guides/linq`.
 2. Configure the source:
    - Managed provider: `tilde_enable_toolkit_provider`.
    - Provider app that Tilde should provision: `tilde_auto_provision_toolkit_provider`.
