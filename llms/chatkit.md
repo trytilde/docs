@@ -57,6 +57,41 @@ Realtime clients consume the closed `agent.*`, `session.*`, `message.*`, `queue_
 
 Bound tenant, target-agent, and ingress-channel fields are supplied by Tilde and cannot be overridden by the caller. Do not configure the removed pairwise internal-agent ChatKit channel.
 
+Delegation is authorized by a visibility check on the target agent. A caller that cannot see an agent cannot message it and must not be told it exists.
+
+## Delegate through a session-scoped connection
+
+Preferred over adding a per-agent provider. Scope the runtime's MCP connection to the calling session by sending the `x-tilde-chatkit-session-id` header, or by passing `chatkit: { sessionId }` to `createMCPClient` in `@trytilde/sdk-vercel-ai-node`. Tilde then offers four extra tools on that connection:
+
+| Tool | Purpose |
+| --- | --- |
+| `chatkit_list_agents` | Agents you may delegate to. Agents you cannot see are not returned. |
+| `chatkit_delegate` | Ask an agent to do something. Opens a private child conversation off the current session and returns a `ticket_id` and `session_id`. |
+| `chatkit_wait_for_response` | Wait for that ticket. Streams progress notifications and returns the final message. |
+| `chatkit_list_participants` | Who is in the current conversation, including external participants. |
+
+None of them accept `org_id`, `team_id`, or a session id: the session comes from the connection, so a session you were not authorized for cannot be addressed. Reuse the `session_id` returned by `chatkit_delegate` to continue the same delegation; omit it to start a new one.
+
+Delegation is recorded as a child of the connection's session, so Mission Control shows the two together. A header naming a session the caller may not use rejects the connection rather than silently dropping the scoped tools, and a personal MCP server cannot be session-scoped at all.
+
+Reaching a newly created agent needs no provisioning step; it appears in `chatkit_list_agents` as soon as you have visibility on it. The per-agent `chatkit_agent_message` provider still exists for a deliberately fixed direct line, but it is no longer created automatically.
+
+## Identify who is speaking
+
+Every session participant resolves to a ChatKit identity: a Tilde user, an agent, or an external chat address such as a GitHub login, an email address, or a mobile number. Addresses are unique per provider account, so the same handle in two GitHub organizations stays two people.
+
+Messages delivered to an agent carry an `identity` block with `display_name`, `kind`, `external_id`, `is_agent`, and a pre-rendered `speaker_label`. Use the block, not the label, when branching: a display name is chosen by whoever sent the message. `@trytilde/sdk-vercel-ai-node` prefixes the first text part with the label automatically and leaves the agent's own replies unlabelled.
+
+`tilde_user_id` appears only when a verified flow linked the address to a Tilde user. Its absence means the sender proved nothing about who they are. Treat that participant as anonymous and never derive permissions from an address, a display name, or an email header.
+
+## Reply to external platforms
+
+When a session originated on an external ChatKit provider, Tilde delivers the agent's final message back to that platform itself. The request body carries a `session` block with `provider_display_name` and `replies_route_to_provider`; when the flag is set, put a line in the system prompt telling the model its reply is delivered to the participants on that platform. `sessionProvenanceInstruction` in `@trytilde/sdk-vercel-ai-node` builds that line.
+
+Do not also post the reply with a provider write tool for the thread the session owns, or the recipient receives it twice. Provider tools remain available for every other thread.
+
+Delivery is queued per recipient and retried with backoff. Reasoning and tool-call content is stripped before anything leaves the platform boundary, and files become attachments or links depending on what the channel accepts.
+
 ## Configure a ChatKit provider
 
 1. Call `tilde_search_available_capabilities` with `kinds: ["chatkit_provider"]` and `include_schemas: true`.

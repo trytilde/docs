@@ -432,6 +432,30 @@ Every registered agent has a generated **Message agent** tool provider. Add that
 
 The former pairwise internal-agent chat provider is no longer used. Agent-to-agent routing is now composed through ordinary MCP servers, so one generated provider can be reused by any authorized parent agent.
 
+An agent may only message an agent it can see. Delegation runs the same visibility check the dashboard uses when it lists agents, so removing a visibility grant also removes the ability to delegate.
+
+When the calling runtime scopes its MCP connection to a ChatKit session, Tilde offers that connection a small set of session tools — list the agents you may delegate to, delegate, wait for the reply, and see who is in the conversation. The delegated conversation is recorded as a child of the calling session, so Mission Control shows the two together instead of as unrelated conversations.
+
+This is the preferred way to let agents reach each other. It needs no setup per target agent: an agent becomes reachable as soon as the caller has visibility on it. The **Message agent** provider above remains for the case where you want a deliberately fixed, single direct line.
+
+## Know who is in the conversation
+
+A session can hold several people and several agents at once, including people who reached you through GitHub, email, or another external provider and have no Tilde account.
+
+Every participant has a **ChatKit identity**: a Tilde user, an agent, or an external address such as a GitHub login or an email address. The same handle in two different GitHub organizations stays two separate people, because an address is unique per provider account.
+
+Messages delivered to an agent carry that identity, and the Tilde SDK labels each inbound message with its speaker so the agent can tell participants apart. An agent takes a turn only when a message addresses it; everything else in the session arrives as context.
+
+An external address on its own proves nothing about who sent it, so an unlinked participant can take part in a conversation but carries no permissions. Linking an external identity to a Tilde user is a separate verified step.
+
+## Reply where the conversation started
+
+For sessions that began on an external provider, Tilde delivers the agent's reply back to that platform — a comment on the GitHub thread, a message in the Slack thread — instead of relying on the agent to post it with a tool.
+
+The agent is told in its request where the conversation came from, so it can write the reply as correspondence rather than as chat. Internal reasoning and tool calls are stripped before anything leaves Tilde, and files become attachments or links depending on what the channel supports.
+
+Because Tilde sends the reply, an agent should not also post to the thread its session owns. Delivery retries with backoff, and a reply that cannot be delivered is surfaced rather than dropped.
+
 ## Trigger work from events via Signals
 
 Signals turn supported external events into ChatKit messages. A rule selects an event type, maps it to an agent, and determines whether related events reuse the same session.
