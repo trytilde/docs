@@ -8,11 +8,11 @@ A Dev Tunnel gives your local application a stable public HTTPS endpoint. Tilde 
 ## Open a tunnel
 
 <Steps>
-  <Step title="Install the Tilde CLI">
-    The CLI is published with the Harness SDK packages.
+  <Step title="Install the OpenBot CLI">
+    OpenBot owns Tilde authentication, state, tunnel, and plugin commands.
 
     ```bash
-    pnpm add -D @trytilde/cli
+    pnpm add -D openbot
     ```
   </Step>
 
@@ -20,17 +20,17 @@ A Dev Tunnel gives your local application a stable public HTTPS endpoint. Tilde 
     Authenticate before opening the tunnel. The login flow opens Tilde and asks you to select a workspace.
 
     ```bash
-    pnpm exec tilde auth login
+    pnpm exec openbot auth login
     ```
 
-    Run `pnpm exec tilde auth set-team` later if you need to switch workspaces.
+    Run `pnpm exec openbot auth set-team` later if you need to switch workspaces.
   </Step>
 
   <Step title="Run your application through the tunnel">
     Replace `pnpm dev` with your normal development command.
 
     ```bash
-    pnpm exec tilde tunnel -- pnpm dev
+    pnpm exec openbot tunnel -- pnpm dev
     ```
 
     The CLI opens a managed Cloudflare tunnel, chooses an available local port, and passes that port to your process as `PORT` and `TUNNEL_PORT`. It prints the public tunnel origin when the connection is ready.

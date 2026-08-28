@@ -42,8 +42,8 @@ Start by reading https://trytilde.ai/llms.txt and use https://trytilde.ai/docs/l
         ```bash
         pnpm create next-app@16.2.12 hello-world-agent --ts --eslint --app --no-src-dir --no-tailwind --use-pnpm
         cd hello-world-agent
-        pnpm add @ai-sdk/openai ai @trytilde/harness-sdk @trytilde/harness-sdk-vercel-ai-node
-        pnpm add -D @trytilde/cli
+        pnpm add @ai-sdk/openai ai @trytilde/sdk @trytilde/sdk-vercel-ai-node
+        pnpm add -D openbot
         touch .env.local
         ```
       </Step>
@@ -57,7 +57,7 @@ Start by reading https://trytilde.ai/llms.txt and use https://trytilde.ai/docs/l
           chatKitEndpoint,
           convertToAiSdkMessages,
           createClient,
-        } from "@trytilde/harness-sdk-vercel-ai-node";
+        } from "@trytilde/sdk-vercel-ai-node";
         import {
           consumeStream,
           convertToModelMessages,
@@ -121,8 +121,8 @@ Start by reading https://trytilde.ai/llms.txt and use https://trytilde.ai/docs/l
         The tunnel gives your local agent a public HTTPS endpoint, allowing Tilde to deliver messages, webhooks, and tool invocations while you develop. For ChatKit, `chatKitEndpoint` verifies Tilde's webhook signature and rejects requests without a valid signature.
 
         ```bash
-        pnpm exec tilde auth login
-        pnpm exec tilde tunnel -- pnpm dev
+        pnpm exec openbot auth login
+        pnpm exec openbot tunnel -- pnpm dev
         ```
 
         <Warning>
