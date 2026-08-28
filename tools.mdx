@@ -108,6 +108,8 @@ tool group does not authorize connection through a private server.
     ```
 
     `createMCPClient` constructs the Tilde MCP endpoint and authenticates it with your Tilde API key. Keep the client open while the agent uses its tools, then call `closeMcp()`.
+
+    Inside a ChatKit endpoint using `responseMode: "tool"`, call `context.session.createMCPClient()` instead. The returned MCP client includes the current provider's session-bound communication tools, with channel, thread, participant, and recipient routing supplied by ChatKit rather than the model.
   </Step>
 </Steps>
 

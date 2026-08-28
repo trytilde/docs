@@ -14,6 +14,12 @@ In `@trytilde/sdk-vercel-ai-node`, use `context.linq` / `LinqChatKitMessageMetad
 
 Use Vercel AI SDK and Harness SDK `chatKitEndpoint`. Preserve webhook signature verification, `context.session.history()`, `convertToAiSdkMessages`, streaming, and server-side secrets.
 
+Set the required top-level `responseMode` to `agentLoop` or `tool`. In `tool` mode, assistant text is private reasoning and only `sendMessage` produces a visible ChatKit message. Use `context.session.tools` or `context.$provider.tools`; routing identifiers are server-bound and must never be requested from the model. `context.session.createMCPClient()` exposes the same session-bound tools through MCP.
+
+Provider actions currently include Slack/GitHub reactions and thread reads, Linq reactions and poll operations, and AgentMail thread reads. AgentMail `sendMessage` accepts `to`, `cc`, `bcc`, subject, HTML, and reply-all. Non-message actions appear as canonical `tool.execution` realtime events; `sendMessage` uses normal ChatKit message streaming.
+
+Participant visibility changes emit `participant.joined` / `participant.left` realtime events and persisted system messages with compact participant handles, display names, and external IDs when available. They do not invoke an agent turn.
+
 ## Register an agent
 
 Call `tilde_register_chatkit_agent` with:
