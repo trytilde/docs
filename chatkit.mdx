@@ -35,7 +35,7 @@ Signal providers and rules use the same two planes. Visibility controls discover
     Wrap your route with `chatKitEndpoint`. It verifies Tilde's signature and gives the handler the current session, new messages, provider metadata, and ChatKit client.
 
     ```bash
-    pnpm add @ai-sdk/openai ai @trytilde/harness-sdk @trytilde/harness-sdk-vercel-ai-node
+    pnpm add @ai-sdk/openai ai @trytilde/sdk @trytilde/sdk-vercel-ai-node
     ```
 
     ```typescript app/api/agent/route.ts
@@ -44,7 +44,7 @@ Signal providers and rules use the same two planes. Visibility controls discover
       chatKitEndpoint,
       convertToAiSdkMessages,
       createClient,
-    } from "@trytilde/harness-sdk-vercel-ai-node";
+    } from "@trytilde/sdk-vercel-ai-node";
     import { consumeStream, convertToModelMessages, streamText } from "ai";
 
     export const POST = chatKitEndpoint({
@@ -54,6 +54,7 @@ Signal providers and rules use the same two planes. Visibility controls discover
         teamId: process.env.TILDE_TEAM_ID!,
       }),
       webhookSigningKey: process.env.TILDE_WEBHOOK_SIGNING_KEY!,
+      responseMode: "agentLoop",
       async handler(request, context) {
         const history = await context.session.history();
         const messages = await convertToAiSdkMessages({
@@ -89,6 +90,19 @@ Signal providers and rules use the same two planes. Visibility controls discover
     Go to **ChatKit** → **Configure Chat Providers** and choose where people will talk to the agent. Link the provider to your registered agent, then open [ChatKit workspace](https://api.trytilde.ai/chatkit-workspace) to start a test session.
   </Step>
 </Steps>
+
+### Choose how the endpoint responds
+
+`chatKitEndpoint` requires a top-level `responseMode`:
+
+- `agentLoop` streams returned assistant text as the visible reply, preserving the existing endpoint pattern.
+- `tool` treats returned assistant text as private reasoning. The agent must call `context.session.tools.sendMessage` (also available through `context.$provider.tools`) for visible replies.
+
+Tool mode binds the current session, participant, provider, channel, thread, repository, issue, and recipient routing on the server. The model supplies only message content and provider-action inputs. Slack and GitHub expose reactions and thread reads; Linq exposes reactions, thread reads, poll creation, poll-option updates, and voting; AgentMail exposes thread reads and email delivery fields including `to`, `cc`, `bcc`, subject, HTML, and reply-all.
+
+Pass the same session context to `context.session.createMCPClient({ serverId: process.env.TILDE_MCP_SERVER_ID! })` when the agent consumes tools through MCP. Session tools are added to that client without asking the model for routing identifiers.
+
+ChatKit assigns compact participant handles and emits `participant.joined` and `participant.left` realtime events when a participant becomes visible to or leaves the conversation. It also persists a system message containing the participant's display name and external ID when available. These lifecycle changes do not start an agent turn.
 
 ### Test your agent in ChatKit workspace
 
@@ -138,7 +152,7 @@ Supported chat providers add validated metadata to the endpoint context. Use the
     import {
       chatKitEndpoint,
       createClient,
-    } from "@trytilde/harness-sdk-vercel-ai-node";
+    } from "@trytilde/sdk-vercel-ai-node";
 
     export const POST = chatKitEndpoint({
       client: createClient({
@@ -147,6 +161,7 @@ Supported chat providers add validated metadata to the endpoint context. Use the
         teamId: process.env.TILDE_TEAM_ID!,
       }),
       webhookSigningKey: process.env.TILDE_WEBHOOK_SIGNING_KEY!,
+      responseMode: "agentLoop",
       async handler(_request, context) {
         console.log({
           event: context.github?.event,
@@ -169,7 +184,7 @@ Supported chat providers add validated metadata to the endpoint context. Use the
     import {
       chatKitEndpoint,
       createClient,
-    } from "@trytilde/harness-sdk-vercel-ai-node";
+    } from "@trytilde/sdk-vercel-ai-node";
 
     export const POST = chatKitEndpoint({
       client: createClient({
@@ -178,6 +193,7 @@ Supported chat providers add validated metadata to the endpoint context. Use the
         teamId: process.env.TILDE_TEAM_ID!,
       }),
       webhookSigningKey: process.env.TILDE_WEBHOOK_SIGNING_KEY!,
+      responseMode: "agentLoop",
       async handler(_request, context) {
         console.log({
           teamId: context.slack?.team_id,
@@ -225,12 +241,12 @@ ChatKit invokes `onUnprocessed` once for each unprocessed message, then caches t
     Use `createChatKitAttachmentFilePartHandler` to download ChatKit attachments with Tilde authentication and convert them into model-safe AI SDK file parts.
 
     ```typescript app/api/agent/route.ts
-    import type { Client } from "@trytilde/harness-sdk";
+    import type { Client } from "@trytilde/sdk";
     import {
       type ChatKitEndpointContext,
       convertToAiSdkMessages,
       createChatKitAttachmentFilePartHandler,
-    } from "@trytilde/harness-sdk-vercel-ai-node";
+    } from "@trytilde/sdk-vercel-ai-node";
 
     async function convertTurn(
       client: Client,
@@ -259,7 +275,7 @@ ChatKit invokes `onUnprocessed` once for each unprocessed message, then caches t
       type ChatKitEndpointContext,
       convertToAiSdkMessages,
       type GitHubSignalByType,
-    } from "@trytilde/harness-sdk-vercel-ai-node";
+    } from "@trytilde/sdk-vercel-ai-node";
     import type { UIMessage } from "ai";
 
     type PullRequestOpened =
@@ -308,7 +324,7 @@ ChatKit invokes `onUnprocessed` once for each unprocessed message, then caches t
       type ChatKitEndpointContext,
       convertToAiSdkMessages,
       type FirecrawlSignalByType,
-    } from "@trytilde/harness-sdk-vercel-ai-node";
+    } from "@trytilde/sdk-vercel-ai-node";
     import type { UIMessage } from "ai";
 
     type PageChanged =
@@ -355,7 +371,7 @@ ChatKit invokes `onUnprocessed` once for each unprocessed message, then caches t
       type ChatKitEndpointContext,
       convertToAiSdkMessages,
       type SentrySignalByType,
-    } from "@trytilde/harness-sdk-vercel-ai-node";
+    } from "@trytilde/sdk-vercel-ai-node";
     import type { UIMessage } from "ai";
 
     type IssueCreated =
@@ -430,7 +446,7 @@ import {
   convertToAiSdkMessages,
   createClient,
   type SentrySignalByType,
-} from "@trytilde/harness-sdk-vercel-ai-node";
+} from "@trytilde/sdk-vercel-ai-node";
 import type { UIMessage } from "ai";
 
 type IssueCreatedSignal = SentrySignalByType["sentry.issue.created"];
@@ -457,6 +473,7 @@ export const POST = chatKitEndpoint({
     teamId: process.env.TILDE_TEAM_ID!,
   }),
   webhookSigningKey: process.env.TILDE_WEBHOOK_SIGNING_KEY!,
+  responseMode: "agentLoop",
   async handler(_request, context) {
     const history = await context.session.history();
     const messages = await convertToAiSdkMessages({
