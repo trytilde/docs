@@ -121,12 +121,12 @@ Memory bank and wiki tools are enabled automatically when you create their resou
   </Step>
 
   <Step title="Connect the agent">
-    Connect to that MCP server with the Harness SDK. Memory and wiki tools are returned alongside its other tools.
+    Connect to that MCP server with the Tilde SDK. Memory and wiki tools are returned alongside its other tools.
 
     ```typescript wherever-you-run-your-agent.ts
     import { openai } from "@ai-sdk/openai";
     import { generateText } from "ai";
-    import { createMCPClient } from "@trytilde/harness-sdk-vercel-ai-node";
+    import { createMCPClient } from "@trytilde/sdk-vercel-ai-node";
 
     const { mcp, closeMcp } = await createMCPClient({
       client: tilde,

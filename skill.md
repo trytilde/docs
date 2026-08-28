@@ -23,7 +23,7 @@ Tilde is a TypeScript-first platform for building and operating AI agents. It pr
 
 - Use the global MCP server to inspect the current identity and workspace, discover provider and tool schemas, configure resources, and export portable state.
 - Use a runtime MCP server created in Tilde when an agent needs selected tools during normal work.
-- Use the TypeScript Harness SDK when implementing ChatKit endpoints, custom tools, memory access, or application-side integrations.
+- Use the TypeScript Tilde SDK when implementing ChatKit endpoints, custom tools, memory access, or application-side integrations.
 - Use the Tilde CLI for authentication, Dev Tunnels, and state import or export.
 
 ## Safe operating rules

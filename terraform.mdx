@@ -32,9 +32,9 @@ Commit `tilde.state.yaml` with your application so reviewers can see which Tilde
 
   <Tab title="CLI">
     ```bash
-    pnpm add -D @trytilde/cli
-    pnpm exec tilde auth login
-    pnpm exec tilde state export ./tilde.state.yaml
+    pnpm add -D openbot
+    pnpm exec openbot auth login
+    pnpm exec openbot state export ./tilde.state.yaml
     ```
   </Tab>
 </Tabs>
@@ -51,8 +51,8 @@ Commit `tilde.state.yaml` with your application so reviewers can see which Tilde
 You can perform the same workflow from the CLI:
 
 ```bash
-pnpm exec tilde auth login
-pnpm exec tilde state import ./tilde.state.yaml ./tilde-state-import-outputs.yaml
+pnpm exec openbot auth login
+pnpm exec openbot state import ./tilde.state.yaml ./tilde-state-import-outputs.yaml
 ```
 
 The CLI shows the plan before applying it. Add `--auto-apply` only in a trusted automated workflow where the state change has already been reviewed.

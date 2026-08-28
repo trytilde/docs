@@ -18,16 +18,16 @@ Give the returned API key and webhook signing key to the human for secure server
 Ask the user or local coding agent to run:
 
 ```bash
-pnpm add -D @trytilde/cli
-pnpm exec tilde auth login
-pnpm exec tilde tunnel -- pnpm dev
+pnpm add -D openbot
+pnpm exec openbot auth login
+pnpm exec openbot tunnel -- pnpm dev
 ```
 
-Replace `pnpm dev` with the application's normal development command. If the selected workspace is wrong, run `pnpm exec tilde auth set-team`.
+Replace `pnpm dev` with the application's normal development command. If the selected workspace is wrong, run `pnpm exec openbot auth set-team`.
 
 The CLI starts a managed Cloudflare tunnel and passes the chosen local port to the process as `PORT` and `TUNNEL_PORT`. Keep the process running while Tilde delivers ChatKit messages, webhooks, and tool invocations.
 
-Signed Harness SDK wrappers such as `chatKitEndpoint` reject ChatKit requests without a valid Tilde signature. That protects the wrapped agent endpoint; it does not secure unrelated routes.
+Signed Tilde SDK wrappers such as `chatKitEndpoint` reject ChatKit requests without a valid Tilde signature. That protects the wrapped agent endpoint; it does not secure unrelated routes.
 
 **Warning:** the tunnel exposes every page and API route served by the development process to the public internet. Disable unneeded routes or protect them with authentication.
 
