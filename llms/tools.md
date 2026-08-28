@@ -29,7 +29,7 @@ Linq is a common provider: provisioning it from Tools or ChatKit creates the sam
    - Managed provider: `tilde_enable_toolkit_provider`.
    - Provider app that Tilde should provision: `tilde_auto_provision_toolkit_provider`.
    - Existing Streamable HTTP MCP server: `tilde_connect_proxied_mcp_server`.
-   - Harness SDK `toolEndpoint` backend: `tilde_register_custom_tool_backend`.
+   - Tilde SDK `toolEndpoint` backend: `tilde_register_custom_tool_backend`.
 3. If the response contains `approval_url`, send it to the user. Immediately invoke the returned `next_tool_name` with `next_tool_arguments`. Do not continue until it returns `approved`.
 4. Enable only the required provider functions with `tilde_set_toolkit_tool_enabled`.
 5. Create a runtime server with `tilde_create_mcp_server`. Supply a stable lowercase `id`, a human-readable `name`, and `is_dynamic_tool_discovery: true` unless the toolset is very small and fixed.
@@ -76,7 +76,7 @@ For the server-authored hosted-provider catalog, direct the user to **Tools** â†
 
 Do not ask the user to paste provider secrets into chat or into MCP arguments. OAuth client secrets, API keys, and bearer tokens must be entered through Tilde's credential setup. Dynamic OAuth client registrations are environment-specific and require authorization again after state import; pre-registered manual OAuth configurations remain declarative and their user credential is reconnected separately.
 
-Use `tilde_register_custom_tool_backend` for a signed discovery endpoint created with Harness SDK `toolEndpoint`. Save the one-time signing key in the tool server, then call `tilde_refresh_custom_tool_backend` after its manifest changes.
+Use `tilde_register_custom_tool_backend` for a signed discovery endpoint created with Tilde SDK `toolEndpoint`. Save the one-time signing key in the tool server, then call `tilde_refresh_custom_tool_backend` after its manifest changes.
 
 For implementation patterns, inspect the [code review bot](https://github.com/trytilde/examples/tree/main/code-review-bot) and the rest of the [examples repository](https://github.com/trytilde/examples).
 
@@ -89,6 +89,6 @@ Reverse proxies let application code call a provider's native API while Tilde in
 
 ## Connect the deployed agent
 
-Pass the runtime MCP server ID to Harness SDK `createMCPClient`. Follow the [human Tools guide](https://trytilde.ai/docs/tools) for the client code. The code review bot is the preferred reference for custom agents that combine MCP tools, local tools, and reverse proxies.
+Pass the runtime MCP server ID to Tilde SDK `createMCPClient`. Follow the [human Tools guide](https://trytilde.ai/docs/tools) for the client code. The code review bot is the preferred reference for custom agents that combine MCP tools, local tools, and reverse proxies.
 
-Within a `chatKitEndpoint({ responseMode: "tool" })` handler, prefer `context.session.tools`, `context.$provider.tools`, or `context.session.createMCPClient()`. These surfaces inject session-bound provider communication tools and prefill routing identifiers. `sendMessage` creates the visible ChatKit message; reactions, thread reads, and Linq poll operations are emitted as canonical tool-execution events.
+Within a `chatKitEndpoint({ responseMode: "tool" })` handler, prefer `context.session.tools`, `context.$provider.tools`, or `context.session.createMCPClient({ serverId })`. These surfaces inject session-bound provider communication tools and prefill routing identifiers. `sendMessage` creates the visible ChatKit message; reactions, thread reads, and Linq poll operations are emitted as canonical tool-execution events.

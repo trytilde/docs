@@ -42,7 +42,7 @@ MCP authorization is intersected at execution time: visibility of an MCP
 server does not by itself authorize a private tool group, and visibility of a
 tool group does not authorize connection through a private server.
 
-[Enable off-the-shelf tool providers](/tool-providers), add custom tools, or proxy upstream APIs. Group them in an MCP server, then connect your agent with the Harness SDK.
+[Enable off-the-shelf tool providers](/tool-providers), add custom tools, or proxy upstream APIs. Group them in an MCP server, then connect your agent with the Tilde SDK.
 
 <Steps>
   <Step title="Enable tools from a source">
@@ -62,14 +62,14 @@ tool group does not authorize connection through a private server.
     4. Adjust tool names, descriptions, parameters, or fixed inputs as needed.
     5. If callers should bring their own personal tools, choose **All personal tools** or **Selected personal tools**. The default is **None**.
 
-    Keep the MCP server ID. You will pass it to the Harness SDK in the next step.
+    Keep the MCP server ID. You will pass it to the Tilde SDK in the next step.
   </Step>
 
-  <Step title="Connect with the Harness SDK">
-    Install the Harness SDK and MCP client packages.
+  <Step title="Connect with the Tilde SDK">
+    Install the Tilde SDK and MCP client packages.
 
     ```bash
-    pnpm add @ai-sdk/mcp @trytilde/harness-sdk @trytilde/harness-sdk-vercel-ai-node
+    pnpm add @ai-sdk/mcp @trytilde/sdk @trytilde/sdk-vercel-ai-node
     ```
 
     Add the MCP server ID and your Tilde credentials to the app's environment. Find the organization and team IDs under **Settings** → **Team settings** → **General information**.
@@ -84,8 +84,8 @@ tool group does not authorize connection through a private server.
     Create the Tilde client, then use `process.env.TILDE_MCP_SERVER_ID` when creating the MCP client.
 
     ```typescript lib/tilde-tools.ts
-    import { createClient } from "@trytilde/harness-sdk";
-    import { createMCPClient } from "@trytilde/harness-sdk-vercel-ai-node";
+    import { createClient } from "@trytilde/sdk";
+    import { createMCPClient } from "@trytilde/sdk-vercel-ai-node";
 
     // Create one Tilde client and reuse it wherever your agent needs tools.
     const tilde = createClient({
@@ -109,7 +109,7 @@ tool group does not authorize connection through a private server.
 
     `createMCPClient` constructs the Tilde MCP endpoint and authenticates it with your Tilde API key. Keep the client open while the agent uses its tools, then call `closeMcp()`.
 
-    Inside a ChatKit endpoint using `responseMode: "tool"`, call `context.session.createMCPClient()` instead. The returned MCP client includes the current provider's session-bound communication tools, with channel, thread, participant, and recipient routing supplied by ChatKit rather than the model.
+    Inside a ChatKit endpoint using `responseMode: "tool"`, call `context.session.createMCPClient({ serverId: process.env.TILDE_MCP_SERVER_ID! })` instead. The returned MCP client includes the current provider's session-bound communication tools, with channel, thread, participant, and recipient routing supplied by ChatKit rather than the model.
   </Step>
 </Steps>
 
@@ -152,11 +152,11 @@ Use a remote custom tool when the implementation should run independently from t
 `toolEndpoint` exposes the discovery and invocation handlers, validates both Zod schemas, and verifies that every request came from Tilde.
 
 ```bash
-pnpm add @trytilde/harness-sdk-vercel-ai-node zod
+pnpm add @trytilde/sdk-vercel-ai-node zod
 ```
 
 ```typescript app/api/tools/route.ts
-import { toolEndpoint } from "@trytilde/harness-sdk-vercel-ai-node";
+import { toolEndpoint } from "@trytilde/sdk-vercel-ai-node";
 import { z } from "zod";
 
 export const { GET, POST } = toolEndpoint({
@@ -196,8 +196,8 @@ pnpm add ai zod
 ```typescript wherever-you-create-your-agent.ts
 import { tool } from "ai";
 import { z } from "zod";
-import { createClient } from "@trytilde/harness-sdk";
-import { createMCPClient } from "@trytilde/harness-sdk-vercel-ai-node";
+import { createClient } from "@trytilde/sdk";
+import { createMCPClient } from "@trytilde/sdk-vercel-ai-node";
 
 const tilde = createClient({
   apiKey: process.env.TILDE_API_KEY!,
@@ -242,7 +242,7 @@ capability after profile authorization.
 The [code review bot](https://github.com/trytilde/examples/tree/main/code-review-bot) uses this pattern to clone repositories through a GitHub Git HTTPS profile and connect to Modal through a gRPC profile.
 
 ```typescript github-api.ts
-import { createClient, reverseProxyPath } from "@trytilde/harness-sdk";
+import { createClient, reverseProxyPath } from "@trytilde/sdk";
 
 const tilde = createClient({
   apiKey: process.env.TILDE_API_KEY!,
