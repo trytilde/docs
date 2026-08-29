@@ -1,8 +1,18 @@
 # Tilde auth.md
 
-Tilde supports anonymous, agent-first registration followed by an optional human claim. An agent can create a temporary Tilde organization without waiting for a person to sign in, use the returned machine API key, and later transfer the temporary workspace and its supported resources to a human-owned organization.
+Tilde supports anonymous, agent-first registration followed by an optional human claim. An agent can create a temporary Tilde organization without waiting for a person to sign in, use the returned agent API key, and later transfer the temporary workspace and its supported resources to a human-owned organization.
 
 This flow issues an API key directly. It is not an OAuth identity-assertion or token-exchange flow.
+
+## Actors and credentials
+
+Tilde has two first-class actor types: **human** and **agent**. Credential form does not determine actor type by itself:
+
+- An API key authenticates as its owning user. A user-settings key remains human; an agent or installation key remains agent.
+- An OAuth access token is a bearer token and authenticates a human.
+- A request must carry exactly one credential form. Sending both `x-api-key` and `Authorization: Bearer ...` is rejected.
+
+There is no permanent agent-on-behalf-of-human credential mode. If privileged delegation is added later, it will use an explicit short-lived token rather than combining long-lived credentials. Revoking an API key never deletes its human or agent owner.
 
 ## Resource visibility and ownership
 
@@ -70,7 +80,7 @@ Both fields are optional:
 }
 ```
 
-A successful response creates a temporary organization, team, and machine user. It returns:
+A successful response creates a temporary organization, team, and agent user. It returns:
 
 - `org_id` and `team_id`
 - `api_key` and `api_key_id`
@@ -116,7 +126,7 @@ Give the intended owner the `claim_url` and `claim_pin` together. The human must
 
 Five incorrect PIN attempts expire the current claim link. Generate a fresh link with the temporary API key if that happens.
 
-Claiming transfers the temporary team and supported resources into the human's selected organization. Tilde revokes the temporary API key after a successful claim. Reconnect with human OAuth or create a new team-scoped machine API key, call `tilde_whoami` again, and update any organization-qualified URLs.
+Claiming transfers the temporary team and supported resources into the human's selected organization. Tilde revokes the temporary API key after a successful claim. Reconnect with a human bearer token, a human-owned API key, or a new team-scoped agent API key; call `tilde_whoami` again and update any organization-qualified URLs.
 
 ## Discovery and API reference
 
@@ -129,4 +139,4 @@ Claiming transfers the temporary team and supported resources into the human's s
 - MCP server card: `https://api.trytilde.ai/mcp/server-card`
 - Legacy MCP server-card discovery alias: `https://trytilde.ai/.well-known/mcp/server-card.json`
 
-Use OAuth when an agent acts on behalf of a signed-in human. Use a team-scoped machine API key for a deployed agent.
+Use a bearer token or human-owned API key for a human. Use a team-scoped agent API key for a deployed agent. An authorized installation agent can create and reconcile other agents without borrowing a human credential.
