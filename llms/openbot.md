@@ -11,7 +11,7 @@ Create a complete cloud-hosted OpenBot instance with the REST API. This is organ
 }
 ```
 
-Use human OAuth when acting for an organization administrator. The slug is a globally unique lowercase DNS label of 3–48 characters. The call creates a dedicated `openbot-<slug>` team, instance API key and OIDC audience, Vercel control and agent projects, persistent Vercel Sandbox, project-OIDC AI Gateway access, a deterministic `openbot-<slug>-control.vercel.app` hostname, and starts OpenBot deployment. Custom Cloudflare hostnames are a follow-up and do not block provisioning.
+Use a human bearer token when acting for an organization administrator. The slug is a globally unique lowercase DNS label of 3–48 characters. The call creates a dedicated `openbot-<slug>` team, agent-owned instance API key and OIDC audience, Vercel control and agent projects, persistent Vercel Sandbox, project-OIDC AI Gateway access, a deterministic `openbot-<slug>-control.vercel.app` hostname, and starts OpenBot deployment. That installation API key can create and reconcile ChatKit agents under its ordinary team permissions. Custom Cloudflare hostnames are a follow-up and do not block provisioning.
 
 The response returns `status: "provisioning"`, `team_id`, `hostname`, `deployment_url`, `vercel_control_project`, `vercel_agent_project`, `vercel_sandbox`, `bootstrap_command_id`, and `oauth`. Repeating the request reconciles deterministic infrastructure for the same organization and slug.
 
