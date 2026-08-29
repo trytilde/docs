@@ -223,6 +223,18 @@ const messages = await convertToAiSdkMessages({
 
 The context also includes `sessionId`, team and organization IDs, the invoking user when known, and typed metadata for supported providers such as `context.slack` and `context.github`.
 
+`context.agent` identifies the agent receiving the current turn. It includes the canonical `id`, `displayName`, `providerId`, `status`, optional `principalUserId`, optional authenticated `avatar.url`, and `createdAt` / `updatedAt` timestamps from Tilde. Use this context instead of duplicating an agent name or avatar in application configuration.
+
+```typescript
+const receivingAgent = {
+  id: context.agent?.id,
+  name: context.agent?.displayName,
+  avatarUrl: context.agent?.avatar?.url,
+};
+```
+
+The avatar URL is a Tilde API path and requires the same server-side Tilde authentication as other agent resources. The `agent` field is optional on the wire so an updated SDK remains compatible with requests from an older Tilde deployment.
+
 ## Handle unprocessed content
 
 `convertToAiSdkMessages` automatically converts standard text and reasoning parts. It also caches transformed message parts for later model requests, improving prompt caching and agent performance. Use `onUnprocessed` for content that needs application-specific handling before it can be sent to a model.
