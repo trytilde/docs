@@ -24,9 +24,9 @@ Realtime events use a closed, client-facing union: `agent.*`, `session.*`, `mess
 
 Read state belongs to the user-session relationship. `PUT /api/v1/team/{team_id}/chatkit/workspace/sessions/{session_id}/read-state` accepts `{ "unread": false }` when a user opens a session or `{ "unread": true }` to mark it manually. Other users sharing the session keep independent state.
 
-Signal provider instances and rules may also be personal. A personal rule names the team where its agent action runs. Sessions created by that rule are `user_team` sessions for the same owner, preventing the rule from turning personal activity into a team-visible conversation.
+Signal provider instances may also be personal. A personal provider may feed only a private Routine created by the same owner. Sessions created by that Routine are `user_team` sessions for the owner, preventing personal activity from becoming a team-visible conversation.
 
-Signal providers and rules use the same two planes. Visibility controls discovery and delivery inspection; ownership controls configuration, target/session policy, grants, state-changing retries, and deletion. Deliveries and sessions inherit the rule and target authorization rather than defining independent grants.
+Signal providers and Routines use the same two planes. Provider visibility controls discovery and delivery inspection. Routine visibility controls who can discover and run the configured action. Ownership controls configuration, target/session policy, grants, state-changing retries, and deletion. Deliveries and sessions inherit their provider and matched Routine authorization rather than defining independent grants.
 
 ## Set up ChatKit
 
@@ -90,6 +90,19 @@ Signal providers and rules use the same two planes. Visibility controls discover
     Go to **ChatKit** → **Configure Chat Providers** and choose where people will talk to the agent. Link the provider to your registered agent, then open [ChatKit workspace](https://api.trytilde.ai/chatkit-workspace) to start a test session.
   </Step>
 </Steps>
+
+## Automate work with Routines
+
+A Routine is one authorization and lifecycle root for work that starts on a schedule or from a Signal. Each Routine contains 1–8 independently enabled triggers and records durable manual, scheduled, and event executions.
+
+- A schedule trigger uses six-field UTC cron syntax.
+- An event trigger selects a configured signal provider, signal type, optional JSON filters, session policy, and ChatKit action.
+- Stable trigger IDs preserve schedule telemetry and retry progress when you replace a Routine.
+- Updates use the returned `version` as `expected_version` so concurrent edits fail instead of overwriting each other.
+
+Open **ChatKit** → **Routines** to create scheduled work. From a configured Signal, choose **Add event Routine** to select the event type, target agent, and stable session-key template.
+
+The REST compatibility path remains `/api/v1/team/{team_id}/automations`, but its payload is the native Routine resource. Signal rules and the former `/chatkit/routines` API are no longer separate resources.
 
 ### Choose how the endpoint responds
 
