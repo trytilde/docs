@@ -1,8 +1,8 @@
 # Configure ChatKit over Tilde Global MCP
 
-Use `https://api.trytilde.ai/mcp`. Call `tilde_whoami` first. Team ChatKit sessions, routines, and agents use `team` ownership; private resources use `user_team`, retaining both the effective owner and execution team. A private session may grant conversation access to selected team users. Every message, attachment, event, task, reply, and queued turn inherits its session audience.
+Use `https://api.trytilde.ai/mcp`. Call `tilde_whoami` first. Team ChatKit sessions and agents use `team` ownership; private ChatKit resources use `user_team`, retaining both the effective owner and execution team. Routines are team-scoped roots whose visibility and ownership planes may be private. A private session may grant conversation access to selected team users. Every message, attachment, event, task, reply, and queued turn inherits its session audience.
 
-Agents, sessions, routines, signal providers, and signal rules have independent visibility and ownership modes. Visibility governs discovery, conversation/delivery reads, messaging, and realtime delivery. Ownership governs settings, membership, grants, target policy, and deletion. Ownership and administrator authority never imply visibility. Use the standard REST mode and user/group grant operations under the exact resource path published by OpenAPI.
+Agents, sessions, Routines, and signal providers have independent visibility and ownership modes. Visibility governs discovery, conversation/delivery reads, messaging, and realtime delivery. Ownership governs settings, membership, grants, target policy, and deletion. Ownership and administrator authority never imply visibility. Use the standard REST mode and user/group grant operations under the exact resource path published by OpenAPI.
 
 ## Build the endpoint first
 
@@ -79,21 +79,21 @@ Use `GET /api/v1/team/{team_id}/chatkit/workspace/search` with the selected work
 
 Queries must contain 1 to 256 non-whitespace characters. Search is case-insensitive full-text matching, not fuzzy or substring matching. A session scope that is hidden from the caller or outside the selected organization and workspace returns `404` without revealing whether it exists elsewhere.
 
-## Trigger work with Signals
+## Trigger work with Signals and Routines
 
 Signals turn provider events into ChatKit messages.
 
-Signal providers and rules may be personal `user` resources with no owning team. A personal rule must supply `target_team_id`, and the owner must belong to that team. It cannot bind a fixed shared session; sessions it creates are `user_team` sessions for the same owner. Personal webhook providers currently use polling ingress, while team providers may use webhook or polling ingress.
+Signal providers may be personal `user` resources with no owning team. A personal provider may feed only a private Routine created by the provider owner. It cannot bind a fixed shared session; sessions it creates are `user_team` sessions for the same owner. Personal providers currently use polling ingress, while team providers may use webhook or polling ingress.
 
-Provider/rule visibility controls discovery and delivery reads. Ownership controls configuration, target/session policy, grants, state-changing retries, and deletion. Deliveries inherit their rule; do not grant individual delivery rows.
+Provider and Routine visibility controls discovery and delivery reads. Ownership controls configuration, target/session policy, grants, state-changing retries, and deletion. Deliveries inherit the provider and matched Routine; do not grant individual delivery rows.
 
 1. Call `tilde_list_signal_providers` and inspect the selected provider's signal schemas and authentication requirements.
 2. Call `tilde_create_signal_provider` with the provider-specific `body`.
-3. Call `tilde_create_signal_rule` with a `body` that selects the event type, target agent, action, and stable session-key mapping.
+3. Call `tilde_create_routine` with a `body` containing the agent, shared instruction, authorization, and 1–8 schedule or event triggers. An event trigger selects the provider instance, signal type, filter, session policy, action, and `instruction_policy`.
 4. Use one stable session key when related events should continue the same body of work, such as all updates to one Sentry issue or GitHub pull request.
 5. Call `tilde_trigger_fake_signal` to test routing where the provider supports it.
 6. Inspect execution with `tilde_list_signal_deliveries`. Use `tilde_retry_signal_delivery` only for a failed delivery that is safe to repeat.
 
-Use `tilde_list_signal_provider_instances` and `tilde_list_signal_rules` before updating or deleting resources. Their mutation functions are `tilde_update_signal_provider`, `tilde_delete_signal_provider`, `tilde_update_signal_rule`, and `tilde_delete_signal_rule`.
+Use `tilde_list_signal_provider_instances` and `tilde_list_routines` before updating or deleting resources. Provider mutations are `tilde_update_signal_provider` and `tilde_delete_signal_provider`; Routine mutations are `tilde_update_routine` and `tilde_delete_routine`. Send the current Routine `version` as `body.expected_version` when updating, and preserve every trigger that should remain because updates replace the complete trigger set.
 
 In application code, handle typed GitHub, Slack, Sentry, and Firecrawl metadata as shown in the [human ChatKit guide](https://trytilde.ai/docs/chatkit). `onUnprocessed` runs once per unprocessed message; later conversions reuse its cached result.
