@@ -85,10 +85,12 @@ Queries must contain 1 to 256 non-whitespace characters. Search is case-insensit
 
 ## Configure coding-agent audit hooks
 
-Use `openbot plugin --cli <codex|claude|cursor> --agent-id <chatkit_agent_id>`.
+Use `openbot plugin --cli <codex|claude|cursor|opencode|gemini> --agent-id <chatkit_agent_id>`.
 The command keeps MCP server and skill-registry setup in the same flow and
 installs native lifecycle hooks for the selected harness. Codex uses a packaged
-Tilde plugin; Claude Code and Cursor use their user hook settings.
+Tilde plugin; OpenCode uses a fail-open global plugin; Claude Code, Cursor, and
+Gemini CLI use their user hook settings. Gemini hooks return valid JSON on
+stdout, as required by Gemini CLI, while audit failures remain non-blocking.
 
 The adapters map one harness session to one tenant-scoped ChatKit session by a
 stable lookup key. They persist user prompts and final responses as ordinary
