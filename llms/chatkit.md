@@ -83,6 +83,28 @@ Use `GET /api/v1/team/{team_id}/chatkit/workspace/search` with the selected work
 
 Queries must contain 1 to 256 non-whitespace characters. Search is case-insensitive full-text matching, not fuzzy or substring matching. A session scope that is hidden from the caller or outside the selected organization and workspace returns `404` without revealing whether it exists elsewhere.
 
+## Configure coding-agent audit hooks
+
+Use `openbot plugin --cli <codex|claude|cursor> --agent-id <chatkit_agent_id>`.
+The command keeps MCP server and skill-registry setup in the same flow and
+installs native lifecycle hooks for the selected harness. Codex uses a packaged
+Tilde plugin; Claude Code and Cursor use their user hook settings.
+
+The adapters map one harness session to one tenant-scoped ChatKit session by a
+stable lookup key. They persist user prompts and final responses as ordinary
+ChatKit messages, then report tool start/completion/failure through
+`POST /api/v1/team/{team_id}/chatkit/agents/{agent_id}/tool-executions`.
+When a hook discovers a local tool one call at a time, its report includes the
+tool display name and immutable source identity; ChatKit activates that entry
+without treating unobserved catalog entries as removed.
+
+Do not create a separate audit table or transcript store. Search coding-agent
+messages through `/chatkit/workspace/search`, and read canonical tool execution
+events under the same session. Preserve the harness session ID and tool call ID
+when adapting another coding agent. Canonical tool details may contain sensitive
+inputs and outputs, so keep agent/session visibility narrow and rely on the
+ChatKit observability projection for browser disclosure.
+
 ## Trigger work with Signals
 
 Signals turn provider events into ChatKit messages.

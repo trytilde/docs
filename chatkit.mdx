@@ -140,6 +140,43 @@ curl --get \
 
 Search uses case-insensitive full-text terms. It does not provide fuzzy, typo-tolerant, or substring matching.
 
+### Audit coding-agent sessions
+
+Connect Codex, Claude Code, or Cursor with `openbot plugin` to record coding
+sessions in ChatKit while installing the Tilde MCP servers and managed skills
+you select.
+
+```bash
+openbot plugin --cli codex --agent-id "$TILDE_CHATKIT_AGENT_ID"
+openbot plugin --cli claude --agent-id "$TILDE_CHATKIT_AGENT_ID"
+openbot plugin --cli cursor --agent-id "$TILDE_CHATKIT_AGENT_ID"
+```
+
+The setup command installs the harness's native lifecycle hooks. Codex receives
+a Tilde plugin because Codex hooks are plugin-owned; Claude Code and Cursor use
+their user hook settings. Authentication stays in the existing Tilde plugin
+token store, while the hook routing file contains only the API URL, team ID,
+and agent ID.
+
+Each coding-agent session maps to one tenant-scoped ChatKit session. User
+prompts and final responses become ordinary searchable messages. Tool start,
+completion, and failure hooks become canonical tool executions with stable
+source, session, and call correlation. Tilde MCP tools and process-local tools
+share the same audit model.
+
+<Warning>
+  Canonical tool executions retain their input, output, and errors for audit.
+  Choose an agent with the correct visibility grants and do not pass secrets in
+  prompts or tool arguments. Browser views still apply the agent's ChatKit
+  observability policy; storage does not discard details merely because a view
+  hides them.
+</Warning>
+
+Use the normal ChatKit search endpoint to find coding-session prompts and
+responses across sessions. A repeated hook delivery reuses the original
+lookup-key session and tool execution identity instead of creating a second
+conversation.
+
 ### Provider-specific message metadata
 
 Supported chat providers add validated metadata to the endpoint context. Use the provider-specific property inside your `chatKitEndpoint` handler.
