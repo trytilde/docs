@@ -59,6 +59,8 @@ Realtime clients consume the closed `agent.*`, `session.*`, `message.*`, `queue_
 
 Bound tenant, target-agent, and ingress-channel fields are supplied by Tilde and cannot be overridden by the caller. Do not configure the removed pairwise internal-agent ChatKit channel.
 
+The delegated endpoint receives the authenticated caller's agent ID as `context.body.session.parentAgentId`. Direct sessions omit it. Use this server-authored value only when a specialist must continue caller-owned runtime context; never ask the model or client to provide the parent identity.
+
 ## Configure a ChatKit provider
 
 1. Call `tilde_search_available_capabilities` with `kinds: ["chatkit_provider"]` and `include_schemas: true`.
