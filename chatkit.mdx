@@ -142,7 +142,7 @@ Search uses case-insensitive full-text terms. It does not provide fuzzy, typo-to
 
 ### Audit coding-agent sessions
 
-Connect Codex, Claude Code, or Cursor with `openbot plugin` to record coding
+Connect Codex, Claude Code, Cursor, OpenCode, or Gemini CLI with `openbot plugin` to record coding
 sessions in ChatKit while installing the Tilde MCP servers and managed skills
 you select.
 
@@ -150,13 +150,15 @@ you select.
 openbot plugin --cli codex --agent-id "$TILDE_CHATKIT_AGENT_ID"
 openbot plugin --cli claude --agent-id "$TILDE_CHATKIT_AGENT_ID"
 openbot plugin --cli cursor --agent-id "$TILDE_CHATKIT_AGENT_ID"
+openbot plugin --cli opencode --agent-id "$TILDE_CHATKIT_AGENT_ID"
+openbot plugin --cli gemini --agent-id "$TILDE_CHATKIT_AGENT_ID"
 ```
 
 The setup command installs the harness's native lifecycle hooks. Codex receives
-a Tilde plugin because Codex hooks are plugin-owned; Claude Code and Cursor use
-their user hook settings. Authentication stays in the existing Tilde plugin
-token store, while the hook routing file contains only the API URL, team ID,
-and agent ID.
+a Tilde plugin because Codex hooks are plugin-owned. OpenCode receives a
+fail-open global plugin. Claude Code, Cursor, and Gemini CLI use their user hook
+settings. Authentication stays in the existing Tilde plugin token store, while
+the hook routing file contains only the API URL, team ID, and agent ID.
 
 Each coding-agent session maps to one tenant-scoped ChatKit session. User
 prompts and final responses become ordinary searchable messages. Tool start,
