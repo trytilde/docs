@@ -223,6 +223,8 @@ const messages = await convertToAiSdkMessages({
 
 The context also includes `sessionId`, team and organization IDs, the invoking user when known, and typed metadata for supported providers such as `context.slack` and `context.github`.
 
+For agent-to-agent delegation, `context.body.session.parentAgentId` identifies the authenticated agent that opened the child session. Direct conversations omit it. A specialist that operates caller-owned runtime state—such as a browser display—can use this server-authored ID to continue the caller's state without accepting a routing identity from model input or client parameters.
+
 `context.agent` identifies the agent receiving the current turn. It includes the canonical `id`, `displayName`, `providerId`, `status`, optional `principalUserId`, optional authenticated `avatar.url`, and `createdAt` / `updatedAt` timestamps from Tilde. Use this context instead of duplicating an agent name or avatar in application configuration.
 
 ```typescript
