@@ -20,7 +20,7 @@ Session members are Tilde authorization principals, not ChatKit delivery partici
 
 Each ChatKit realtime WebSocket retains its authenticated effective user and current Identity groups. Team agent lifecycle changes are sent to every connected team member. Private agent and session events follow their current visibility grants and conversation membership. Authorization changes emit an `access.changed` invalidation so clients refresh their personalized workspace projection.
 
-Realtime events use a closed, client-facing union: `agent.*`, `session.*`, `message.*`, `queue_item.*`, `turn.*`, `activity.*`, `task.*`, and `chat.error`. Streaming content arrives through sequenced `message.delta` events. Internal event-bus payloads and audience identifiers are never forwarded.
+Realtime events use a closed, client-facing union: `agent.*`, `session.*`, `participant.*`, `message.*`, `queue_item.*`, `turn.*`, `activity.*`, `task.*`, and `chat.error`. Streaming content arrives through sequenced `message.delta` events. Internal event-bus payloads and audience identifiers are never forwarded.
 
 Read state belongs to the user-session relationship. `PUT /api/v1/team/{team_id}/chatkit/workspace/sessions/{session_id}/read-state` accepts `{ "unread": false }` when a user opens a session or `{ "unread": true }` to mark it manually. Other users sharing the session keep independent state.
 
@@ -102,7 +102,7 @@ Tool mode binds the current session, participant, provider, channel, thread, rep
 
 Pass the same session context to `context.session.createMCPClient({ serverId: process.env.TILDE_MCP_SERVER_ID! })` when the agent consumes tools through MCP. Session tools are added without asking the model for routing identifiers. In a private owner-workspace session, Tilde also derives the authenticated human's personal Memory and Wiki tools from the authorized session. The agent keeps its own identity, and unrelated personal connections are not exposed.
 
-ChatKit assigns compact participant handles and emits `participant.joined` and `participant.left` realtime events when a participant becomes visible to or leaves the conversation. It also persists a system message containing the participant's display name and external ID when available. These lifecycle changes do not start an agent turn.
+ChatKit assigns compact participant handles and emits durable `participant.joined` and `participant.left` events when a participant becomes visible to or leaves the conversation. Conversation snapshots expose them in `participant_events`, separate from `messages`, so clients can render session activity without adding synthetic chat messages. Tilde still includes the lifecycle context in agent history, and these changes do not start an agent turn.
 
 ### Test your agent in ChatKit workspace
 

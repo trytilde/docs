@@ -20,7 +20,7 @@ Set the required top-level `responseMode` to `agentLoop` or `tool`. In `tool` mo
 
 Provider actions currently include Slack/GitHub reactions and thread reads, Linq reactions and poll operations, and AgentMail thread reads. AgentMail `sendMessage` accepts `to`, `cc`, `bcc`, subject, HTML, and reply-all. Non-message actions appear as canonical `tool.execution` realtime events; `sendMessage` uses normal ChatKit message streaming.
 
-Participant visibility changes emit `participant.joined` / `participant.left` realtime events and persisted system messages with compact participant handles, display names, and external IDs when available. They do not invoke an agent turn.
+Participant visibility changes emit durable `participant.joined` / `participant.left` events with compact participant handles, display names, and external IDs when available. Workspace conversation snapshots return the same records in `participant_events`; keep them separate from `messages` and render them as session activity, not chat bubbles. Tilde includes the lifecycle context in agent history without invoking an agent turn.
 
 ## Register an agent
 
@@ -46,7 +46,7 @@ Private sessions use `user_team` ownership. The creator is inserted as the owner
 
 Owners and team, organization, or system administrators manage membership. Members may list/read the session, send messages and attachments, and receive its ChatKit realtime message, delta, queue, turn, task, and error events. Members cannot change ownership or manage other members. A grant stops authorizing new access when the user is removed from the execution team.
 
-Realtime clients consume the closed `agent.*`, `session.*`, `message.*`, `queue_item.*`, `turn.*`, `activity.*`, `task.*`, and `chat.error` union. They must refresh the workspace projection after `access.changed`. Use `PUT /api/v1/team/{team_id}/chatkit/workspace/sessions/{session_id}/read-state` with `{ "unread": false }` after presenting a session and `{ "unread": true }` for a manual unread override. Read state is per user and must never be copied into shared session metadata.
+Realtime clients consume the closed `agent.*`, `session.*`, `participant.*`, `message.*`, `queue_item.*`, `turn.*`, `activity.*`, `task.*`, and `chat.error` union. They must refresh the workspace projection after `access.changed`. Use `PUT /api/v1/team/{team_id}/chatkit/workspace/sessions/{session_id}/read-state` with `{ "unread": false }` after presenting a session and `{ "unread": true }` for a manual unread override. Read state is per user and must never be copied into shared session metadata.
 
 ## Enable agent-to-agent messaging
 
