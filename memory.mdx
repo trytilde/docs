@@ -31,7 +31,7 @@ A memory bank is an isolated store that lasts beyond one conversation. Agents ca
 
 Tilde memory banks are powered by [Hindsight](https://hindsight.vectorize.io/). Tilde exposes most Hindsight bank configuration, including retain and reflect missions, extraction behavior, observations, consolidation, disposition, entity settings, memory defense, directives, mental models, and advanced provider overrides. You can also import and export portable bank templates.
 
-Open Tilde, select your workspace, and go to **Memory** → **Memory Banks**. Click **New memory bank**, then give the bank a clear name and description.
+Open Tilde, select your workspace, and go to **Memory** → **Memory Banks**. Click **New memory bank**, choose **Personal** or **Workspace**, then give the bank a clear name and description. Personal banks follow you across agents without becoming visible to the workspace.
 
 Tilde automatically creates a private tool provider bound to the bank and enables these tools:
 
@@ -44,13 +44,13 @@ Tilde binds the bank ID internally, so it does not appear as an agent-controlled
 
 ## Wikis
 
-A wiki is a structured Markdown knowledge base for your team. It can contain nested pages, typed data, version history, semantic relationships, graph queries, and media assets.
+A wiki is a structured Markdown knowledge base for you personally or for your team. It can contain nested pages, typed data, version history, semantic relationships, graph queries, and media assets.
 
-Go to **Memory** → **Wikis** and click **New wiki**. You can select one or more memory banks during setup. Tilde then synchronizes wiki changes into those banks, giving agents both structured wiki access and semantic recall over the same knowledge.
+Go to **Memory** → **Wikis** and click **New wiki**. Choose **Personal** or **Workspace**, then select memory banks with the same ownership scope. Tilde synchronizes Wiki changes into those banks, giving agents both structured Wiki access and semantic recall over the same knowledge.
 
 Creating a wiki automatically provisions and enables its private wiki tools. They cover:
 
-- **Pages:** list, read, create or update, move, delete, migrate, and inspect history.
+- **Pages:** list, read, create or update, move, delete, migrate, inspect history, and run bounded literal or regular-expression grep with paths, line numbers, and context.
 - **Data model:** manage versioned page types, JSON schemas, and relationship types.
 - **Graph:** relate pages, inspect backlinks and neighborhoods, and traverse relationships.
 - **Assets:** upload, download, update, delete, and inspect media references.
@@ -71,9 +71,9 @@ Use automatic ingestion for source data, agent tools for deliberate updates, and
 
 ### Ingest supported sources automatically
 
-Open a memory bank and select the sources you want it to ingest. Tilde can ingest ChatKit conversations, signals, wikis, skills, and MCP servers. Once a source is linked, Tilde detects changes and resynchronizes the affected documents into the bank.
+Open a memory bank and select the sources you want it to ingest. Tilde can ingest ChatKit conversations, signals, wikis, skills, and MCP servers. Personal banks initially accept personal Signal providers and personal Wikis; workspace banks accept workspace sources. Once a source is linked, Tilde backfills it, detects changes, and resynchronizes affected documents into the bank.
 
-A source is not shared with every memory bank automatically. You choose which banks receive it. For wikis, select the destination memory banks when you create or edit the wiki.
+A source is not shared with every memory bank automatically. You explicitly choose which banks receive it when configuring the connection, Wiki, or bank. A personal source can bind only to a personal bank owned by the same user and organization.
 
 ### Let an agent maintain its knowledge
 

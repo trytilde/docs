@@ -3,6 +3,19 @@
 
 export const providers = [
   {
+    "name": "AgentMail",
+    "slug": "agentmail",
+    "initials": "AG",
+    "category": "Chat",
+    "summary": "Compose and reply to AgentMail email conversations.",
+    "auth": [
+      "AgentMail API key"
+    ],
+    "iconSources": [],
+    "toolCount": 2,
+    "tools": []
+  },
+  {
     "name": "AWS",
     "slug": "aws",
     "initials": "AW",
@@ -158,7 +171,7 @@ export const providers = [
       "Linq API token"
     ],
     "iconSources": [],
-    "toolCount": 23,
+    "toolCount": 24,
     "tools": []
   },
   {
@@ -300,7 +313,7 @@ export const providers = [
       "No Auth"
     ],
     "iconSources": [],
-    "toolCount": 80,
+    "toolCount": 66,
     "tools": []
   },
   {
@@ -335,11 +348,9 @@ export const providers = [
     "initials": "TI",
     "category": "Pay",
     "summary": "Tilde Pay tools for balances, deposit information, and agent payments.",
-    "auth": [
-      "No Auth"
-    ],
+    "auth": [],
     "iconSources": [],
-    "toolCount": 8,
+    "toolCount": 0,
     "tools": []
   },
   {
