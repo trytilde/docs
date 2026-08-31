@@ -16,7 +16,7 @@ Memory-bank and wiki ownership can move between `user` and `team` through their 
 ## Memory banks
 
 1. Call `tilde_list_memory_providers` to confirm the hosted provider.
-2. Call `tilde_create_memory_bank` with a clear name and purpose.
+2. Call `tilde_create_memory_bank` for a workspace bank or `tilde_create_personal_memory_bank` for the authenticated human's private bank, with a clear name and purpose.
 3. Save the returned memory bank ID.
 4. Use `tilde_get_memory_bank` and `tilde_check_memory_bank_health` to verify provisioning.
 
@@ -24,7 +24,7 @@ Memory banks are hosted through Hindsight. They currently cost $20 per bank each
 
 ## Wikis and schema packs
 
-1. Call `tilde_create_wiki`. Set `memory_bank_ids` when its content should also be ingested into memory.
+1. Call `tilde_create_wiki` for workspace knowledge or `tilde_create_personal_wiki` for the authenticated human. Set same-scope `memory_bank_ids` when its content should also be ingested into memory.
 2. Call `tilde_list_wiki_schema_packs` to inspect reusable schemas.
 3. Call `tilde_apply_wiki_schema_pack` with `wiki_id` and `schema_pack_key`. Tilde records the authenticated caller as the actor.
 4. Use `tilde_get_wiki` to verify provisioning. Use `tilde_retry_wiki_provisioning` only after an errored provisioning attempt.
@@ -43,6 +43,8 @@ ChatKit agents and wikis can also accept `memory_bank_ids` when created. Use exp
 
 Inspect ingestion with `tilde_list_memory_bank_sources`. Call `tilde_retry_memory_sync` with the source kind and ID after fixing the cause of a failed sync.
 
+For personal Signal providers and personal Wikis, call `tilde_set_personal_memory_source_bindings`. Tilde infers the human user from authenticated credentials; never supply or guess a user ID. A personal source can bind only to a personal bank owned by that user in the same organization. New deliveries and Wiki changes are queued automatically after the explicit binding is created.
+
 ## Expose memory and wiki tools
 
 Creating a bank or wiki automatically enables a private tool provider. It does not expose those functions on an agent's MCP server.
@@ -53,3 +55,5 @@ Creating a bank or wiki automatically enables a private tool provider. It does n
 4. Prefer dynamic mode for the full wiki toolset.
 
 Treat the wiki as the source of truth for structured and relational knowledge. A useful maintenance pattern is a daily agent run that reviews the previous 24 hours, updates the wiki first, and retains only concise durable facts that do not belong in the wiki. See the [human Memory guide](https://trytilde.ai/docs/memory).
+
+Every bound Wiki provides `grep_pages` in addition to full-text `list_pages`. Use literal mode for exact text and regex mode for patterns. Results contain stable page identity, path, one-based line number, the matching Markdown line, and bounded context; page and match limits prevent unbounded scans.
