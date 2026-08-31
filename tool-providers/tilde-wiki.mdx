@@ -1,7 +1,7 @@
 ---
 title: "Tilde Wiki tools for AI agents"
 sidebarTitle: "Tilde Wiki"
-description: "Explore 43 Tilde Wiki tools for AI agents in Tilde, including supported authentication and MCP capabilities."
+description: "Explore 44 Tilde Wiki tools for AI agents in Tilde, including supported authentication and MCP capabilities."
 keywords:
   - "Tilde Wiki AI tools"
   - "Tilde Wiki MCP integration"
@@ -9,7 +9,7 @@ keywords:
   - "Tilde tool providers"
   - "MCP tools"
 "og:title": "Tilde Wiki tools for AI agents | Tilde"
-"og:description": "Explore 43 Tilde Wiki tools for AI agents in Tilde, including supported authentication and MCP capabilities."
+"og:description": "Explore 44 Tilde Wiki tools for AI agents in Tilde, including supported authentication and MCP capabilities."
 mode: "wide"
 ---
 
@@ -32,11 +32,15 @@ export const provider = {
     "No Auth"
   ],
   "iconSources": [],
-  "toolCount": 43,
+  "toolCount": 44,
   "tools": [
     [
       "list_pages",
       "List or full-text search pages in this wiki."
+    ],
+    [
+      "grep_pages",
+      "Run bounded ripgrep-style literal or regular-expression search across Markdown lines in this wiki."
     ],
     [
       "read_page",
@@ -77,10 +81,6 @@ export const provider = {
     [
       "create_page_type",
       "Create a custom page type with a Draft 7 JSON Schema."
-    ],
-    [
-      "get_page_type",
-      "Read a custom page type."
     ]
   ]
 };
@@ -89,13 +89,14 @@ export const provider = {
 
 Maintain Markdown pages, semantic relationships, graph queries, revisions, and media assets in one bound Tilde Wiki.
 
-Tilde exposes **43 Tilde Wiki tools** for AI agents through MCP. Connect with No Auth.
+Tilde exposes **44 Tilde Wiki tools** for AI agents through MCP. Connect with No Auth.
 
 <ToolProviderDetail provider={provider} ProviderLogo={ProviderLogo} />
 
 ## Popular Tilde Wiki tools
 
 - **list_pages** — List or full-text search pages in this wiki.
+- **grep_pages** — Run bounded ripgrep-style literal or regular-expression search across Markdown lines in this wiki.
 - **read_page** — Read a Markdown page by stable id.
 - **upsert_page** — Create or update a page. Updates require expected_revision.
 - **move_page** — Move a page without changing its stable id.
@@ -106,7 +107,6 @@ Tilde exposes **43 Tilde Wiki tools** for AI agents through MCP. Connect with No
 - **apply_ontology_template** — Install a reusable ontology template into this wiki idempotently.
 - **list_page_types** — List custom page type definitions.
 - **create_page_type** — Create a custom page type with a Draft 7 JSON Schema.
-- **get_page_type** — Read a custom page type.
 
 ## Connect Tilde Wiki to an AI agent
 

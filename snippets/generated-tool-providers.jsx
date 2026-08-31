@@ -376,7 +376,7 @@ export const providers = [
       "No Auth"
     ],
     "iconSources": [],
-    "toolCount": 43,
+    "toolCount": 44,
     "tools": []
   }
 ];
