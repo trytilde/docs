@@ -4,6 +4,8 @@ Tilde resource state is portable even though Tilde does not require Terraform. K
 
 State does not contain API keys, signing keys, provider credentials, conversation history, or memory content.
 
+Self-extension proposal state contains only secret-free intent, the server-authored preview, an optional secret-free setup continuation, and source receipts for audit. It excludes approval principals, Human Approval tokens, worker leases, runtime status, one-time outputs, and rollback authority. Import creates a new pending proposal with a new destination approval; it never imports an executed or approved state, and it never uses source receipts to delete destination resources.
+
 Portable resources use tagged `team`, `user`, or `user_team` ownership. Team export remains team-only by default. Personal and private-team resources require explicit inclusion and authorization, and import requires an `owner_mappings` entry from every source user ID to its target user ID. Missing mappings fail validation; never remove ownership or convert it to team ownership to make an import pass.
 
 Selected skills are exported as checksum-bound packages. Their `SKILL.md` entrypoint and package-local references, templates, scripts, examples, and media are embedded so import can verify and recreate the complete package without fetching mutable upstream content. Provider source and revision metadata remain attached as provenance.
