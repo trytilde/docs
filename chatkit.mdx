@@ -114,6 +114,18 @@ When creating a private session, the creator becomes its owner automatically. Th
   ChatKit workspace requires the **Vercel AI Endpoint** ChatKit provider to be enabled for your agent.
 </Info>
 
+### Approve agent-requested capability changes
+
+An agent may create a durable self-extension proposal when it needs a connector, MCP server, skill registry, custom tool, agent bundle, memory bank, or wiki that it cannot already use. Tilde validates the requested category, rejects secret-shaped fields, and authors the permission, credential, cost, audience, egress, security, and undo preview.
+
+The active conversation renders that proposal as a secure **Yes** or **No** Human Approval card. The decision is bound to the proposal ID, immutable proposal hash, proposal generation, authenticated human principal, requesting agent, and originating session. A typed button decision is required; free-text confirmation in chat does not approve a proposal.
+
+Only the requesting agent's human owner, a human team administrator, or a system administrator can decide the proposal. The requesting human cannot approve their own request, and an agent credential cannot approve, reject, cancel, roll back, or claim one-time outputs. **Yes** atomically completes the linked Human Approval and queues leased execution. **No** atomically cancels the approval and records proposal rejection.
+
+Credential values, credential references, approval tokens, OAuth state, and generated signing keys are never included in model-visible proposal text. If execution needs provider setup, the server returns a secret-free setup-item reference only after approval. The approving human continues through the normal server-authored credential or OAuth card. The original agent can then resume its task from the durable decision and proposal status.
+
+Execution records whether each resource was created by the proposal or reused. Rollback removes only proposal-created receipts. One-time generated values are encrypted and can be consumed once through the human-only outputs endpoint.
+
 ### Search conversations
 
 Use consolidated ChatKit search to find session titles, agents participating in sessions, and message content that you can view in a workspace. Results include the session context needed to open the matching conversation.

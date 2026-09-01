@@ -59,6 +59,19 @@ Realtime clients consume the closed `agent.*`, `session.*`, `participant.*`, `me
 
 Bound tenant, target-agent, and ingress-channel fields are supplied by Tilde and cannot be overridden by the caller. Do not configure the removed pairwise internal-agent ChatKit channel.
 
+## Propose a missing capability safely
+
+Agents can propose but cannot approve or execute capability changes.
+
+1. POST the secret-free intent to `/api/v1/team/{team_id}/chatkit/self-extension-proposals`. Supply the exact `requesting_agent_id`, optional originating `session_id` and `run_id`, a stable `idempotency_key`, one supported `category`, a short title and rationale, and credential-free `desired_state`. Credential-shaped fields are rejected even when named as references or IDs; complete provider authentication only through the owner-authenticated setup continuation after approval.
+2. Stop the agent turn after the client renders the returned capability-change Human Approval. Never treat a free-text yes as approval and never ask for API keys, passwords, OAuth codes, tokens, or signing keys in chat.
+3. The owner client posts `approval_id`, `proposal_hash`, `proposal_generation`, and `decision: "approve" | "reject"` to `/api/v1/team/{team_id}/chatkit/self-extension-proposals/{proposal_id}/decision` using the authenticated human credential. The requesting agent's human owner or a team/system administrator may decide; agent credentials and unrelated humans are rejected.
+4. Poll the proposal resource. Approved work moves through `approved`, `executing`, and `executed`; denied work becomes `rejected`. Leased retries are idempotent.
+5. If the executed proposal contains a `provider_setup` continuation, hand its `setup_item_id` to the owner-authenticated generic credential setup flow. Resolve OAuth or credential next actions there; the agent must not receive authorization state or credential values.
+6. Resume the original task only after the durable decision. Use the returned resource receipts for verification, not as authority to delete shared resources.
+
+Rollback is a separate authorized-human action and removes only receipts marked as proposal-created. Generated outputs remain encrypted and require the human-only consume-once endpoint.
+
 The delegated endpoint receives the authenticated caller's agent ID as `context.body.session.parentAgentId`. Direct sessions omit it. Use this server-authored value only when a specialist must continue caller-owned runtime context; never ask the model or client to provide the parent identity.
 
 ## Configure a ChatKit provider
