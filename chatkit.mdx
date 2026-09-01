@@ -122,7 +122,7 @@ The active conversation renders that proposal as a secure **Yes** or **No** Huma
 
 Only the requesting agent's human owner, a human team administrator, or a system administrator can decide the proposal. The requesting human cannot approve their own request, and an agent credential cannot approve, reject, cancel, roll back, or claim one-time outputs. **Yes** atomically completes the linked Human Approval and queues leased execution. **No** atomically cancels the approval and records proposal rejection.
 
-Credential values, approval tokens, OAuth state, and generated signing keys are never included in model-visible proposal text. If execution needs provider setup, the proposal returns a secret-free setup-item reference. The approving human continues through the normal server-authored credential or OAuth card. The original agent can then resume its task from the durable decision and proposal status.
+Credential values, credential references, approval tokens, OAuth state, and generated signing keys are never included in model-visible proposal text. If execution needs provider setup, the server returns a secret-free setup-item reference only after approval. The approving human continues through the normal server-authored credential or OAuth card. The original agent can then resume its task from the durable decision and proposal status.
 
 Execution records whether each resource was created by the proposal or reused. Rollback removes only proposal-created receipts. One-time generated values are encrypted and can be consumed once through the human-only outputs endpoint.
 

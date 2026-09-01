@@ -63,7 +63,7 @@ Bound tenant, target-agent, and ingress-channel fields are supplied by Tilde and
 
 Agents can propose but cannot approve or execute capability changes.
 
-1. POST the secret-free intent to `/api/v1/team/{team_id}/chatkit/self-extension-proposals`. Supply the exact `requesting_agent_id`, optional originating `session_id` and `run_id`, a stable `idempotency_key`, one supported `category`, a short title and rationale, and `desired_state` containing references rather than credential values.
+1. POST the secret-free intent to `/api/v1/team/{team_id}/chatkit/self-extension-proposals`. Supply the exact `requesting_agent_id`, optional originating `session_id` and `run_id`, a stable `idempotency_key`, one supported `category`, a short title and rationale, and credential-free `desired_state`. Credential-shaped fields are rejected even when named as references or IDs; complete provider authentication only through the owner-authenticated setup continuation after approval.
 2. Stop the agent turn after the client renders the returned capability-change Human Approval. Never treat a free-text yes as approval and never ask for API keys, passwords, OAuth codes, tokens, or signing keys in chat.
 3. The owner client posts `approval_id`, `proposal_hash`, `proposal_generation`, and `decision: "approve" | "reject"` to `/api/v1/team/{team_id}/chatkit/self-extension-proposals/{proposal_id}/decision` using the authenticated human credential. The requesting agent's human owner or a team/system administrator may decide; agent credentials and unrelated humans are rejected.
 4. Poll the proposal resource. Approved work moves through `approved`, `executing`, and `executed`; denied work becomes `rejected`. Leased retries are idempotent.
