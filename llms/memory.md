@@ -50,7 +50,9 @@ These are agent-authenticated billing operations, not Global MCP tools:
 2. POST `/api/v1/billing/ai-credits/receipts` with `reservation_id`, `actual_cost_microusd`, `model_id`, `input_tokens`, `output_tokens`, `tags`, and `idempotency_key`; include `generation_id` and `provider` when available.
 3. DELETE `/api/v1/billing/ai-credits/reservations` with `reservation_id` when no provider charge occurred.
 
-Do not retry an uncertain chargeable model call until its receipt is reconciled. Human top-up authorization is separate. OpenBot hosted-inference metering is pending and is not enabled by the merged durable-work runtime.
+OpenBot hosted-inference metering is shipped for Tilde-managed Vercel project OIDC. Before every Gateway call, reserve credits and prepare a generation- and worker-fenced AgentRun effect. Persist the Gateway generation for recovery. Commit authoritative system/fallback receipts and release authoritative BYOK receipts. Direct owner Gateway keys and Codex subscription inference are outside this meter.
+
+Do not let BYOK skip reservation: Vercel may fall back to charged system credentials, so zero-credit organizations cannot start any Gateway call. Do not replay planned, uncertain, or reconciled effects. If no model response is recoverable, terminally fail the old run; a later owner trigger creates a new run. Hosted `max_cost_microusd` uses authoritative post-call receipt cost and may overshoot by one final call. Non-hosted cost budgets require configured input/output price rates. Human top-up authorization remains separate.
 
 ## Wikis and schema packs
 

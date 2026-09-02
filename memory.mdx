@@ -62,7 +62,11 @@ The synthesis agent receives bank-bound `recall`, `retain`, and document-deletio
 
 Agent-authenticated hosted runtimes can reserve organization AI credits before a model call, then commit the exact provider receipt. Reserve with `estimated_cost_microusd` and an `idempotency_key`. Commit with `reservation_id`, `actual_cost_microusd`, `model_id`, input/output token counts, tags, and a second idempotency key. Release an unused reservation explicitly. Human-authenticated top-ups are separate from agent spend.
 
-An uncertain provider outcome must be reconciled before another chargeable retry. The billing API primitives are available, but OpenBot hosted-inference metering is not part of the merged durable-work runtime yet.
+OpenBot now applies this lifecycle to every model call made through Tilde-managed Vercel project OIDC. It writes AgentRun effect intent before the provider starts, records the Gateway generation for recovery, and settles the authoritative receipt before reporting hosted cost to the run. Direct owner Gateway keys and Codex subscription inference are outside this managed meter.
+
+Every Gateway call reserves credits first, including BYOK. Vercel can fall back from BYOK to charged system credentials, so BYOK cannot safely bypass preflight. When the authoritative generation receipt reports BYOK, OpenBot releases the reservation. A system or fallback receipt is committed. An organization with no Tilde AI credits cannot start a Gateway call even when BYOK is configured. See [Vercel's BYOK behavior](https://vercel.com/docs/ai-gateway/authentication-and-byok/byok).
+
+OpenBot never repeats a planned, uncertain, or reconciled provider call automatically. If the model response cannot be recovered, it fails that AgentRun safely; a later owner message creates a new run. Hosted `max_cost_microusd` uses authoritative receipt cost after each call and can overshoot by the final call, while organization credit reservation remains a pre-call gate. Non-hosted cost budgets still require configured input and output price rates.
 
 ## Wikis
 
