@@ -25,13 +25,15 @@ Use memory banks when an agent needs relevant context without knowing where it w
 
 A memory bank is an isolated store that lasts beyond one conversation. Agents can retain stable documents, recall content relevant to a query, and reflect on the bank to produce a contextual answer.
 
-Tilde memory banks use a managed Helix graph and vector store. Tenant and bank predicates isolate every node, edge, search, and mutation. Recall combines semantic, text, exact-title, and graph candidates before returning bounded results with evidence and source provenance. Owners can also import and export portable bank templates for supported configuration, mental models, and directives.
+Tilde memory banks use a managed Helix graph and vector store. Tenant and bank predicates isolate every node, edge, search, and mutation. Recall combines semantic, lexical, exact-title, and graph candidates before reranking a bounded result set with evidence and source provenance. Bank access is resolved in Postgres before a scoped provider query is created, so agents never submit a tenant or bank partition directly. Owners can also import and export portable bank templates for supported configuration, mental models, and directives.
+
+Each retained document has typed fields for its OKF category, title, importance, authorship, overwrite policy, evidence, subjects, supersession, source, and learning agent. The optional `metadata` object is only for provider-native or application-specific extension facts. It does not affect access, ranking, graph links, provenance, or synthesis.
 
 Open Tilde, select your workspace, and go to **Memory** → **Memory Banks**. Click **New memory bank**, choose **Personal** or **Workspace**, then give the bank a clear name and description. Personal banks follow you across agents without becoming visible to the workspace.
 
 Tilde automatically creates a private tool provider bound to the bank and enables these tools:
 
-- `retain` stores or replaces a stable document. Reuse its `document_id` when updating it.
+- `retain` stores or replaces a stable document. Reuse its `document_id` when updating it. Select an OKF `memory_type`, set `importance` from `0.0` to `1.0`, and use typed relations for evidence, subjects, or supersession.
 - `recall` searches for memories relevant to a query.
 - `reflect` answers a question using knowledge held by the bank.
 - `delete_document` removes a retained document by ID.
@@ -56,7 +58,7 @@ The synthesis agent receives bank-bound `recall`, `retain`, and document-deletio
 
 OpenBot declares the owned bank's synthesizer through the Agent Resource Bundle field `memory.bank.synthesizer_agent_id`. It is a stable same-team ChatKit agent key. Supplying `memory-catcher` validates and converges that assignment on creation, update, and portable state import. Omitting the field preserves the bank's current or server-default assignment. Setting `memory.bank.enabled` to `false` deletes the lifecycle-owned bank.
 
-Before Memory Catcher creates its synthesis AgentRun, reserves credits, or calls the selected provider, it submits the prompt's batch digest, complete evidence IDs, and worker lease to `/memory/synthesis-sessions/{session_id}/validate-batch`. Tilde accepts only the deterministic current oldest-first prompt chunk under that unexpired lease. Later or arbitrary same-lease subsets remain invalid until the earlier chunk completes.
+Every synthesis mutation carries the prompt's batch digest, complete evidence IDs, and worker lease. Tilde accepts only the exact active evidence set under that unexpired lease. A stale worker or arbitrary subset cannot authorize a mutation or completion.
 
 ### Account for managed inference with AI credits
 
@@ -93,7 +95,7 @@ Schema packs do not create a separate tool provider. The wiki's existing tools i
 
 ## Keep memory continuously updated
 
-Use automatic ingestion for source data, agent tools for deliberate updates, and a scheduled distillation agent for durable lessons from conversations.
+Use automatic ingestion for source data, agent tools for deliberate updates, and bank-sharded background synthesis for durable lessons from conversations.
 
 ### Ingest supported sources automatically
 
@@ -109,12 +111,16 @@ Give the agent wiki page and relationship tools when it needs to maintain struct
 
 Treat the wiki as a first-class source of truth for common and relational data such as customers, projects, ownership, policies, and dependencies. Use the memory bank for semantic recall, conclusions, preferences, and concise summaries that do not belong in a structured page.
 
-### Run a daily distillation agent
+### Use background synthesis
 
-We recommend running a dedicated agent on a schedule, typically once every 24 hours. Give it access to that day's conversations, the target memory bank tools, and the relevant wiki tools. Its job is to compress the day's interactions into durable knowledge.
+Assign a synthesizer agent when you create or configure a bank. Tilde shards evidence by bank and starts the assigned agent when the pending queue reaches 1,000 estimated tokens. One synthesizer can serve many banks, but each invocation receives tools bound to exactly one bank and one active evidence lease. A bank without an assigned synthesizer continues collecting evidence until you configure one.
 
-```text Daily memory distillation prompt
-Review the last 24 hours of conversations.
+The synthesizer recalls related facts, writes or supersedes typed memories, and records a cited no-op when the evidence adds nothing durable. Owner-written explicit facts are protected from automatic overwrite and deletion. Mutation and completion receipts are operational records; they are not retained memories or exported configuration.
+
+You can also run a foreground agent when you need immediate synthesis. Its memory tools use the same typed document contract, while its normal conversation remains responsible for user-visible communication.
+
+```text Memory synthesis guidance
+Review the supplied evidence batch.
 
 Identify durable facts, decisions, preferences, outcomes, and unresolved work.
 Ignore greetings, repeated context, temporary instructions, and unverified claims.
@@ -127,7 +133,7 @@ Recall related memories before writing, and reuse stable document IDs when updat
 Do not retain secrets or duplicate content already ingested from the wiki.
 ```
 
-This pattern keeps raw conversation noise out of long-term memory while steadily improving the context available to future sessions.
+This pattern keeps raw event noise out of long-term memory while steadily improving the context available to future sessions.
 
 ## Expose memory tools to an agent
 
