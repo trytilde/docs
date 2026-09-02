@@ -102,7 +102,36 @@ Tool mode binds the current session, participant, provider, channel, thread, rep
 
 Pass the same session context to `context.session.createMCPClient({ serverId: process.env.TILDE_MCP_SERVER_ID! })` when the agent consumes tools through MCP. Session tools are added without asking the model for routing identifiers. In a private owner-workspace session, Tilde also derives the authenticated human's personal Memory and Wiki tools from the authorized session. The agent keeps its own identity, and unrelated personal connections are not exposed.
 
+For a shared agent whose MCP server enables speaker-bound personal-tool federation, use `context.mcp.connect({ serverId })`. ChatKit forwards an invocation-scoped capability for the verified speaker outside model input. Tilde resolves only that speaker's eligible personal accounts; an unmapped external speaker receives no personal tools. The capability, user ID, account IDs, and credentials are never copied into messages or room state.
+
 ChatKit assigns compact participant handles and emits durable `participant.joined` and `participant.left` events when a participant becomes visible to or leaves the conversation. Conversation snapshots expose them in `participant_events`, separate from `messages`, so clients can render session activity without adding synthetic chat messages. Tilde still includes the lifecycle context in agent history, and these changes do not start an agent turn.
+
+### Share a room with people and agents
+
+A ChatKit session can be a private or team room with a durable human and agent roster. Room owners can invite a canonical Tilde user, select an `admin` or `member` collaboration role, add visible agents, inspect pending invitations, revoke an invitation, and remove a participant. The invited user accepts or declines before receiving private room history.
+
+Room roles do not replace resource permissions. Session visibility controls messages, attachments, replay, and live events. Session ownership controls invitations and roster administration. Removing a participant stops future delivery and speaker-bound personal-tool federation.
+
+`client.chatkit.rooms` exposes the typed roster and invitation contract. `runBoundedRoomGroup` deduplicates agents, caps participants and rounds, and stops when a round makes no progress. OpenBot currently keeps the owner room UI dormant until canonical human identity discovery can replace raw user identifiers; the underlying API and SDK contract are available.
+
+### Keep substantial work durable
+
+Goals, tasks, background jobs, routines, and AgentRuns let an agent continue substantial work without keeping correctness in one process.
+
+- A **goal** records the outcome for one agent and session. A **task** records an independently deliverable piece of that goal, including dependencies and progress.
+- A **background job** delegates one bounded objective to an explicit child agent. Jobs persist an optional `model_id`, hard duration/token/cost budgets, child session, transcript message IDs, artifacts, and terminal result.
+- An **AgentRun** persists the model-loop objective, generation-fenced lease, steps, token/cost totals, loop counters, wake state, and tool-effect receipts.
+- A **routine** stores recurring intent and its schedule. Prefer an event trigger when the same work can start from a Signal.
+
+Use `client.chatkit.work({ agentId, sessionId })` for goals, tasks, and jobs; `client.chatkit.routines(agentId)` for recurring work; and `client.chatkit.runs` for a durable host. Job actions are `steer`, `stop`, `resume`, and `collect-result`. Only the bound agent can mutate its work. Authorized owners can inspect and control the corresponding conversation work.
+
+Tilde writes child model and budget context into signed, server-authored `tildeAgentJob` message metadata. Hidden continuations use `tildeAgentRun` metadata containing the run ID, worker ID, generation, and hidden flag. Agent hosts must not accept caller-provided model, budget, run, or worker headers as authority.
+
+### Compact model context without rewriting history
+
+Context compaction changes model input, not ChatKit history. An agent reports `started`, `ended`, or `failed` lifecycle events to `/chatkit/sessions/{session_id}/compaction-events`. A successful checkpoint stores the exact summary, agent, transcript boundary, compacted and retained message IDs, and token counts.
+
+Load `/chatkit/sessions/{session_id}/messages/from-last-compaction?agent_id=...` to receive the latest successful checkpoint separately from retained and newer messages. In `@trytilde/sdk-vercel-ai-node`, `createChatKitCompactionController` supplies a bounded `prepareStep` loop and `composeChatKitCompactionPrepareStep` preserves provider preparation before applying compaction.
 
 ### Test your agent in ChatKit workspace
 

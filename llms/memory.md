@@ -22,6 +22,36 @@ Memory-bank and wiki ownership can move between `user` and `team` through their 
 
 Memory banks are hosted through Hindsight. They currently cost $20 per bank each month; this pricing is expected to change.
 
+## Automatic ChatKit memory
+
+Set `automatic_memory_mode` on the ChatKit agent or channel to exactly `none`, `personal`, `personal_plus_agent`, or `team`; default to `none`. `memory_bank_ids` controls conversation ingestion and is not a substitute for recall authorization.
+
+For one recipient-bound recall, POST `/api/v1/team/{team_id}/chatkit/agents/{agent_id}/sessions/{session_id}/automatic-memory/recall` with the durable triggering `message_id` and optional `max_tokens`. Never supply or infer a user ID. Tilde derives the effective actor from the stored message/session and returns only visible, provenance-bearing memory.
+
+OpenBot automatic-memory wiring remains pending its product dependency. Do not tell users that existing OpenBot agents recall automatically until that product change is merged and deployed.
+
+## Personal-bank synthesis
+
+PUT `/api/v1/user/{user_id}/memory/banks/{bank_id}/synthesizer` with `synthesizer_agent_id` and `synthesizer_team_id`. The authenticated human must own the bank. Tilde creates a stable private synthesis session and queues visible completed-turn evidence.
+
+The assigned agent uses these session-bound paths:
+
+- `POST /api/v1/team/{team_id}/memory/synthesis-sessions/{session_id}/recall`
+- `POST /api/v1/team/{team_id}/memory/synthesis-sessions/{session_id}/retain`
+- `DELETE /api/v1/team/{team_id}/memory/synthesis-sessions/{session_id}/documents`
+
+DELETE the bank's `/synthesizer` assignment to stop processing while retaining queued evidence.
+
+## Organization AI credits
+
+These are agent-authenticated billing operations, not Global MCP tools:
+
+1. POST `/api/v1/billing/ai-credits/reservations` with `estimated_cost_microusd` and `idempotency_key` before inference.
+2. POST `/api/v1/billing/ai-credits/receipts` with `reservation_id`, `actual_cost_microusd`, `model_id`, `input_tokens`, `output_tokens`, `tags`, and `idempotency_key`; include `generation_id` and `provider` when available.
+3. DELETE `/api/v1/billing/ai-credits/reservations` with `reservation_id` when no provider charge occurred.
+
+Do not retry an uncertain chargeable model call until its receipt is reconciled. Human top-up authorization is separate. OpenBot hosted-inference metering is pending and is not enabled by the merged durable-work runtime.
+
 ## Wikis and schema packs
 
 1. Call `tilde_create_wiki` for workspace knowledge or `tilde_create_personal_wiki` for the authenticated human. Set same-scope `memory_bank_ids` when its content should also be ingested into memory.

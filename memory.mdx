@@ -42,6 +42,28 @@ Tilde automatically creates a private tool provider bound to the bank and enable
 
 Tilde binds the bank ID internally, so it does not appear as an agent-controlled tool parameter.
 
+### Recall memory for the effective speaker
+
+ChatKit automatic memory is opt-in. An agent or channel stores one `automatic_memory_mode`: `none`, `personal`, `personal_plus_agent`, or `team`. `none` is the default. `memory_bank_ids` independently selects the banks that ingest conversations involving that resource.
+
+The recipient agent calls `/chatkit/agents/{agent_id}/sessions/{session_id}/automatic-memory/recall` with a durable `message_id` and optional `max_tokens`. Tilde derives the effective speaker from that stored message and session, applies bank visibility, and returns a bounded projection with provenance. The caller cannot choose another user or use a hidden continuation as someone else's memory context.
+
+### Synthesize personal memory in the background
+
+A personal bank can assign a synthesizer with `synthesizer_agent_id` and `synthesizer_team_id`. Tilde creates one stable private ChatKit synthesis session for that bank and queues visible completed-turn evidence. Streaming deltas, hidden continuations, and the synthesis session itself do not recursively enqueue more work.
+
+The synthesis agent receives bank-bound `recall`, `retain`, and document-deletion operations under `/memory/synthesis-sessions/{session_id}`. Clearing the synthesizer stops background processing but preserves queued evidence for a later assignment.
+
+<Info>
+  The automatic-memory and synthesis APIs are available. OpenBot's opt-in automatic-memory product wiring is still pending its dependent product stack; existing OpenBot agents do not gain automatic recall merely by upgrading the API.
+</Info>
+
+### Account for managed inference with AI credits
+
+Agent-authenticated hosted runtimes can reserve organization AI credits before a model call, then commit the exact provider receipt. Reserve with `estimated_cost_microusd` and an `idempotency_key`. Commit with `reservation_id`, `actual_cost_microusd`, `model_id`, input/output token counts, tags, and a second idempotency key. Release an unused reservation explicitly. Human-authenticated top-ups are separate from agent spend.
+
+An uncertain provider outcome must be reconciled before another chargeable retry. The billing API primitives are available, but OpenBot hosted-inference metering is not part of the merged durable-work runtime yet.
+
 ## Wikis
 
 A wiki is a structured Markdown knowledge base for you personally or for your team. It can contain nested pages, typed data, version history, semantic relationships, graph queries, and media assets.
