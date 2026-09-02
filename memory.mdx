@@ -58,7 +58,7 @@ The synthesis agent receives bank-bound `recall`, `retain`, and document-deletio
 
 OpenBot declares the owned bank's synthesizer through the Agent Resource Bundle field `memory.bank.synthesizer_agent_id`. It is a stable same-team ChatKit agent key. Supplying `memory-catcher` validates and converges that assignment on creation, update, and portable state import. Omitting the field preserves the bank's current or server-default assignment. Setting `memory.bank.enabled` to `false` deletes the lifecycle-owned bank.
 
-Every synthesis mutation carries the prompt's batch digest, complete evidence IDs, and worker lease. Tilde accepts only the exact active evidence set under that unexpired lease. A stale worker or arbitrary subset cannot authorize a mutation or completion.
+Before inference, Memory Catcher validates the prompt's batch digest, complete evidence IDs, and worker lease through `/memory/synthesis-sessions/{session_id}/validate-batch`. Tilde accepts only the current prompt-sized evidence chunk under that unexpired lease. Every later mutation repeats the same typed binding, so a stale worker or arbitrary subset cannot authorize a mutation or completion.
 
 ### Account for managed inference with AI credits
 
