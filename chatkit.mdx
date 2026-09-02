@@ -28,6 +28,24 @@ Signal provider instances and rules may also be personal. A personal rule names 
 
 Signal providers and rules use the same two planes. Visibility controls discovery and delivery inspection; ownership controls configuration, target/session policy, grants, state-changing retries, and deletion. Deliveries and sessions inherit the rule and target authorization rather than defining independent grants.
 
+## Automate work with Routines
+
+A Routine is one automation with shared ownership, visibility, enablement, and instruction. Each Routine contains one to eight independently enabled triggers. Triggers are OR'd: any matching schedule or event starts a run.
+
+- **Schedule triggers** use minute-granularity UTC cron expressions.
+- **Event triggers** select a configured signal provider, signal type, filters, session policy, and ChatKit action.
+- **Manual runs** execute the Routine's default agent and instruction immediately.
+
+Routine create, trigger replacement, and deletion are atomic. Updates may include `expected_version` to reject concurrent edits instead of overwriting them. Every schedule, event, and manual activation appears in the Routine run history.
+
+Event triggers support fixed sessions, keyed session reuse, and a new session per delivery. They can invoke an agent or create only a signal message. `instruction_policy` controls whether the agent receives only the normalized signal or both the signal and the Routine instruction.
+
+Personal signal providers can feed private Routines in a workspace. A personal provider cannot be attached to a team-visible Routine.
+
+<Info>
+  Signal providers and deliveries remain under Signals. Signal routing rules are now event triggers inside Routines rather than separate resources.
+</Info>
+
 ## Set up ChatKit
 
 <Steps>
