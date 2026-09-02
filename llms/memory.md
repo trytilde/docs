@@ -47,9 +47,9 @@ The assigned agent uses these session-bound paths:
 
 DELETE the bank's `/synthesizer` assignment to stop processing while retaining queued evidence.
 
-For synthesis retain, supersede, forget, and completion, copy the exact current `batch_id`, complete duplicate-free `evidence_ids`, and fresh `lease_owner` supplied by the job. Never reuse a prior claim's lease. OpenBot exposes these as the bank-free `memory_upsert`, `memory_supersede`, `memory_forget`, and `finish_synthesis` tools; Memory Catcher must finish the durable receipt before emitting the requested completion marker.
+For synthesis retain, supersede, forget, and completion, copy the exact current `batch_id`, complete duplicate-free `evidence_ids` in their supplied order, and fresh `lease_owner` supplied by the job. Never reorder the evidence sequence or reuse a prior claim's lease. OpenBot exposes these as the bank-free `memory_upsert`, `memory_supersede`, `memory_forget`, and `finish_synthesis` tools; Memory Catcher must finish the durable receipt before emitting the requested completion marker.
 
-Before inference, call `validate-batch` with the batch ID, complete evidence IDs, and lease owner. Tilde recomputes the digest and accepts only the current prompt-sized evidence chunk under the unexpired lease. Each later mutation repeats the same typed binding, so a stale worker or arbitrary subset cannot authorize a mutation or completion.
+Before inference, call `validate-batch` with the batch ID, exact ordered evidence-ID sequence, and lease owner. Tilde recomputes the digest and accepts only the current prompt-sized evidence chunk under the unexpired lease. Each later mutation repeats the same typed binding, so a stale worker, reordered set, or arbitrary subset cannot authorize a mutation or completion.
 
 ## Organization AI credits
 
