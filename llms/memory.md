@@ -20,7 +20,9 @@ Memory-bank and wiki ownership can move between `user` and `team` through their 
 3. Save the returned memory bank ID.
 4. Use `tilde_get_memory_bank` and `tilde_check_memory_bank_health` to verify provisioning.
 
-Memory banks use Tilde's managed Helix graph and vector store. Tenant and bank predicates scope every query and mutation. Recall returns bounded graph/vector results with evidence, source, and learning-agent provenance.
+Memory banks use Tilde's managed Helix graph and vector store. Tenant and bank predicates scope every query and mutation. Recall fuses semantic, lexical, exact-title, and graph candidates before reranking a bounded result set with evidence, source, and learning-agent provenance. Callers never supply raw tenant or graph predicates.
+
+Retained documents use typed `memory_type`, `title`, `importance`, `authorship`, `relations`, and `provenance` fields. Put evidence IDs, subjects, supersession, source identity, and learning-agent identity in those fields. Use `metadata` only for provider-native or caller-owned extension facts that Tilde does not interpret.
 
 ## Automatic ChatKit memory
 
@@ -45,9 +47,9 @@ The assigned agent uses these session-bound paths:
 
 DELETE the bank's `/synthesizer` assignment to stop processing while retaining queued evidence.
 
-For synthesis retain, supersede, forget, and completion, copy the exact current `batch_id`, complete duplicate-free `evidence_ids`, and fresh `lease_owner` supplied by the job. Never reuse a prior claim's lease. OpenBot exposes these as the bank-free `memory_upsert`, `memory_supersede`, `memory_forget`, and `finish_synthesis` tools; Memory Catcher must finish the durable receipt before emitting the requested completion marker.
+For synthesis retain, supersede, forget, and completion, copy the exact current `batch_id`, complete duplicate-free `evidence_ids` in their supplied order, and fresh `lease_owner` supplied by the job. Never reorder the evidence sequence or reuse a prior claim's lease. OpenBot exposes these as the bank-free `memory_upsert`, `memory_supersede`, `memory_forget`, and `finish_synthesis` tools; Memory Catcher must finish the durable receipt before emitting the requested completion marker.
 
-Before creating a synthesis AgentRun, reserving credits, or invoking inference, call `validate-batch` with those three fields. Tilde recomputes the server digest and accepts only the current oldest-first prompt chunk under the unexpired lease. A later or arbitrary subset cannot establish billed-inference authority.
+Before inference, call `validate-batch` with the batch ID, exact ordered evidence-ID sequence, and lease owner. Tilde recomputes the digest and accepts only the current prompt-sized evidence chunk under the unexpired lease. Each later mutation repeats the same typed binding, so a stale worker, reordered set, or arbitrary subset cannot authorize a mutation or completion.
 
 ## Organization AI credits
 
@@ -94,5 +96,17 @@ Creating a bank or wiki automatically enables a private tool provider. It does n
 4. Prefer dynamic mode for the full wiki toolset.
 
 Treat the wiki as the source of truth for structured and relational knowledge. A useful maintenance pattern is a daily agent run that reviews the previous 24 hours, updates the wiki first, and retains only concise durable facts that do not belong in the wiki. See the [human Memory guide](https://trytilde.ai/docs/memory).
+
+## Background synthesis
+
+Assign one synthesizer agent to each bank. Tilde queues source evidence by bank
+and invokes the assigned agent when the queue reaches 1,000 estimated tokens.
+The synthesis session exposes only that bank's tools. Every retain, supersede,
+or delete command is bound to the exact batch, evidence IDs, and worker lease.
+The agent must complete the batch with `mutated` or a cited `noop` outcome.
+
+Owner-written explicit facts are protected from automatic overwrite and
+deletion. Synthesis leases and receipts are operational state and are not part
+of exported bank configuration.
 
 Every bound Wiki provides `grep_pages` in addition to full-text `list_pages`. Use literal mode for exact text and regex mode for patterns. Results contain stable page identity, path, one-based line number, the matching Markdown line, and bounded context; page and match limits prevent unbounded scans.
