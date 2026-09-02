@@ -20,7 +20,46 @@ Memory-bank and wiki ownership can move between `user` and `team` through their 
 3. Save the returned memory bank ID.
 4. Use `tilde_get_memory_bank` and `tilde_check_memory_bank_health` to verify provisioning.
 
-Memory banks are hosted through Hindsight. They currently cost $20 per bank each month; this pricing is expected to change.
+Memory banks use Tilde's managed Helix graph and vector store. Tenant and bank predicates scope every query and mutation. Recall returns bounded graph/vector results with evidence, source, and learning-agent provenance.
+
+## Automatic ChatKit memory
+
+Set `automatic_memory_mode` on the ChatKit agent or channel to exactly `none`, `personal`, `personal_plus_agent`, or `team`; default to `none`. `memory_bank_ids` controls conversation ingestion and is not a substitute for recall authorization.
+
+For one recipient-bound recall, POST `/api/v1/team/{team_id}/chatkit/agents/{agent_id}/sessions/{session_id}/automatic-memory/recall` with the durable triggering `message_id` and optional `max_tokens`. Never supply or infer a user ID. Tilde derives the effective actor from the stored message/session and returns only visible, provenance-bearing memory.
+
+OpenBot automatic-memory wiring is shipped and default-off. Persist `OPENBOT_AUTOMATIC_MEMORY_MODE` or a per-agent `AGENT_<ID>_AUTOMATIC_MEMORY_MODE` override. `personal_plus_agent` alone provisions an agent-owned bank; `personal` and `team` enable their corresponding authorized recall without creating that bank. Memory Catcher uses the installation's selected Codex, direct Gateway, or managed-OIDC inference provider and has mode `none` plus no bank of its own.
+
+For an Agent Resource Bundle, `memory.bank.synthesizer_agent_id` is an optional stable same-team ChatKit agent key. Set it to `memory-catcher` for an OpenBot-owned bank. Omission preserves the current or server-default synthesizer; it never clears an assignment. `memory.bank.enabled: false` deletes the lifecycle-owned bank. Portable state carries the synthesizer as a ChatKit agent resource reference and resolves it in the destination team.
+
+## Personal-bank synthesis
+
+PUT `/api/v1/user/{user_id}/memory/banks/{bank_id}/synthesizer` with `synthesizer_agent_id` and `synthesizer_team_id`. The authenticated human must own the bank. Tilde creates a stable private synthesis session and queues visible completed-turn evidence.
+
+The assigned agent uses these session-bound paths:
+
+- `POST /api/v1/team/{team_id}/memory/synthesis-sessions/{session_id}/validate-batch`
+- `POST /api/v1/team/{team_id}/memory/synthesis-sessions/{session_id}/recall`
+- `POST /api/v1/team/{team_id}/memory/synthesis-sessions/{session_id}/retain`
+- `DELETE /api/v1/team/{team_id}/memory/synthesis-sessions/{session_id}/documents`
+
+DELETE the bank's `/synthesizer` assignment to stop processing while retaining queued evidence.
+
+For synthesis retain, supersede, forget, and completion, copy the exact current `batch_id`, complete duplicate-free `evidence_ids`, and fresh `lease_owner` supplied by the job. Never reuse a prior claim's lease. OpenBot exposes these as the bank-free `memory_upsert`, `memory_supersede`, `memory_forget`, and `finish_synthesis` tools; Memory Catcher must finish the durable receipt before emitting the requested completion marker.
+
+Before creating a synthesis AgentRun, reserving credits, or invoking inference, call `validate-batch` with those three fields. Tilde recomputes the server digest and accepts only the current oldest-first prompt chunk under the unexpired lease. A later or arbitrary subset cannot establish billed-inference authority.
+
+## Organization AI credits
+
+These are agent-authenticated billing operations, not Global MCP tools:
+
+1. POST `/api/v1/billing/ai-credits/reservations` with `estimated_cost_microusd` and `idempotency_key` before inference.
+2. POST `/api/v1/billing/ai-credits/receipts` with `reservation_id`, `actual_cost_microusd`, `model_id`, `input_tokens`, `output_tokens`, `tags`, and `idempotency_key`; include `generation_id` and `provider` when available.
+3. DELETE `/api/v1/billing/ai-credits/reservations` with `reservation_id` when no provider charge occurred.
+
+OpenBot hosted-inference metering is shipped for every Tilde-managed Vercel project-OIDC Gateway call, including Memory Catcher. Before each call, reserve credits and prepare a generation- and worker-fenced AgentRun effect. Persist the Gateway generation for recovery. Commit authoritative system/fallback receipts and release authoritative BYOK receipts. Direct owner Gateway keys and Codex subscription inference are outside this meter.
+
+Do not let BYOK skip reservation: Vercel may fall back to charged system credentials, so zero-credit organizations cannot start any Gateway call. Do not replay planned, uncertain, or reconciled effects. If no model response is recoverable, terminally fail the old run; a later owner trigger creates a new run. Hosted `max_cost_microusd` uses authoritative post-call receipt cost and may overshoot by one final call. Non-hosted cost budgets require configured input/output price rates. Human top-up authorization remains separate.
 
 ## Wikis and schema packs
 

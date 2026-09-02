@@ -92,3 +92,5 @@ Reverse proxies let application code call a provider's native API while Tilde in
 Pass the runtime MCP server ID to Tilde SDK `createMCPClient`. Follow the [human Tools guide](https://trytilde.ai/docs/tools) for the client code. The code review bot is the preferred reference for custom agents that combine MCP tools, local tools, and reverse proxies.
 
 Within a `chatKitEndpoint({ responseMode: "tool" })` handler, prefer `context.session.tools`, `context.$provider.tools`, or `context.session.createMCPClient({ serverId })`. These surfaces inject session-bound provider communication tools and prefill routing identifiers. `sendMessage` creates the visible ChatKit message; reactions, thread reads, and Linq poll operations are emitted as canonical tool-execution events.
+
+Use `context.mcp.connect({ serverId })` when a shared ChatKit agent should federate the verified speaker's eligible personal tools. The SDK forwards an invocation-scoped capability outside model input. Never serialize that capability, user IDs, account IDs, or credentials into messages, state, logs, or tool arguments.

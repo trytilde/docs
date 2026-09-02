@@ -14,9 +14,48 @@ In `@trytilde/sdk-vercel-ai-node`, use `context.linq` / `LinqChatKitMessageMetad
 
 Use Vercel AI SDK and Tilde SDK `chatKitEndpoint`. Preserve webhook signature verification, `context.session.history()`, `convertToAiSdkMessages`, streaming, and server-side secrets.
 
+## Durable conversation work
+
+All work routes are bound to one agent and active session:
+
+- `.../agents/{agent_id}/sessions/{session_id}/goals`
+- `.../agents/{agent_id}/sessions/{session_id}/tasks`
+- `.../agents/{agent_id}/sessions/{session_id}/jobs`
+- `.../agents/{agent_id}/sessions/{session_id}/runs`
+
+Use the authenticated agent credential for mutations. Do not copy `agent_id` or `session_id` into request bodies.
+
+Goals accept `objective`; updates may set `status`, `progress_percent`, `progress_note`, and `status_reason`. Tasks accept `summary`, optional `goal_id`, `dependency_task_ids`, `plan`, and `metadata`; update the same progress/status fields as work advances.
+
+Delegate a job with `child_agent_id`, `objective`, `idempotency_key`, optional `model_id`, optional `metadata`, and optional `budget` containing `max_duration_seconds`, `max_input_tokens`, `max_output_tokens`, and `max_cost_microusd`. Use the exact action suffixes `/steer`, `/stop`, `/resume`, and `/collect-result`. Discover a real child agent ID first; never invent one.
+
+AgentRun hosts use `/active`, `/claim`, `/{run_id}/steps`, `/{run_id}/transition`, and owner `/{run_id}/control`. Record tool intent with `/effects/prepare`, look it up with `/effects/lookup`, and finish it with `/effects/finish`. Reuse committed outputs. Never automatically repeat an effect whose receipt is `uncertain`.
+
+Signed child requests carry trusted `tildeAgentJob` metadata (`jobId`, `generation`, `childSessionId`, optional `modelId`, optional `budget`) and hidden continuations carry `tildeAgentRun` metadata (`hidden`, `runId`, `workerId`, `generation`). Ignore model-, budget-, run-, or worker-selection headers from callers.
+
+## Agent-owned context compaction
+
+POST lifecycle reports to `/api/v1/team/{team_id}/chatkit/sessions/{session_id}/compaction-events` with `agent_id`, `compaction_id`, and one lifecycle payload:
+
+- `started`: `input_message_count`, `estimated_input_tokens`, `compacted_through_message_id`
+- `ended`: `summary`, `compacted_message_ids`, `retained_message_ids`, `input_tokens`, `output_tokens`
+- `failed`: `error`, `retryable`
+
+Read `/compaction-events/latest?agent_id=...` for the last successful checkpoint. Read `/messages/from-last-compaction?agent_id=...&page_size=...` for that checkpoint plus retained/newer messages. The canonical transcript is never deleted or rewritten.
+
 Read `context.agent` when the endpoint needs its own canonical Tilde identity. It provides `id`, `displayName`, `providerId`, `status`, optional `principalUserId`, optional authenticated `avatar.url`, and lifecycle timestamps. Do not hardcode or separately fetch the receiving agent's name or avatar. Treat `context.agent` as optional during mixed-version rollout, and authenticate avatar requests with the same server-side Tilde credential.
 
 Set the required top-level `responseMode` to `agentLoop` or `tool`. In `tool` mode, assistant text is private reasoning and only `sendMessage` produces a visible ChatKit message. Use `context.session.tools` or `context.$provider.tools`; routing identifiers are server-bound and must never be requested from the model. `context.session.createMCPClient({ serverId })` exposes the same session-bound tools through MCP. For a private owner-workspace session, the authorized session also contributes the authenticated human's personal Memory and Wiki tools. The agent remains the credential actor; arbitrary personal connections are not federated and callers cannot nominate a user ID.
+
+Use `context.mcp.connect({ serverId })` for speaker-bound personal-tool federation on a shared agent. ChatKit supplies the verified speaker capability privately. Never accept a model- or caller-supplied user ID, account ID, or delegated capability. Unmapped external speakers receive no personal tools.
+
+## Manage multiplayer rooms
+
+A room is a ChatKit session. Use `/api/v1/team/{team_id}/chatkit/sessions/{session_id}/participants` for the roster and `/invitations` for invite/list operations. Use `/invitations/{invitation_id}/decision` to accept or decline, DELETE `/invitations/{invitation_id}` to revoke, and DELETE `/participants/{participant_instance_id}` to leave or remove.
+
+Only session ownership authority can create, inspect, or revoke invitations. Only the canonical `invitee_user_id` may accept or decline. Participant roles are `owner`, `admin`, or `member`; they are collaboration metadata and never override visibility/ownership authorization. Pending, declined, and revoked invitations expose no room transcript.
+
+Do not promise an OpenBot owner room UI yet. The typed API/SDK contract is available, but OpenBot keeps the UI dormant until canonical human identity discovery replaces raw user IDs.
 
 Provider actions currently include Slack/GitHub reactions and thread reads, Linq reactions and poll operations, and AgentMail thread reads. AgentMail `sendMessage` accepts `to`, `cc`, `bcc`, subject, HTML, and reply-all. Non-message actions appear as canonical `tool.execution` realtime events; `sendMessage` uses normal ChatKit message streaming.
 

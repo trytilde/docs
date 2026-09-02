@@ -40,6 +40,20 @@ Tilde's Vercel account token remains exclusively in the Tilde deployment worker.
 
 Runtime configuration accepts user-owned model, agent, and generated Computer values. Tilde derives the API key, organization, team, hosted-instance identity, OAuth metadata, public origin, and Computer identity from the authenticated instance record rather than trusting caller-supplied values.
 
+## Hosted inference billing
+
+Tilde Cloud forwards the non-secret hosted-billing marker to the agent runtime through the managed release configuration allowlist. Vercel tokens and static Gateway credentials remain excluded. OpenBot enables metering only for Tilde-managed project OIDC; direct owner Gateway-key and Codex subscription paths disable it.
+
+Before every Gateway model call, OpenBot reserves organization AI credits and prepares a worker- and generation-fenced AgentRun effect. It persists the Gateway generation for crash recovery. The authoritative generation receipt commits system or fallback cost and releases a BYOK reservation. BYOK still reserves first because Vercel may fall back to charged system credentials and requires Gateway credits for that fallback. An organization with zero Tilde AI credits cannot start a Gateway call, including a BYOK call.
+
+If a provider result is planned, uncertain, or reconciled without a recoverable model response, OpenBot does not repeat it. The old run fails safely, and a later owner message creates a new run. Hosted cost budgets use the authoritative receipt after each call, so `max_cost_microusd` can overshoot by the final call; the organization credit balance remains protected by pre-call reservation.
+
+## Automatic memory
+
+OpenBot automatic memory is shipped and defaults off. Set `OPENBOT_AUTOMATIC_MEMORY_MODE` to `personal`, `personal_plus_agent`, or `team`, or use an `AGENT_<ID>_AUTOMATIC_MEMORY_MODE` override. Only `personal_plus_agent` creates a lifecycle-owned bank. Its Agent Resource Bundle assigns the stable same-team `memory-catcher` ChatKit agent as synthesizer; omission preserves a current or server default, while disabling the bank removes that lifecycle-owned resource.
+
+Memory Catcher uses the installation's selected inference provider, including managed project OIDC, and owns no memory bank itself. Before a billed call it validates the exact current prompt chunk and unexpired worker lease with Tilde, then uses a durable AgentRun effect for reservation and authoritative settlement. Failed credit commit or BYOK release remains retryable without repeating provider inference. Its bank-bound tools require the current batch ID, complete evidence IDs, and fresh lease owner for every mutation and completion, so synthesis cannot recursively retain itself or reuse a stale claim.
+
 ## Managed release API
 
 After building `.vercel/output`, OpenBot creates a release for either `control` or `agents`, uploads each unique SHA-1 file through Tilde, finalizes the release, and polls it until `ready` or `failed`.
