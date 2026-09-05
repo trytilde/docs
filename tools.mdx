@@ -275,3 +275,18 @@ const pullRequest = await response.json();
 ```
 
 Reverse proxies are enabled by default for supported tool providers.
+
+## Personal OAuth through provider setup
+
+Applications can reuse the workspace provider catalog while creating an account
+owned by the signed-in user. Send `personal: true` to
+`POST /api/v1/team/{team_id}/provider-setup/start`, together with the catalog's
+provider and authentication method IDs. Use a distinct `form_values.id` for each
+account and supply `return_url` for the OAuth callback.
+
+Personal OAuth stores both the connection and its refreshable credential in the
+user scope. Tokens use the user's encryption key. The callback preserves custom
+account labels alongside the provider's account identity. Read the resulting
+accounts from `/api/v1/user/{user_id}/mcp/tool-group`. Workspace-owned setup remains
+the default when `personal` is omitted. Agents use these accounts through
+session-bound personal tool federation rather than receiving credentials.

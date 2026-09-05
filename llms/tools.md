@@ -94,3 +94,15 @@ Pass the runtime MCP server ID to Tilde SDK `createMCPClient`. Follow the [human
 Within a `chatKitEndpoint({ responseMode: "tool" })` handler, prefer `context.session.tools`, `context.$provider.tools`, or `context.session.createMCPClient({ serverId })`. These surfaces inject session-bound provider communication tools and prefill routing identifiers. `sendMessage` creates the visible ChatKit message; reactions, thread reads, and Linq poll operations are emitted as canonical tool-execution events.
 
 Use `context.mcp.connect({ serverId })` when a shared ChatKit agent should federate the verified speaker's eligible personal tools. The SDK forwards an invocation-scoped capability outside model input. Never serialize that capability, user IDs, account IDs, or credentials into messages, state, logs, or tool arguments.
+
+## Personal OAuth setup from an application
+
+Use the official SDK transport with the authenticated user's session. Discover
+provider/auth-method IDs from the team's provider-setup catalog, then call
+`POST /api/v1/team/{team_id}/provider-setup/start` with `personal: true`, `domain:
+"mcp"`, `provider_id`, `auth_method_id`, a unique `form_values.id`, optional
+`form_values.displayName`, and `return_url`. Follow the returned generic
+`next_action`. List the resulting accounts through the user-scoped tool-group
+route. Multiple accounts of the same provider remain distinct. Personal OAuth
+brokering is restricted to the effective owner; user credentials are encrypted
+and refreshed in the user scope. Omitting `personal` retains team setup.
