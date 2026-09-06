@@ -106,3 +106,8 @@ provider/auth-method IDs from the team's provider-setup catalog, then call
 route. Multiple accounts of the same provider remain distinct. Personal OAuth
 brokering is restricted to the effective owner; user credentials are encrypted
 and refreshed in the user scope. Omitting `personal` retains team setup.
+
+Personal credential setup ensures organization, workspace (when required for
+broker state), and user key defaults after validating the effective owner.
+Callbacks repair missing defaults before token exchange. A missing personal key
+must never be worked around by encrypting the user's tokens under a team key.

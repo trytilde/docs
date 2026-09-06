@@ -285,7 +285,9 @@ provider and authentication method IDs. Use a distinct `form_values.id` for each
 account and supply `return_url` for the OAuth callback.
 
 Personal OAuth stores both the connection and its refreshable credential in the
-user scope. Tokens use the user's encryption key. The callback preserves custom
+user scope. Tokens use the user's encryption key. Tilde ensures the owner's
+scoped key exists before OAuth starts and again when resuming a callback,
+including for accounts created before personal encryption was introduced. The callback preserves custom
 account labels alongside the provider's account identity. Read the resulting
 accounts from `/api/v1/user/{user_id}/mcp/tool-group`. Workspace-owned setup remains
 the default when `personal` is omitted. Agents use these accounts through

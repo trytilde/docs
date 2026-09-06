@@ -51,7 +51,7 @@ Use `context.mcp.connect({ serverId })` for speaker-bound personal-tool federati
 
 ## Inspect outbound delivery
 
-Use `GET /api/v1/team/{team_id}/chatkit/session/{session_id}/message/{message_id}/deliveries` with the organization header and a credential that can read the message and session. The response is an array of `channel_inbox_id`, `provider_id`, `status`, optional `external_message_id`, `last_error`, and `delivered_at`. A `delivered` receipt confirms provider acceptance, not a read receipt. An empty list is not success. Wait on pending work, surface `dead_letter`, and retain the same canonical message ID when retrying an uncertain notification.
+Use `GET /api/v1/team/{team_id}/chatkit/session/{session_id}/message/{message_id}/deliveries` with the organization header and a credential that can read the message and session. The response is an array of `channel_inbox_id`, `provider_id`, `status`, optional `external_message_id`, `last_error`, and `delivered_at`. The optional `provider_status` is `pending`, `delivered`, or `failed` when final provider status can be queried. It overrides initial acceptance; Telnyx WhatsApp carrier failures return `dead_letter` with an error. Without that status, `delivered` only confirms provider acceptance. Neither is a read receipt. Wait on pending work and retain the same canonical message ID for uncertain notifications. A new attempt is safe only after a confirmed provider rejection.
 
 ## Manage multiplayer rooms
 

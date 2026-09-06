@@ -110,7 +110,7 @@ ChatKit assigns compact participant handles and emits durable `participant.joine
 
 After creating a message, read `GET /api/v1/team/{team_id}/chatkit/session/{session_id}/message/{message_id}/deliveries` with the same organization scope. It requires visibility of the message and its session. Each receipt identifies the channel, provider, status, optional provider message ID, last error, and delivery timestamp.
 
-`delivered` means the provider accepted the outbound message. It does not mean the recipient read it. An empty receipt list or queued/retrying delivery is still pending; `dead_letter` is a terminal failure. Keep the original message ID when checking an uncertain send instead of creating a duplicate.
+`provider_status` reports `pending`, `delivered`, or `failed` when the adapter can query final delivery status, as with Telnyx WhatsApp. That result takes precedence over initial queue acceptance: a later carrier rejection returns `dead_letter` and its error. Without a queryable provider status, `delivered` means acceptance. Neither means the recipient read the message. Keep the original message ID for an uncertain send; only a confirmed provider rejection establishes that a new attempt is safe.
 
 ### Share a room with people and agents
 
