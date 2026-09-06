@@ -95,6 +95,8 @@ Within a `chatKitEndpoint({ responseMode: "tool" })` handler, prefer `context.se
 
 Use `context.mcp.connect({ serverId })` when a shared ChatKit agent should federate the verified speaker's eligible personal tools. The SDK forwards an invocation-scoped capability outside model input. Never serialize that capability, user IDs, account IDs, or credentials into messages, state, logs, or tool arguments.
 
+For an `agent_job` invocation, use the same `context.mcp.connect` surface. Tilde derives the human from the durable job's private parent-session lineage and an actual ancestor message with a server-authored human actor; do not insert a fake human message into the child session. Capabilities retain the child session, original trigger, and job ID/generation. Their use revalidates the running generation, private owner and grants, active participants, current team membership, and original external sender verification and channel policy. A resumed generation cannot reuse an older capability. Hidden continuations must also match their trusted AgentRun generation and worker lease. Personal federation is withheld if the lineage or original policy cannot be validated.
+
 ## Personal OAuth setup from an application
 
 Use the official SDK transport with the authenticated user's session. Discover

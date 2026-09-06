@@ -18,6 +18,8 @@ A workspace MCP server can optionally federate personal tools for each connectin
 
 The selection stores definitions, not credentials or account IDs. When two people connect to the same server, each sees the same workspace tools plus only their own permitted personal accounts. Account-qualified tool names prevent collisions. A personal MCP server exposes personal tools only.
 
+An agent can delegate personal tool work within a private conversation while the accounts remain yours. Tilde follows the persisted job and private parent conversations to the original verified human request, then grants the child a short-lived capability for its configured MCP server. The owner, participant access, job generation, and original channel's personal-tool policy are rechecked when the capability is used. Stopping or resuming the job, removing access, or unlinking the original sender invalidates the old delegation. A channel that withholds personal tools cannot gain them through delegation.
+
 Owners can promote a personal MCP server to a workspace they belong to. A workspace administrator can make a server personal to themselves only after removing every static workspace-tool mapping; personal tools are always federation-only.
 
 To configure this, open an MCP server, choose its personal-tool federation mode, and use **Add tools** in selected mode. The picker shows every available provider definition; the actual runtime catalog is the intersection of that policy and the connecting user's active personal accounts.
