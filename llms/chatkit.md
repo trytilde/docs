@@ -83,6 +83,8 @@ Team agent create, update, and delete events are broadcast to authenticated Chat
 
 Realtime audiences are derived from current visibility and session membership on every event. A private visibility grant may admit an authorized user or group to the root, while private-session members receive that session's message and agent-turn stream. Client payloads do not expose authorization grants or internal audience identifiers.
 
+Human-created private workspace sessions belong to the authenticated human, including when a deployment service owns the selected agent. Tilde binds the workspace participant to that human for personal tool access. Delegated child sessions inherit the parent session's ownership.
+
 ## Manage private session members
 
 Private sessions use `user_team` ownership. The creator is inserted as the owner automatically, and an optional `member_user_ids` list may add other users from the same team during creation. Use the private-session membership API to list, add, or remove non-owner members later. Do not confuse these authorization members with ChatKit inbox participants.

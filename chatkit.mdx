@@ -139,6 +139,8 @@ Context compaction changes model input, not ChatKit history. An agent reports `s
 
 Load `/chatkit/sessions/{session_id}/messages/from-last-compaction?agent_id=...` to receive the latest successful checkpoint separately from retained and newer messages. In `@trytilde/sdk-vercel-ai-node`, `createChatKitCompactionController` supplies a bounded `prepareStep` loop and `composeChatKitCompactionPrepareStep` preserves provider preparation before applying compaction.
 
+Human-created private workspace sessions belong to the authenticated human, including when a deployment service owns the selected agent. Tilde binds the workspace participant to that human for personal tool access. Delegated child sessions inherit the parent session's ownership.
+
 ### Test your agent in ChatKit workspace
 
 Use [ChatKit workspace](https://api.trytilde.ai/chatkit-workspace) to invoke your agent directly and test conversations. Select the correct workspace and agent, then start a session and send a message.
