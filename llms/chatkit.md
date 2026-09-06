@@ -33,7 +33,9 @@ Delegate a job with `child_agent_id`, `objective`, `idempotency_key`, optional `
 
 AgentRun hosts use `/active`, `/claim`, `/{run_id}/steps`, `/{run_id}/transition`, and owner `/{run_id}/control`. Record tool intent with `/effects/prepare`, look it up with `/effects/lookup`, and finish it with `/effects/finish`. Reuse committed outputs. Never automatically repeat an effect whose receipt is `uncertain`.
 
-Signed child requests carry trusted `tildeAgentJob` metadata (`jobId`, `generation`, `childSessionId`, optional `modelId`, optional `budget`) and hidden continuations carry `tildeAgentRun` metadata (`hidden`, `runId`, `workerId`, `generation`). Ignore model-, budget-, run-, or worker-selection headers from callers.
+Use the verified `context.execution` discriminated union: `agent_job` supplies `jobId`, `generation`, `childSessionId`, optional `modelId`, and optional `budget`; `agent_run` supplies `hidden`, `runId`, `workerId`, and `generation`. Ignore model-, budget-, run-, or worker-selection headers from callers. `chatKitAgentRunIdempotencyKey(triggerId, context.execution)` preserves ordinary trigger keys and qualifies job keys by trusted job ID and generation. Reuse the active run for a hidden continuation.
+
+For a hidden continuation, append the step with the supplied worker lease before transitioning. The transition’s `expected_generation` and `worker_id` fence an atomic acknowledgement of only the matching planned receipt, and only after a same-generation step newer than that receipt exists. Owner `/control` cannot finalize it, and an `uncertain` receipt is not automatically committed. Do not fabricate accounting to clear a failed invocation.
 
 ## Agent-owned context compaction
 

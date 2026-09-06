@@ -133,7 +133,9 @@ Goals, tasks, background jobs, routines, and AgentRuns let an agent continue sub
 
 Use `client.chatkit.work({ agentId, sessionId })` for goals, tasks, and jobs; `client.chatkit.routines(agentId)` for recurring work; and `client.chatkit.runs` for a durable host. Job actions are `steer`, `stop`, `resume`, and `collect-result`. Only the bound agent can mutate its work. Authorized owners can inspect and control the corresponding conversation work.
 
-Tilde writes child model and budget context into signed, server-authored `tildeAgentJob` message metadata. Hidden continuations use `tildeAgentRun` metadata containing the run ID, worker ID, generation, and hidden flag. Agent hosts must not accept caller-provided model, budget, run, or worker headers as authority.
+Tilde supplies child job ID, generation, model, and budget in the signed request’s typed `execution` context. Hidden continuations carry the run ID, worker ID, generation, and hidden flag there. Agent hosts must not accept caller-provided model, budget, run, or worker headers as authority. Use `chatKitAgentRunIdempotencyKey(triggerId, context.execution)` when creating a run so duplicate job deliveries reuse it and a resumed job generation can start a fresh run.
+
+A hidden continuation records its completed step before requesting a run transition. Tilde atomically acknowledges the matching planned continuation and applies that transition only for the current generation and unexpired worker lease, with a durable step recorded after the continuation started. Owner control cannot acknowledge a pending continuation, and an uncertain receipt still requires reconciliation or cancellation.
 
 ### Compact model context without rewriting history
 
