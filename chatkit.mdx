@@ -124,6 +124,8 @@ Room roles do not replace resource permissions. Session visibility controls mess
 
 ### Keep substantial work durable
 
+Owner-only WhatsApp and Linq channels can opt into private conversations with `external_participant_policy: { join: "linked_only", agent_invocation: "linked_only", personal_tools: "linked_participants", session_scope: "personal" }` in their provider configuration. The sender must have a verified identity link routed to that channel and current team membership. Messages retain the verified human actor and the original channel's reply target. Existing shared conversations stay separate; a subsequent real inbound message starts or reuses the owner's private conversation. Other channels retain the default `session_scope: "team"` behavior.
+
 Goals, tasks, background jobs, routines, and AgentRuns let an agent continue substantial work without keeping correctness in one process.
 
 - A **goal** records the outcome for one agent and session. A **task** records an independently deliverable piece of that goal, including dependencies and progress.

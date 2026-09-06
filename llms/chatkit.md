@@ -89,6 +89,8 @@ Realtime audiences are derived from current visibility and session membership on
 
 Human-created private workspace sessions belong to the authenticated human, including when a deployment service owns the selected agent. Tilde binds the workspace participant to that human for personal tool access. Delegated child sessions inherit the parent session's ownership.
 
+For owner-only WhatsApp/Linq ingress, update the channel with `provider_configuration.external_participant_policy` set to `{ "join": "linked_only", "agent_invocation": "linked_only", "personal_tools": "linked_participants", "session_scope": "personal" }`, preserving its other provider configuration. Shared verification uses the actual WhatsApp phone-number ID or configured Linq line as `provider_account_id`, not the destination channel ID. Ingress validates the real global link's route and current membership, materializes the channel's tenant identity, and stores the canonical verification namespace in the message actor. No duplicate verification link is created. Unverified or revoked senders do not join or wake the agent. Replies retain the incoming provider route; this setting does not select a background notification channel.
+
 ## Manage private session members
 
 Private sessions use `user_team` ownership. The creator is inserted as the owner automatically, and an optional `member_user_ids` list may add other users from the same team during creation. Use the private-session membership API to list, add, or remove non-owner members later. Do not confuse these authorization members with ChatKit inbox participants.
