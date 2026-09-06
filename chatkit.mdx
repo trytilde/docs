@@ -106,6 +106,12 @@ For a shared agent whose MCP server enables speaker-bound personal-tool federati
 
 ChatKit assigns compact participant handles and emits durable `participant.joined` and `participant.left` events when a participant becomes visible to or leaves the conversation. Conversation snapshots expose them in `participant_events`, separate from `messages`, so clients can render session activity without adding synthetic chat messages. Tilde still includes the lifecycle context in agent history, and these changes do not start an agent turn.
 
+### Confirm an outbound message
+
+After creating a message, read `GET /api/v1/team/{team_id}/chatkit/session/{session_id}/message/{message_id}/deliveries` with the same organization scope. It requires visibility of the message and its session. Each receipt identifies the channel, provider, status, optional provider message ID, last error, and delivery timestamp.
+
+`delivered` means the provider accepted the outbound message. It does not mean the recipient read it. An empty receipt list or queued/retrying delivery is still pending; `dead_letter` is a terminal failure. Keep the original message ID when checking an uncertain send instead of creating a duplicate.
+
 ### Share a room with people and agents
 
 A ChatKit session can be a private or team room with a durable human and agent roster. Room owners can invite a canonical Tilde user, select an `admin` or `member` collaboration role, add visible agents, inspect pending invitations, revoke an invitation, and remove a participant. The invited user accepts or declines before receiving private room history.

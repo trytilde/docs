@@ -49,6 +49,10 @@ Set the required top-level `responseMode` to `agentLoop` or `tool`. In `tool` mo
 
 Use `context.mcp.connect({ serverId })` for speaker-bound personal-tool federation on a shared agent. ChatKit supplies the verified speaker capability privately. Never accept a model- or caller-supplied user ID, account ID, or delegated capability. Unmapped external speakers receive no personal tools.
 
+## Inspect outbound delivery
+
+Use `GET /api/v1/team/{team_id}/chatkit/session/{session_id}/message/{message_id}/deliveries` with the organization header and a credential that can read the message and session. The response is an array of `channel_inbox_id`, `provider_id`, `status`, optional `external_message_id`, `last_error`, and `delivered_at`. A `delivered` receipt confirms provider acceptance, not a read receipt. An empty list is not success. Wait on pending work, surface `dead_letter`, and retain the same canonical message ID when retrying an uncertain notification.
+
 ## Manage multiplayer rooms
 
 A room is a ChatKit session. Use `/api/v1/team/{team_id}/chatkit/sessions/{session_id}/participants` for the roster and `/invitations` for invite/list operations. Use `/invitations/{invitation_id}/decision` to accept or decline, DELETE `/invitations/{invitation_id}` to revoke, and DELETE `/participants/{participant_instance_id}` to leave or remove.
