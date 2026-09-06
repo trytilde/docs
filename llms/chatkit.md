@@ -12,6 +12,8 @@ For Linq, create one common-provider installation from either ChatKit or Tools. 
 
 In `@trytilde/sdk-vercel-ai-node`, use `context.linq` / `LinqChatKitMessageMetadata` for inbound Linq ChatKit metadata and `LinqSignalByType["linq.message.received"]` (or another `LinqSignalType`) for event-narrowed Signal handlers under `onUnprocessed.linq`.
 
+With AI SDK 7, move server-authored system context into `instructions` before calling the model. Keep ordinary conversation and explicitly untrusted recalled memory in `messages`. Do not discard the server context to avoid a prompt validation error.
+
 Use Vercel AI SDK and Tilde SDK `chatKitEndpoint`. Preserve webhook signature verification, `context.session.history()`, `convertToAiSdkMessages`, streaming, and server-side secrets.
 
 ## Durable conversation work

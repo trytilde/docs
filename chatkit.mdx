@@ -93,6 +93,8 @@ Signal providers and rules use the same two planes. Visibility controls discover
 
 ### Choose how the endpoint responds
 
+With AI SDK 7, keep system context in the model call's `instructions` field. Conversation `messages` must not contain system messages; recalled memory remains explicitly untrusted context.
+
 `chatKitEndpoint` requires a top-level `responseMode`:
 
 - `agentLoop` streams returned assistant text as the visible reply, preserving the existing endpoint pattern.
