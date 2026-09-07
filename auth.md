@@ -1,5 +1,7 @@
 # Tilde auth.md
 
+Applications with their own login system should use [organization runtime identities and proxy tokens](/identities/index). Runtime identities can exist without a login account; managed linking connects a verified Tilde account later.
+
 Tilde supports anonymous, agent-first registration followed by an optional human claim. An agent can create a temporary Tilde organization without waiting for a person to sign in, use the returned agent API key, and later transfer the temporary workspace and its supported resources to a human-owned organization.
 
 This flow issues an API key directly. It is not an OAuth identity-assertion or token-exchange flow.
@@ -8,11 +10,11 @@ This flow issues an API key directly. It is not an OAuth identity-assertion or t
 
 Tilde has two first-class actor types: **human** and **agent**. Credential form does not determine actor type by itself:
 
-- An API key authenticates as its owning user. A user-settings key remains human; an agent or installation key remains agent.
+- An API key authenticates as its owning runtime identity. A personal identity key remains human; an agent or installation key remains agent.
 - An OAuth access token is a bearer token and authenticates a human.
 - A request must carry exactly one credential form. Sending both `x-api-key` and `Authorization: Bearer ...` is rejected.
 
-There is no permanent agent-on-behalf-of-human credential mode. If privileged delegation is added later, it will use an explicit short-lived token rather than combining long-lived credentials. Revoking an API key never deletes its human or agent owner.
+Organization proxy tokens provide explicit application delegation through `X-Tilde-Proxy-Token` and `X-Tilde-Identity-Id`. Tilde checks the token's organization/capabilities and the effective identity's current membership and resource permissions. The token issuer's administrative roles are never combined with the identity's permissions. Revoking a credential does not delete its runtime identity.
 
 ## Resource visibility and ownership
 

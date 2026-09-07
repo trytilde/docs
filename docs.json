@@ -112,6 +112,14 @@
         ]
       },
       {
+        "group": "Identities",
+        "pages": [
+          "identities/index",
+          "identities/proxy-tokens",
+          "identities/account-linking"
+        ]
+      },
+      {
         "group": "Product features",
         "pages": [
           {
@@ -132,6 +140,7 @@
       {
         "group": "Guides",
         "pages": [
+          "guides/frontend-chat",
           "guides/code-review-agent",
           "guides/linq",
           "guides/hosted-openbot"

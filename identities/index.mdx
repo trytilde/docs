@@ -1,0 +1,201 @@
+---
+title: "Identities"
+description: "Create organization-owned runtime identities for people and agents, independently of login accounts."
+---
+
+A runtime identity is the principal that owns private resources, receives grants,
+participates in ChatKit, and appears in tool and audit attribution. Your app can
+create one before its user has a Tilde login account.
+
+Your application controls login through its own Clerk application or another
+identity provider. Tilde controls runtime access inside your organization.
+
+## Accounts, identities, and teams
+
+| Record | Purpose | Scope |
+| --- | --- | --- |
+| Login account | Sign in to Tilde and exercise explicitly assigned administration | Links to an identity in each organization |
+| Runtime identity | Own resources and act in tools, conversations, and audits | Exactly one organization; may belong to multiple teams |
+| Team | Group runtime resources and members | Exactly one organization |
+| Organization proxy token | Let a trusted application delegate runtime requests | Exactly one organization; may operate across its teams |
+
+An identity has a generated, stable ID, a `human` or `agent` kind, profile
+information, and enabled/disabled status. Its ID remains the same after
+[account linking](/identities/account-linking), so its resources and history stay
+with it. Linking does not merge identities or grant administration.
+
+A useful application layout is one organization per environment and an initial
+team and identity for each user. Add team memberships when your application
+supports collaboration. An identity must currently belong to the team it acts in;
+knowing a team or resource ID does not grant access.
+
+## Joining Tilde directly
+
+Tilde uses Clerk for login accounts, while organizations and teams are native
+Tilde records. Signing up does not create an organization in Clerk or provision a
+Tilde workspace through a webhook.
+
+If you follow an organization invitation from an email, sign in or sign up with
+the invited account. Tilde accepts the invitation, creates or reuses your identity
+in that organization, selects its team, and opens the home dashboard. Existing
+memberships in other organizations do not change that destination.
+
+Without an invitation or existing membership, Tilde asks you to name your first
+organization and team. Submitting this setup creates the organization, team,
+identity, and administrative membership before opening home. Retrying setup
+reuses the same workspace. Clerk webhooks reconcile account lifecycle only.
+
+The hosted [account-linking flow](/identities/account-linking) can connect an
+existing application identity without creating a separate first organization.
+
+## Create an application client
+
+Create an [organization proxy token](/identities/proxy-tokens) with identity and
+team provisioning capabilities. Store it only on your server.
+
+```ts lib/tilde.ts
+import "server-only";
+import { createClient } from "@trytilde/sdk";
+
+export const tilde = createClient({
+  baseUrl: process.env.TILDE_API_ORIGIN!,
+  orgId: process.env.TILDE_ORG_ID!,
+  proxyToken: process.env.TILDE_PROXY_TOKEN!,
+  orgSubdomain: false,
+});
+```
+
+The unbound client provisions identities and starts managed linking. Bind a new
+client to an identity and team for runtime requests:
+
+```ts
+const runtime = tilde.forTeam({
+  identityId: mapping.identityId,
+  teamId: mapping.teamId,
+});
+```
+
+`forTeam` returns a separate client. Keep the shared application client immutable
+so concurrent requests cannot exchange identities or teams. A bound runtime
+client cannot perform identity administration.
+
+## Provision on the first authenticated request
+
+Verify the application's session on the server, including its expected issuer.
+Use the verified issuer and subject as the mapping key. Never use an identity ID,
+team ID, or email submitted by the browser as proof of identity.
+
+```ts
+import { IdentityApiError } from "@trytilde/sdk";
+import { tilde } from "./tilde";
+
+// Called after verifying the application session.
+async function provision(subject: string, issuer: string, displayName: string) {
+  const identifier = {
+    namespace: "my-app:login",
+    value: JSON.stringify([issuer, subject]),
+  };
+
+  let identity;
+  try {
+    identity = await tilde.createIdentity({
+      kind: "human",
+      displayName,
+      identifiers: [identifier],
+    });
+  } catch (error) {
+    if (!(error instanceof IdentityApiError) || error.status !== 409) throw error;
+    identity = await tilde.identities.resolve(identifier);
+  }
+  if (identity.disabled) throw new Error("Application access is disabled");
+
+  const team = await tilde.identities.provisionTeam(identity.id, `${displayName}'s workspace`);
+  return { identityId: identity.id, teamId: team.team_id };
+}
+```
+
+Persist this result in your application database with a unique constraint on
+`(environment, issuer, subject)`. Serialize concurrent provisioning for that key
+and return the stored mapping on repeat login. The initial-team operation is
+idempotent; retry it after a partial failure. Do not retry arbitrary failures by
+creating another identity.
+
+Identifiers are optional and unique by `(org, namespace, value)`. You can add
+identifiers later with `tilde.identities.update`. An existing identifier cannot be
+claimed by another identity. Identifiers help your trusted server resolve a
+principal; they are not verified contact ownership or permission to link accounts.
+Matching email addresses alone never authorize a link.
+
+## Manage memberships and identifiers
+
+An unbound client with `identities:manage` can manage an identity's memberships in
+existing teams within the same organization:
+
+```ts
+const teams = await tilde.identities.listTeams(identityId, { pageSize: 50 });
+// teams.items contains this page; continue with teams.next_page_token.
+await tilde.identities.addTeam(identityId, additionalTeamId);
+await tilde.identities.removeTeam(identityId, additionalTeamId);
+await tilde.identities.removeIdentifier(identityId, {
+  namespace: "my-app:old-id",
+  value: "previous-subject",
+});
+```
+
+Adding membership grants the runtime member role and preserves an existing role;
+it never assigns a login-account role. Removal revokes team membership and team
+groups while retaining the identity's resources. Disabled identities cannot be
+added to teams. Identifiers, verified contacts, and account links remain separate:
+removing an identifier does not unlink an account or transfer its resources.
+
+## Manage lifecycle
+
+```ts
+const identity = await tilde.identities.get(identityId);
+const firstPage = await tilde.identities.list({ pageSize: 50 });
+if (firstPage.next_page_token) {
+  const nextPage = await tilde.identities.list({
+    pageSize: 50, nextPageToken: firstPage.next_page_token,
+  });
+}
+await tilde.identities.update(identityId, { displayName: "Alice Smith" });
+await tilde.identities.update(identityId, { disabled: true });
+```
+
+Identity and membership lists return `{ items, next_page_token }`. Pass cursors
+unchanged; page sizes are clamped to 1–100.
+
+Verify your identity provider's webhook signatures before changing a mapping.
+Record disabled/deleted state durably, reject stale events, and retry remote
+disabling after transient failures. Signing in again must not silently restore a
+deleted user's access. In HeyAsh, Clerk profile changes and unlock events do not
+re-enable a Tilde identity disabled by an administrator; recovery requires an
+explicit Tilde administrator action. Disabling an identity stops its runtime access while
+preserving resources and audit history.
+
+## Fresh resets and stale events
+
+Before resetting Tilde or your application database, pause writers and record a
+cutover instant outside the databases being cleared. The Tilde and HeyAsh Clerk
+integrations support `CLERK_WEBHOOK_EVENTS_NOT_BEFORE` as an ISO-8601 timestamp with
+a timezone. Configure it on each deployment before bootstrap or webhook delivery
+resumes. Signed events older than that original-event timestamp are ignored;
+delivery retry timestamps must not bypass the cutoff. Keep lifecycle tombstones
+and signature verification in addition to this reset boundary.
+
+## Authorization and billing
+
+The application proxy verifies its session and permitted team selection. Tilde
+then enforces the token's organization and capabilities, the identity's current
+status and membership, and the persisted resource's visibility and ownership.
+Private grants remain within their tenant. The token creator's administrator
+privileges do not become the delegated identity's privileges.
+
+Core subscriptions and usage belong to the organization. Runtime identities do
+not create paid account seats. Proxy requests and account linking never enroll
+or reactivate seats. Organization administrators explicitly assign account seats
+for people who use runtime features directly through Tilde.
+
+Next, configure [proxy tokens](/identities/proxy-tokens), add a
+[frontend chat UI](/guides/frontend-chat), or offer
+[Connect Tilde account](/identities/account-linking).

@@ -1,0 +1,269 @@
+---
+title: "Frontend chat with your own authentication"
+sidebarTitle: "Frontend chat setup"
+description: "Add a streaming ChatKit UI to your application using its own login provider and a server-only Tilde proxy token."
+---
+
+Your users can sign in to your application and chat with a Tilde agent without
+signing in to Tilde. This guide uses Next.js route handlers and the Vercel AI SDK
+UI transport. The proxy also works in servers that support Fetch requests and
+responses.
+
+```mermaid
+sequenceDiagram
+    participant Browser
+    participant App as Your application server
+    participant Tilde
+    participant Agent as Your signed agent endpoint
+    Browser->>App: Application session cookie + chat request
+    App->>App: Verify session; resolve identity and permitted team
+    App->>Tilde: Proxy token + org + acting identity + team route
+    Tilde->>Tilde: Check identity, membership, and private session access
+    Tilde->>Agent: Signed ChatKit turn
+    Agent-->>Tilde: Response stream
+    Tilde-->>App: UI message stream
+    App-->>Browser: UI message stream
+```
+
+## 1. Configure login and Tilde
+
+Set up your application's own login provider. For Clerk, follow the
+[official Next.js integration](https://clerk.com/docs/nextjs/getting-started/quickstart)
+using your application's Clerk keys, provider, sign-in/sign-up pages, middleware,
+and server session verification. Protect API handlers as well as pages.
+
+Sign in to Tilde and complete the first organization/team setup, or accept an
+invitation to an existing application organization. Organization/team creation is
+a native Tilde setup action; it does not depend on Clerk organization webhooks.
+Enroll the application organization in Core through Tilde administration.
+Create an [organization proxy token](/identities/proxy-tokens) in
+**Settings → Organization → Proxy tokens**. Enable `runtime:delegate`,
+`identities:manage`, and `teams:manage` for first-login provisioning. Add
+`identity-links:create` only if you offer **Connect Tilde account**.
+
+```dotenv
+# Server-only Tilde configuration
+TILDE_API_ORIGIN=https://api.trytilde.ai
+TILDE_ORG_ID=org-your-application
+TILDE_PROXY_TOKEN=replace-with-your-secret
+```
+
+```bash
+pnpm add @trytilde/sdk @ai-sdk/react ai server-only
+```
+
+Use the SDK release that exports `@trytilde/sdk/proxy` and identity methods,
+together with the matching Tilde API deployment.
+
+Register a signed agent endpoint and its Vercel UI channel in the execution team,
+as described in [Set up ChatKit](/chatkit#set-up-chatkit). Its agent API key and
+webhook signing key belong to that endpoint's server configuration. The browser
+uses the application proxy; it never receives these keys or the org proxy token.
+If each user gets a team, your trusted provisioning service must register the
+agent/channel in each team before users create conversations.
+
+## 2. Persist a session-to-identity mapping
+
+Follow [identity provisioning](/identities/index#provision-on-the-first-authenticated-request)
+to create or resolve the user's identity and initial team. Store the result in
+your database under the verified `(environment, issuer, subject)` key. Reuse it
+on subsequent logins and reconcile signed lifecycle webhooks.
+
+Create a server adapter named `resolveApplicationSession(request)` that returns
+`null` for an unauthenticated or disabled user, or:
+
+```ts
+return {
+  identityId: mapping.identityId,
+  teamIds: mapping.allowedTeamIds,
+};
+```
+
+`mapping` comes from trusted persistence after verifying the session. Team
+selection from a browser is only a requested selection: check it against this
+list. Do not accept browser-supplied identity headers or grant access based on
+email equality.
+
+## 3. Mount the runtime proxy
+
+```ts app/api/tilde/[...path]/route.ts
+import { createTildeProxy } from "@trytilde/sdk/proxy";
+import { resolveApplicationSession } from "@/lib/application-session";
+
+const proxy = createTildeProxy({
+  baseUrl: process.env.TILDE_API_ORIGIN!,
+  orgId: process.env.TILDE_ORG_ID!,
+  proxyToken: process.env.TILDE_PROXY_TOKEN!,
+  mountPath: "/api/tilde",
+  resolveSession: resolveApplicationSession,
+});
+
+export { proxy as GET, proxy as HEAD, proxy as POST, proxy as PUT,
+  proxy as PATCH, proxy as DELETE };
+```
+
+Browser requests target `/api/tilde/api/v1/...` on your application's origin.
+The proxy supplies the token, organization, and acting identity on the upstream
+request. It allows supported runtime routes, checks the selected team, and keeps
+streams and request cancellation intact. Cookie-authenticated mutations must
+come from the same origin.
+
+## 4. Create a private conversation
+
+Use the [server application client](/identities/index#create-an-application-client)
+and the same session adapter for server-side calls. The following handler picks
+the user's mapped initial team. `agentForTeam` is your trusted lookup of the agent
+registered in that team; it must not return an arbitrary browser-submitted ID.
+
+```ts app/api/conversations/route.ts
+import { randomUUID } from "node:crypto";
+import { tilde } from "@/lib/tilde";
+import { resolveApplicationSession } from "@/lib/application-session";
+import { agentForTeam } from "@/lib/agents";
+
+export async function POST(request: Request) {
+  if (request.headers.get("origin") !== new URL(request.url).origin) {
+    return Response.json({ error: "Same-origin request required" }, { status: 403 });
+  }
+  const session = await resolveApplicationSession(request);
+  if (!session) return new Response(null, { status: 401 });
+  const teamId = session.teamIds[0];
+  if (!teamId) return new Response(null, { status: 403 });
+  const agentId = await agentForTeam(teamId);
+  const runtime = tilde.forTeam({ identityId: session.identityId, teamId });
+  const conversation = await runtime.chatkit.createAgentSession({
+    agentId,
+    lookupKey: `app:${session.identityId}:${randomUUID()}`,
+    title: "New conversation",
+  });
+  const participant = conversation.participants.find(
+    (entry) => entry.participant_type === "human",
+  );
+  const sessionId = conversation.session.id;
+  const inboxId = participant?.inbox?.id;
+  const instanceId = participant?.instance?.id;
+  if (!sessionId || !inboxId || !instanceId) throw new Error("Chat participant missing");
+
+  const upstream = new URL(runtime.chatkit.vercelUiEndpoint({
+    sessionId, inboxId, instanceId, stream: true,
+  }));
+  return Response.json({
+    sessionId,
+    streamUrl: `/api/tilde${upstream.pathname}${upstream.search}`,
+  }, { headers: { "cache-control": "no-store" } });
+}
+```
+
+Delegated workspace conversations have private ownership under the effective
+identity. Store the conversation ID in your application if you need to reopen it.
+For retryable creation, persist an application conversation key and reuse it as
+`lookupKey` instead of generating a new one on every retry. Reopening a stored ID
+still requires current Tilde session permissions.
+
+## 5. Render the stream
+
+Call `POST /api/conversations` when the user starts a chat, then render this
+component with the returned `sessionId` and `streamUrl`. Use `sessionId` as the
+React key when switching conversations.
+
+The [AI SDK transport](https://ai-sdk.dev/docs/ai-sdk-ui/transport) sends messages
+to the same-origin endpoint. No Tilde authentication headers belong here.
+
+```tsx components/chat.tsx
+"use client";
+
+import { useChat } from "@ai-sdk/react";
+import { DefaultChatTransport } from "ai";
+import { useMemo, useState } from "react";
+
+export function Chat({ sessionId, streamUrl }: {
+  sessionId: string;
+  streamUrl: string;
+}) {
+  const [draft, setDraft] = useState("");
+  const transport = useMemo(() => new DefaultChatTransport({
+    api: streamUrl,
+    credentials: "same-origin",
+  }), [streamUrl]);
+  const { messages, sendMessage, status, error, stop } = useChat({
+    id: sessionId,
+    transport,
+  });
+  const busy = status === "submitted" || status === "streaming";
+
+  return <section aria-label="Conversation">
+    <div aria-live="polite">
+      {messages.map(message => <p key={message.id}>
+        <strong>{message.role}: </strong>
+        {message.parts.map((part, index) =>
+          part.type === "text" ? <span key={index}>{part.text}</span> : null,
+        )}
+      </p>)}
+    </div>
+    {error && <p role="alert">The message could not be sent. Please try again.</p>}
+    <form onSubmit={event => {
+      event.preventDefault();
+      if (!draft.trim() || busy) return;
+      void sendMessage({ text: draft });
+      setDraft("");
+    }}>
+      <label htmlFor="chat-message">Message</label>
+      <input id="chat-message" value={draft}
+        onChange={event => setDraft(event.target.value)} disabled={busy} />
+      <button type="submit" disabled={busy || !draft.trim()}>Send</button>
+      {busy && <button type="button" onClick={() => void stop()}>Stop</button>}
+    </form>
+  </section>;
+}
+```
+
+The minimal renderer displays text. Add renderers for tool, file, and other
+message parts as your agent needs them. When reopening a conversation, load its
+history through the authenticated runtime transport and initialize the UI from
+that history. Do not recreate the session merely to load it.
+
+Use ChatKit's session attachment APIs for file uploads. Keep uploads under the
+same session authorization and proxy, and preserve their content type and body;
+do not turn binary bodies into JSON. Configure your hosting platform to permit
+streaming and your required upload sizes and durations.
+
+## 6. Add realtime events when needed
+
+HTTP streaming is sufficient for a single active chat response. To observe
+background activity, request a fresh short-lived browser ticket through the proxy:
+
+```ts
+const encodedTeam = encodeURIComponent(teamId);
+const response = await fetch(
+  `/api/tilde/api/v1/team/${encodedTeam}/identity/realtime-ticket`,
+  {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ transport: "browser", origin: window.location.origin }),
+  },
+);
+if (!response.ok) throw new Error("Realtime authorization failed");
+const { ticket, protocol } = await response.json();
+const url = new URL(`/api/v1/team/${encodedTeam}/chatkit/realtime`, tildeApiOrigin);
+url.protocol = url.protocol === "http:" ? "ws:" : "wss:";
+url.searchParams.set("org_id", orgId);
+const socket = new WebSocket(url, [`${protocol}.${ticket}`]);
+```
+
+`tildeApiOrigin`, `orgId`, and `teamId` are public routing configuration. The token
+remains on your server. Tickets are one-use, origin-bound, and expire quickly;
+request a new ticket when reconnecting. Tilde revalidates identity membership and
+credential revocation during ongoing access. Close sockets and clear private
+client caches when the application session changes or signs out.
+
+## 7. Offer account linking and check isolation
+
+Add [Connect Tilde account](/identities/account-linking) in your application's
+settings if users should also open their identities through Tilde. This uses the
+managed hosted flow and does not add a paid seat.
+
+Before release, test two users in the same team and in different teams. Attempt
+to open each other's private session IDs, forge identity headers, reuse a revoked
+token, and reconnect after disabling an identity. Verify login/logout,
+repeat-login provisioning, streaming cancellation, uploads, and history loading
+with your actual identity provider configuration.
