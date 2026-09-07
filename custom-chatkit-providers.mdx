@@ -51,7 +51,7 @@ one-time secret outputs; keep those out of transcripts and application logs.
 ## Author a backend
 
 Import `defineChatKitProvider`, `chatKitProviderEndpoint`, and
-`createProviderRuntimeClient` from `@trytilde/harness-sdk/chatkit-provider`.
+`createProviderRuntimeClient` from `@trytilde/sdk/chatkit-provider`.
 The endpoint uses standard `Request` and `Response` objects and does not require
 Vercel AI. Export its `GET` handler for discovery and `POST` handler for signed
 operations.
@@ -70,7 +70,7 @@ persisted setup binding; the dashboard resumes that setup as the signed-in user.
 Store connection runtime tokens securely;
 use `setup.credentialsUpdated` to handle rotation.
 
-The SDK repository's `examples/custom-chatkit` directory contains Linq and
+Dispatch's `packages/sdk/examples/custom-chatkit` directory contains Linq and
 AgentMail adapters, a runnable Node host, and a custom streaming protocol.
 Linq covers line selection, subscriptions, reactions, thread reads, and polls.
 AgentMail covers inbox credentials, email threading, rich recipients, HTML,
@@ -98,7 +98,7 @@ connection and participants. Tilde intersects the result with the authenticated
 agent's actual turn and target authorization.
 
 Agents discover bound tools with `client.chatkit.sessionTools({ sessionId })`.
-The Vercel AI adapter exposes `context.session.tools()` and a standalone
+The Vercel AI adapter exposes `context.session.tools` and a standalone
 `sessionProviderTools` helper. Session-scoped MCP exposes provider actions with
 the `chatkit_provider__` prefix. Common canonical names such as `sendMessage`
 cannot be shadowed.
