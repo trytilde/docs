@@ -1,33 +1,35 @@
-> **First-time setup**: Customize this file for your project. Prompt the user to customize this file for their project.
-> For Mintlify product knowledge (components, configuration, writing standards),
-> install the Mintlify skill: `npx skills add https://mintlify.com/docs`
+# Tilde documentation agent guide
 
-# Documentation project instructions
+This is the canonical Mintlify documentation repository for Tilde. Public guides
+live in the root MDX pages and feature/guide directories; `docs.json` owns navigation.
+Internal architecture and PR records live under `docs/adrs` and `docs/updates` and
+are excluded from site publication by `.mintignore`.
 
-## About this project
+## Documentation maintenance
 
-- This is a documentation site built on [Mintlify](https://mintlify.com)
-- Pages are MDX files with YAML frontmatter
-- Configuration lives in `docs.json`
-- Run `mint dev` to preview locally
-- Run `mint broken-links` to check links
+For every change, follow [docs/README.md](docs/README.md) and
+[maintain-docs](.agents/skills/maintain-docs/SKILL.md). Read governing ADRs, record
+resolved durable decisions, maintain the current pending/PR-numbered update record,
+and keep affected public pages and navigation synchronized. Do not ask again about
+already-authorized decisions or preserve obsolete setup prompts.
 
-## Terminology
+## Public content
 
-{/* Add product-specific terms and preferred usage */}
-{/* Example: Use "workspace" not "project", "member" not "user" */}
+- Confirm API/SDK examples against the owning source and generated contract.
+- Use `@trytilde/sdk` and the corresponding adapters for the current SDK.
+- Distinguish Tilde login accounts, organization-owned runtime identities, teams,
+  and organization proxy credentials. Runtime identities do not imply paid seats.
+- Keep application proxy credentials server-only and document trusted session/team
+  resolution for frontend integrations.
+- Link related API/SDK/application PRs and coordinate publication with their release.
+  Do not claim unreleased features are already deployed or simulated checks are live.
+- Use concise active prose, sentence-case headings, and descriptive links. Prefer
+  Mintlify components and match surrounding pages. Give images meaningful alt text.
+- Never include secret values, private transcripts, or environment-owned data.
 
-## Style preferences
+## Validation and publication
 
-{/* Add any project-specific style rules below */}
-
-- Use active voice and second person ("you")
-- Keep sentences concise — one idea per sentence
-- Use sentence case for headings
-- Bold for UI elements: Click **Settings**
-- Code formatting for file names, commands, paths, and code references
-
-## Content boundaries
-
-{/* Define what should and shouldn't be documented */}
-{/* Example: Don't document internal admin features */}
+Run `mint validate`, `mint broken-links`, and `mint a11y` after content/navigation
+changes. Review the final diff and keep the same update record current through PR
+revisions. Use the [create-pr workflow](.agents/skills/create-pr/SKILL.md) when PR
+publication is authorized; never fabricate a PR number or claim a deployment.

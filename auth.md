@@ -1,5 +1,7 @@
 # Tilde auth.md
 
+Applications with their own login system should use [organization runtime identities and proxy tokens](/identities/index). Runtime identities can exist without a login account; managed linking connects a verified Tilde account later.
+
 Tilde supports anonymous, agent-first registration followed by an optional human claim. An agent can create a temporary Tilde organization without waiting for a person to sign in, use the returned machine API key, and later transfer the temporary workspace and its supported resources to a human-owned organization.
 
 This flow issues an API key directly. It is not an OAuth identity-assertion or token-exchange flow.

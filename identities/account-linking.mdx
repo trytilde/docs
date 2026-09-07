@@ -1,0 +1,67 @@
+---
+title: "Link a Tilde account"
+description: "Let an application user connect a Tilde login account to an existing runtime identity through a hosted confirmation flow."
+---
+
+Offer **Connect Tilde account** when a user wants to access their application's
+runtime identity through Tilde. Their conversations, tools, private resources,
+and audit history stay attached to the same identity.
+
+## Start a managed link
+
+Enable `identity-links:create` on the application's proxy token and register the
+exact return URL in **Settings → Organization → Proxy tokens**.
+
+In a server route, verify the application's session, check the same-origin
+mutation, and load the user's identity from your database. Call the unbound
+application client:
+
+```ts
+const linking = await tilde.linkIdentity({
+  identityId: mapping.identityId,
+  returnUrl: "https://my-app.example/settings",
+});
+return Response.json({ url: linking.url });
+```
+
+Redirect the user to the returned URL. Tilde handles login and displays the
+initiating application, identity, and organization for confirmation. You do not need to implement a
+link-completion endpoint or exchange Tilde login cookies.
+
+The request is bound to the initiating application token, organization, and
+identity. It expires after 15 minutes and can be used once. Keep the URL out of
+analytics and logs. The configured return URL is a navigation destination, not
+proof that linking completed.
+
+## Send a managed email
+
+```ts
+const linking = await tilde.linkIdentity({
+  identityId: mapping.identityId,
+  returnUrl: "https://my-app.example/settings",
+  delivery: { type: "email", address: verifiedRecipient },
+});
+```
+
+Use a recipient validated by your application. Tilde delivers the confirmation
+link and requires the destination account to match the designated verified
+recipient. Possessing an email-shaped runtime identifier does not establish
+verified contact ownership.
+
+## Completion and conflicts
+
+Tilde authenticates the destination account and atomically claims the request.
+An expired, replayed, revoked-application, or conflicting request cannot create
+a new link. An identity already linked to another account cannot be claimed by
+signing in with a matching email address.
+
+Established account links let Tilde select the linked identity for that
+organization on later sessions. A new unlinked application identity needs the
+managed confirmation flow; do not automatically link it based on profile fields
+or an unverified issuer/subject identifier.
+
+Linking does not merge identities, add organization or team administration,
+move resources across organizations, or enroll an account seat. Direct Tilde
+runtime use requires explicit Core account-seat enrollment by an organization
+administrator. Your application's proxy access remains governed by its own
+session and the runtime identity's permissions.

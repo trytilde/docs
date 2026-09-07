@@ -1,0 +1,35 @@
+# Identity documentation and frontend chat setup
+
+PR: Pending
+
+## Intent of the change
+
+Document independent application authentication, org-owned identities, proxy token setup, managed linking, and a same-origin frontend chat UI.
+
+## Architecture changes
+
+Governing decision: [0001-repository-documentation-convention](../../adrs/0001-repository-documentation-convention.md).
+This repository documents the identity/authentication contracts implemented by Tilde API and the SDK. Its own runtime architecture is unchanged.
+
+```mermaid
+flowchart LR
+  Agent["Agent and PR workflows"] --> Convention["docs/README.md"]
+  Convention --> Decisions["docs/adrs"]
+  Convention --> Updates["docs/updates"]
+  Convention --> Guides["Owning README and public guides"]
+```
+
+## Summarized changes
+
+- Added a dedicated Identities navigation section for overview/provisioning, proxy tokens, and managed account linking.
+- Documented reviewed identity membership/identifier management, strict suspension recovery, safe proxy transport, and the signed original-event reset cutoff.
+- Added frontend chat setup covering trusted sessions, private session creation, streaming, uploads, and realtime tickets.
+- Linked the guide from Quickstart and ChatKit and refreshed package names.
+- Added shared repository documentation/PR conventions; internal records are excluded from Mintlify publication.
+- Validation: Mintlify build validation, broken-link checks, and accessibility checks passed after adding the shared convention.
+
+## Critical to apply
+
+yes
+
+Publish alongside the matching Tilde API/SDK/HeyAsh release. Examples require the SDK proxy/identity exports and configured application credentials; they must not be presented as supported by an older deployed API.

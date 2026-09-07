@@ -1,0 +1,134 @@
+---
+title: "Organization proxy tokens"
+description: "Issue and rotate server credentials that delegate runtime requests to identities in your organization."
+---
+
+An organization proxy token lets your backend act as runtime identities across
+the organization's teams. It authenticates your application; the effective
+identity's current permissions determine which runtime resources it can access.
+
+## Create and store a token
+
+1. Sign in to Tilde as an organization administrator.
+2. Select the organization and open **Settings → Organization → Proxy tokens**.
+3. Choose **Create token**, enter an application/environment name, and select capabilities.
+4. Set an optional expiry. Register exact return URLs if you enable managed linking.
+5. Copy the one-time secret into your server's secret store.
+
+```dotenv
+TILDE_API_ORIGIN=https://api.trytilde.ai
+TILDE_ORG_ID=org-your-application
+TILDE_PROXY_TOKEN=replace-with-the-one-time-secret
+```
+
+Keep development and production organizations and credentials separate. Never
+use a public environment-variable prefix for the token. Only the origin and
+non-secret routing IDs may reach the browser.
+
+## Choose capabilities
+
+| Capability | Allows |
+| --- | --- |
+| `runtime:delegate` | Act as an enabled identity on supported runtime routes; the default capability |
+| `identities:manage` | Create, resolve, update, disable, and manage memberships/identifiers for organization identities |
+| `teams:manage` | Provision an identity's initial team |
+| `identity-links:create` | Start a Tilde-hosted account-linking request |
+
+Enable only the capabilities the application uses. An application that provisions
+users and teams and offers account linking needs all four. You can use separate
+credentials for runtime traffic and provisioning if they run in separate services.
+
+Provisioning requests use the unbound application client. Runtime requests include
+an acting identity. The SDK browser proxy does not expose provisioning, token
+management, billing, account-link completion, or account administration.
+
+## Mount the server proxy
+
+The SDK accepts standard Fetch `Request` and `Response` objects. In a Next.js App
+Router application, mount one handler for all supported methods:
+
+```ts app/api/tilde/[...path]/route.ts
+import { createTildeProxy } from "@trytilde/sdk/proxy";
+import { resolveApplicationSession } from "@/lib/application-session";
+
+const proxy = createTildeProxy({
+  baseUrl: process.env.TILDE_API_ORIGIN!,
+  orgId: process.env.TILDE_ORG_ID!,
+  proxyToken: process.env.TILDE_PROXY_TOKEN!,
+  mountPath: "/api/tilde",
+  resolveSession: resolveApplicationSession,
+});
+
+export { proxy as GET, proxy as HEAD, proxy as POST, proxy as PUT,
+  proxy as PATCH, proxy as DELETE };
+```
+
+`resolveApplicationSession(request)` is your server adapter. It verifies your
+provider's session, checks your local lifecycle state, and loads the persisted
+identity/team mapping. Return `null` when unauthenticated, or:
+
+```ts
+return {
+  identityId: mapping.identityId,
+  teamIds: mapping.allowedTeamIds,
+};
+```
+
+Do not populate `allowedTeamIds` from browser input. For a one-team-per-user app,
+return only the mapped initial team. For collaboration, load currently permitted
+teams from trusted membership data. Tilde independently validates membership.
+
+The proxy replaces inbound authentication and delegation headers, fixes the
+upstream origin, checks team selection, and preserves streaming, uploads,
+cancellation, and response status. Mutations require the browser's same-origin
+`Origin` header. Upstream credentials, cookies, and redirect locations are not
+forwarded to the browser.
+
+## Wire format
+
+Server-to-server runtime calls carry:
+
+```http
+X-Tilde-Proxy-Token: <server secret>
+X-Tilde-Org-Id: <token organization>
+X-Tilde-Identity-Id: <effective identity>
+```
+
+The team is part of `/api/v1/team/{team_id}/...`. Keep identity delegation in its
+explicit header rather than adding it to resource request bodies. Do not combine
+proxy credentials with a login cookie, bearer token, or API key. Tilde rejects
+conflicting credentials and tenant routing.
+
+An organization token has a broader compromise scope than a single user's
+credential: a holder with runtime delegation can select identities across that
+organization. Your proxy must authenticate every request and constrain the team
+and identity, while Tilde enforces the final tenant and resource boundaries.
+
+## Manage and rotate
+
+The table shows name, masked identifier, capabilities, creation and expiry,
+last use, and status. Administrators can rename, create a replacement, or revoke
+a token. Replacement creation leaves the old token active until explicitly revoked:
+
+1. Create a replacement and store its new secret.
+2. Deploy the new configuration and verify application requests.
+3. Revoke the old token and confirm it no longer authorizes requests.
+
+A revoked or expired token cannot delegate requests. Realtime connections retain
+credential provenance and revalidate access; use short-lived browser tickets
+instead of exposing the organization token to a WebSocket client.
+
+See [Frontend chat with your own authentication](/guides/frontend-chat) for the
+complete chat transport setup.
+
+## Transport limits
+
+Org proxy credentials support the HTTP runtime surface described here. The SDK
+rejects org proxy credentials for gRPC reverse proxying until that transport has
+an equivalent delegation contract. Do not fall back to a different caller's
+credentials to make an unsupported transport work.
+
+The shared proxy sets restrictive content security and content-type headers on
+responses so navigated HTML or SVG cannot execute as your application. Fetch-based
+streams and binary uploads retain their normal transport behavior. SDK requests
+with application credentials reject redirects before contacting another origin.

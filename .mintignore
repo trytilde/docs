@@ -6,3 +6,6 @@
 AGENTS.md
 drafts/
 *.draft.mdx
+
+# Internal repository decision and change records
+docs/
