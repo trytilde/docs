@@ -1,0 +1,164 @@
+---
+title: "Custom ChatKit providers"
+description: "Host your own chat integration with the TypeScript SDK."
+icon: "plug"
+---
+
+A custom ChatKit provider connects your platform to Tilde's canonical sessions,
+agent execution, and durable delivery. You host the provider backend. Tilde
+stores a reusable, team-scoped definition and creates an independent connection
+for each configured account.
+
+Your backend verifies external webhook signatures, interprets platform threads
+and identities, and converts messages. Tilde owns authorization, conversation
+participants, tool-execution records, and delivery retries. Provider runtime
+credentials cannot act as Tilde users.
+
+## Register and connect
+
+1. Open **ChatKit → Configure providers** and register the backend's HTTPS
+   discovery URL. Registration creates a pending definition and returns its
+   signing key once.
+2. Configure that key and the returned definition ID in your backend, then
+   refresh discovery. A failed refresh preserves the last valid manifest and
+   records diagnostics. Changes incompatible with existing connections require
+   a new definition.
+3. Choose the provider in the generic setup catalog. Configure the connection's
+   default agent, credentials, and platform settings. The backend can request
+   forms, authorization redirects, or setup instructions. Use **Inspect connections**
+   to configure a pending imported connection or resume interrupted setup.
+4. Send external webhooks directly to your backend. Verify the platform's raw
+   request before submitting normalized events to Tilde.
+
+You can also manage definitions through `client.chatkit.customProviders`:
+
+```typescript
+const registration = await client.chatkit.customProviders.create({
+  displayName: "My chat platform",
+  discoveryUrl: "https://provider.example/provider",
+});
+// Store registration.signingKey in your backend's secret manager.
+// Configure registration.provider.id as the endpoint's definitionId.
+await client.chatkit.customProviders.refresh({
+  providerId: registration.provider.id,
+});
+```
+
+Use `startConnection` and `resumeConnection` for SDK-driven setup. Their
+`nextAction` describes the next generic setup step. Responses may contain
+one-time secret outputs; keep those out of transcripts and application logs.
+
+## Author a backend
+
+Import `defineChatKitProvider`, `chatKitProviderEndpoint`, and
+`createProviderRuntimeClient` from `@trytilde/sdk/chatkit-provider`.
+The endpoint uses standard `Request` and `Response` objects and does not require
+Vercel AI. Export its `GET` handler for discovery and `POST` handler for signed
+operations.
+
+Your definition declares configuration schemas, authentication methods,
+subscriptions, content capabilities, and session tools. Implement the matching
+setup, identity, messaging, and tool handlers. Declare only supported
+capabilities. The SDK validates manifests and verifies Tilde's operation
+signature before invoking your code.
+
+A signed operation binds the protocol version, request ID, definition,
+connection, and execution context. Configuration and managed credentials arrive
+only at authorized backend operations. For OAuth, verify the platform callback
+and redirect the browser to the supplied `input.return_url`. It carries Tilde's
+persisted setup binding; the dashboard resumes that setup as the signed-in user.
+Store connection runtime tokens securely;
+use `setup.credentialsUpdated` to handle rotation.
+
+Dispatch's `packages/sdk/examples/custom-chatkit` directory contains Linq and
+AgentMail adapters, a runnable Node host, and a custom streaming protocol.
+Linq covers line selection, subscriptions, reactions, thread reads, and polls.
+AgentMail covers inbox credentials, email threading, rich recipients, HTML,
+reply-all, and attachments.
+
+## Ingest messages and identities
+
+Use a connection-scoped runtime client to ensure a conversation and ingest a
+normalized message. Event IDs, external identities, and conversation keys are
+scoped to the connection, so two accounts can safely reuse the same external
+IDs. Tilde durably accepts each event and rejects conflicting reuse of an ID.
+Polling and socket consumers use the same API as webhook handlers.
+
+The runtime client supports attachment uploads and downloads, external
+participant updates, history, agent address registration, and mention
+normalization. External addresses are delivery identities; adding one never
+grants Tilde-user access. Upload attachments before referencing their IDs in
+an inbound message.
+
+## Session tools
+
+Declare contextual tools such as `addReaction`, `getThread`, or your platform's
+own actions. Discovery can narrow the declaration based on the current
+connection and participants. Tilde intersects the result with the authenticated
+agent's actual turn and target authorization.
+
+Agents discover bound tools with `client.chatkit.sessionTools({ sessionId })`.
+The Vercel AI adapter exposes `context.session.tools` and a standalone
+`sessionProviderTools` helper. Session-scoped MCP exposes provider actions with
+the `chatkit_provider__` prefix. Common canonical names such as `sendMessage`
+cannot be shadowed.
+
+Keep the model's tool-call ID stable across retries. Tilde binds the agent,
+session, target, trigger, connection, and execution ID outside model arguments.
+Each mutation must support reconciliation. Return `applied` with its result,
+`absent` only when a retry is safe, or `uncertain` when the outcome is unknown.
+A missing local receipt alone does not prove that the platform operation failed.
+
+## Rich delivery
+
+`sendMessage` stores one canonical message and durable delivery intent.
+Providers prepare private delivery options and deliver the persisted output.
+Automatic replies and explicit sends use the same delivery worker.
+
+To/CC/BCC, subject, HTML, reply-all, and provider-specific options do not need to
+be reconstructed from visible text. Tilde encrypts the private delivery
+envelope. BCC stays out of shared transcripts, participant lists, realtime
+payloads, and ordinary execution records. The email reference supports `provider_options: { new_thread: true }` with
+explicit To recipients when starting a new email from an authorized session
+turn. Providers must also redact BCC from
+their own tool results and inbound extension data.
+
+Use the supplied delivery ID for platform idempotency or delivery markers.
+Reconciliation runs before retrying an uncertain send. Attachment URLs are
+refreshed for delivery attempts. Exhausted retries remain visible as dead letters. Use
+`client.chatkit.customProviders.listConnectionWork` to inspect ingestion and
+cleanup status without reading message payloads. After correcting a backend
+failure, use `retryConnectionWork` with the returned work ID.
+
+## Client transports
+
+Custom client protocols can submit canonical turns, read history, and subscribe
+to `client.chatkit.streamSessionEvents`. Authenticate each caller with their
+own SDK client. Reconnect with the last event cursor and use history for a fresh
+snapshot. Tilde filters events by the current audience and periodically
+revalidates stream authorization.
+
+A provider runtime token is for external platform operations. It cannot
+impersonate a user or replace caller authentication for a streaming client.
+
+## Lifecycle and portability
+
+Disabling a definition pauses its connections' runtime work and pending
+delivery. Re-enabling resumes them. Deleting a connection revokes its runtime
+credential, cancels pending delivery, and schedules external cleanup while
+retaining conversation history. A referenced definition cannot be deleted.
+
+Setup can provision an associated custom Tools backend through the existing
+Tools lifecycle. The connection owns its typed toolkit reference and cleans it
+up on deletion. Tools retain their own enablement settings; session tools do
+not require a separate toolkit instance.
+
+State exports include public definitions, connection configuration, and
+portable agent/toolkit references. Imports require discovery and credential
+rebinding before runtime activation. Credentials, runtime tokens, pending work,
+and private setup continuation are not portable state.
+
+Deploy additive API support and upgrade workers before enabling custom
+providers or releasing an SDK that uses these operations. Use public HTTPS or a
+reachable Dev Tunnel; a local-development flag does not grant private-network
+access.

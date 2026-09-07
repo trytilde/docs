@@ -66,6 +66,14 @@ Install Mintlify's documentation skill for your coding tools:
 npx skills add https://mintlify.com/docs
 ```
 
+## Internal records
+
+Never store or publish `docs/adrs/` or `docs/updates/` in this repository. Keep
+engineering decisions and change records in the owning source repository; use
+this repository's PR descriptions for docs-only rationale and validation. Run
+`npm run check:publication-boundary` before publishing. See [the publication
+policy](docs/README.md).
+
 ## Publishing changes
 
 Mintlify deploys committed changes through its GitHub app. Generated tool-provider files must be committed because Mintlify maps indexable routes to MDX files in the repository.

@@ -1,15 +1,17 @@
-## Change
+## Changes
 
-Describe the problem and resulting behavior.
+Describe the public documentation changes and their source contracts.
 
 ## Validation
 
-Record checks actually run, their results, and any unverified flows.
+- [ ] `npm run check:publication-boundary`
+- [ ] `mint validate`
+- [ ] `mint broken-links`
+- [ ] `mint a11y`
+- [ ] `git diff --check`
 
-## Documentation
+## Publication and related changes
 
-- Link the current `docs/updates/<actual-pr-number>.md` record (rename the pending record after PR creation).
-- Link new or amended ADRs under `docs/adrs/`, or state `ADR review: no new decision` with a reason.
-- List affected README, setup/deployment, and public documentation changes; link related repository PRs and merge order.
-- Confirm the update record describes the full current diff, actual validation, and required consumer/operator actions.
-- Refresh this section and the same update record after subsequent review or rebase changes.
+Link companion API/SDK PRs and explain deployment order or remaining release work.
+Internal ADRs and update records belong in those source repositories. Do not add
+`docs/adrs/` or `docs/updates/` files to this repository.
