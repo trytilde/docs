@@ -2,16 +2,16 @@
 
 This is the canonical Mintlify documentation repository for Tilde. Public guides
 live in the root MDX pages and feature/guide directories; `docs.json` owns navigation.
-Internal architecture and PR records live under `docs/adrs` and `docs/updates` and
-are excluded from site publication by `.mintignore`.
+Architecture decisions and detailed change records belong in the owning source
+repository, never in this public docs repository.
 
 ## Documentation maintenance
 
-For every change, follow [docs/README.md](docs/README.md) and
-[maintain-docs](.agents/skills/maintain-docs/SKILL.md). Read governing ADRs, record
-resolved durable decisions, maintain the current pending/PR-numbered update record,
-and keep affected public pages and navigation synchronized. Do not ask again about
-already-authorized decisions or preserve obsolete setup prompts.
+Follow [docs/README.md](docs/README.md). Never create, copy, commit, or publish
+`docs/adrs/` or `docs/updates/`, including historical records or templates.
+Record docs-only intent, verification, and publication requirements in the PR
+body. Link source-repository decisions/PRs when useful. Keep public pages,
+examples, setup instructions, and navigation synchronized.
 
 ## Public content
 
@@ -30,6 +30,6 @@ already-authorized decisions or preserve obsolete setup prompts.
 ## Validation and publication
 
 Run `mint validate`, `mint broken-links`, and `mint a11y` after content/navigation
-changes. Review the final diff and keep the same update record current through PR
+changes. Run `npm run check:publication-boundary` and review the final diff through PR
 revisions. Use the [create-pr workflow](.agents/skills/create-pr/SKILL.md) when PR
 publication is authorized; never fabricate a PR number or claim a deployment.

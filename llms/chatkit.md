@@ -218,3 +218,28 @@ search other conversations that the authenticated agent actively participates
 in with the current session's verified human owner. Ordinary search permissions
 also apply. Models cannot supply a different agent, tenant or user identity to
 this tool. Follow `next_page_token`, even after an empty filtered page.
+
+## Manage custom ChatKit backends
+
+Call `tilde_manage_custom_chatkit_provider` in the resolved team scope. Supported
+`action` values are `create`, `list`, `get`, `update`, `refresh`, `enable`,
+`disable`, `delete`, and `rotate_signing_key`. Use `provider_id` for an existing
+definition. Create/update use `display_name`, `discovery_url`, and optional
+`local_running_endpoint`.
+
+Create returns a pending definition and one-time signing key. Configure the
+customer-hosted endpoint with that key and definition ID before refreshing.
+Never place signing keys or runtime credentials in shared conversation history.
+Use the generic provider setup catalog/start/resume operations with domain
+`chatkit` and the definition ID; follow the returned `next_action`.
+
+Session tools are discovered against the authenticated agent's current turn.
+Do not fabricate session coordinates, use a provider runtime token as a user
+credential, or expose transport context as model inputs. Preserve tool-call IDs
+for replay and rely on canonical execution receipts and reconciliation.
+
+A failed discovery refresh preserves the last valid manifest. Disabled
+providers pause runtime work. Definition deletion fails while connections refer
+to it. Portable imports remain pending until fresh credentials are bound.
+See [custom ChatKit providers](https://docs.trytilde.ai/custom-chatkit-providers)
+for the public SDK authoring contract.
