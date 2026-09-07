@@ -613,3 +613,39 @@ export const POST = chatKitEndpoint({
 ## ChatKit and memory
 
 ChatKit preserves the messages inside a session. [Memory](/memory) stores selected knowledge that should be available across sessions, channels, or agents. Use both when an agent needs conversational continuity and longer-lived organizational context.
+
+
+## Configure realtime voice
+
+Voice settings belong to your Tilde agent. In agent registration, select a voice
+profile and its models, voice, and maximum conversation duration. You can change
+these settings in the agent editor later.
+
+- **Text agent with speech**: Tilde transcribes incoming audio, invokes your normal
+  `chatKitEndpoint` callback, and speaks its streamed text response.
+- **OpenAI Realtime**: the realtime model generates spoken responses directly.
+  Tilde records the final transcripts without invoking your text endpoint again.
+
+Your text callback receives `context.audio` for transcribed speech turns and
+`context.telnyx` for Telnyx calls. Provider facts are supplied in the signed
+request. A subsequent typed message does not become a speech turn merely because
+its session previously contained a call.
+
+Each call creates a normal ChatKit session. Browser media admission is one-time,
+expires after five minutes, and remains subject to current session membership.
+Call duration is limited by the configured maximum. Call recordings are not
+retained by this initial realtime implementation.
+
+For a manual test, use the SDK repository's `examples/realtime-voice` example. It
+registers one agent for each mode and supplies a microphone page. To receive
+phone calls, create a **Telnyx Voice** managed credential, bind a dedicated test
+Voice API application and number to the agent, and configure the application's
+webhook URL with the URL returned by Tilde. The Tilde API must be publicly
+reachable through HTTPS and WSS. Hookdeck webhook replay alone cannot carry live
+bidirectional audio.
+
+The initial browser implementation streams audio through the Rust API. Direct
+browser-to-provider WebRTC and direct SIP routing are separate transport options
+and are not implied by the OpenAI Realtime profile. Native Realtime uses its
+configured instructions and does not inherit endpoint tools. Browser voice
+identifies its caller but does not yet establish personal-tool federation.

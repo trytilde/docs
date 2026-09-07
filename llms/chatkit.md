@@ -189,3 +189,40 @@ Provider/rule visibility controls discovery and delivery reads. Ownership contro
 Use `tilde_list_signal_provider_instances` and `tilde_list_signal_rules` before updating or deleting resources. Their mutation functions are `tilde_update_signal_provider`, `tilde_delete_signal_provider`, `tilde_update_signal_rule`, and `tilde_delete_signal_rule`.
 
 In application code, handle typed GitHub, Slack, Sentry, and Firecrawl metadata as shown in the [human ChatKit guide](https://trytilde.ai/docs/chatkit). `onUnprocessed` runs once per unprocessed message; later conversions reuse its cached result.
+
+
+## Agent-owned realtime audio
+
+Use the selected tenant host and explicit `team_id` for these REST operations:
+
+1. `GET /api/v1/chatkit/audio/profiles` returns supported profile defaults and
+   server-authored fields. Render these descriptors rather than generating
+   provider-specific setup instructions in frontend code.
+2. Register an HTTP agent with optional `audio` configuration, or use
+   `PUT /api/v1/team/{team_id}/chatkit/agents/{agent_id}/audio` with `{ "audio":
+   <configuration> }`. Set `audio` to null on the PUT route to disable voice.
+3. Configuration fields are `mode` (`pipeline` or `realtime`), `credential_id`
+   (optional), `stt_model`, `tts_model`, `realtime_model`, `voice`, `instructions`,
+   and `max_duration_seconds` (10–1800). The OpenAI Audio credential source is
+   `chatkit_openai_audio`; omitting the credential uses the server OpenAI key.
+4. `POST /api/v1/team/{team_id}/chatkit/agents/{agent_id}/audio/sessions` creates a
+   normal session and returns `audio_session`, `websocket_path`, and a one-time
+   token. Connect with WebSocket subprotocols `chatkit-audio` and `token.<token>`.
+   Send mono signed PCM16 little-endian audio at 24 kHz as base64 `audio` frames.
+5. `PUT /api/v1/team/{team_id}/chatkit/agents/{agent_id}/audio/telnyx` accepts
+   `credential_id` (source `chatkit_telnyx_voice`), `public_key`, `phone_number`,
+   `connection_id`, and public HTTPS `media_base_url`. It returns `route` and
+   `webhook_url`; use that exact webhook URL in the dedicated Telnyx application.
+
+Pipeline mode invokes the existing callback only when a user speech turn is
+ready. Rust synthesizes the response. Realtime mode owns spoken generation;
+transcript observations must not trigger another model turn or external send.
+`context.audio` and `context.telnyx` come from typed, server-authored speech
+provenance rather than client message metadata.
+
+The manual browser/carrier example is `examples/realtime-voice` in the Harness
+SDK. It never buys phone numbers or changes existing carrier routing. Agent
+settings and credential setup references are portable; live connections and
+media tokens are not exported. Configure Telnyx number/application bindings
+again in the destination installation. Native mode does not inherit endpoint
+tools, and browser voice does not establish personal-tool federation.
