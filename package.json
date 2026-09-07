@@ -8,7 +8,8 @@
   "scripts": {
     "generate:tool-providers": "node scripts/generate-tool-provider-pages.mjs",
     "check:tool-providers": "node scripts/generate-tool-provider-pages.mjs --check",
-    "dev": "npm run generate:tool-providers && mint dev",
-    "check": "npm run check:tool-providers && mint broken-links"
+    "dev": "npm run check:publication-boundary && npm run generate:tool-providers && mint dev",
+    "check": "npm run check:publication-boundary && npm run check:tool-providers && mint broken-links",
+    "check:publication-boundary": "node scripts/check-publication-boundary.mjs"
   }
 }
