@@ -131,6 +131,7 @@
             ]
           },
           "chatkit",
+          "custom-chatkit-providers",
           "memory",
           "skills",
           "dev-tunnels",

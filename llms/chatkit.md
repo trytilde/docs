@@ -247,3 +247,56 @@ settings and credential setup references are portable; live connections and
 media tokens are not exported. Configure Telnyx number/application bindings
 again in the destination installation. Native mode does not inherit endpoint
 tools, and browser voice does not establish personal-tool federation.
+
+## Change resources through native tools
+
+Agents use native Tilde API/MCP operations under their existing permissions.
+The capability proposal API has been retired. Chain dependent operations using
+returned resource IDs, reconcile partial failures before retrying, and read back
+the resulting resource. Do not widen permissions or switch credentials after an
+authorization failure.
+
+Before enabling a connector, read the managed [enable-connections skill](https://docs.trytilde.ai/llms/connections.md).
+Discover existing user and agent access and verify the correct account first.
+Choose personal/user or bot ownership explicitly; when unclear, ask whether
+other bots should be able to use the account.
+
+Native brokering returns a `connector_setup_required` descriptor for the pending
+resource. API clients render an enable-provider event outside message bubbles
+and open secure configuration modals. In external channels, invoke sendMessage
+with the server-returned hosted setup URL. Credentials stay in native secure
+setup operations, outside chat and persisted client workflow snapshots.
+
+## Recover missing conversation context
+
+Session-scoped MCP connections provide `chatkit_search_history`. The query
+searches the current conversation by default. Set `include_related_sessions` to
+search other conversations that the authenticated agent actively participates
+in with the current session's verified human owner. Ordinary search permissions
+also apply. Models cannot supply a different agent, tenant or user identity to
+this tool. Follow `next_page_token`, even after an empty filtered page.
+
+## Manage custom ChatKit backends
+
+Call `tilde_manage_custom_chatkit_provider` in the resolved team scope. Supported
+`action` values are `create`, `list`, `get`, `update`, `refresh`, `enable`,
+`disable`, `delete`, and `rotate_signing_key`. Use `provider_id` for an existing
+definition. Create/update use `display_name`, `discovery_url`, and optional
+`local_running_endpoint`.
+
+Create returns a pending definition and one-time signing key. Configure the
+customer-hosted endpoint with that key and definition ID before refreshing.
+Never place signing keys or runtime credentials in shared conversation history.
+Use the generic provider setup catalog/start/resume operations with domain
+`chatkit` and the definition ID; follow the returned `next_action`.
+
+Session tools are discovered against the authenticated agent's current turn.
+Do not fabricate session coordinates, use a provider runtime token as a user
+credential, or expose transport context as model inputs. Preserve tool-call IDs
+for replay and rely on canonical execution receipts and reconciliation.
+
+A failed discovery refresh preserves the last valid manifest. Disabled
+providers pause runtime work. Definition deletion fails while connections refer
+to it. Portable imports remain pending until fresh credentials are bound.
+See [custom ChatKit providers](https://docs.trytilde.ai/custom-chatkit-providers)
+for the public SDK authoring contract.

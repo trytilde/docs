@@ -1,0 +1,4 @@
+
+# Internal engineering records belong in the owning source repository.
+/docs/adrs/
+/docs/updates/

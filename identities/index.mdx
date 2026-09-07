@@ -40,10 +40,18 @@ the invited account. Tilde accepts the invitation, creates or reuses your identi
 in that organization, selects its team, and opens the home dashboard. Existing
 memberships in other organizations do not change that destination.
 
-Without an invitation or existing membership, Tilde asks you to name your first
-organization and team. Submitting this setup creates the organization, team,
-identity, and administrative membership before opening home. Retrying setup
-reuses the same workspace. Clerk webhooks reconcile account lifecycle only.
+For a first-time account without an invitation or organization membership, Tilde
+asks you to name your first organization and team. Submitting this setup creates
+the organization, team, identity, and administrative membership before opening
+home. Retries during initial setup reuse the same workspace instead of creating
+duplicates. Clerk webhooks reconcile account lifecycle only.
+
+If you completed first-organization setup previously but no longer have any
+organization memberships, Tilde shows **Restore organization access**. Recover
+access through an organization invitation or [managed account linking](/identities/account-linking),
+or sign out to use another account. This recovery screen does not show the
+first-organization form. Tilde does not automatically recreate a deleted first
+organization or restore revoked access when the original setup request is retried.
 
 The hosted [account-linking flow](/identities/account-linking) can connect an
 existing application identity without creating a separate first organization.
