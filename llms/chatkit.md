@@ -189,3 +189,32 @@ Provider/rule visibility controls discovery and delivery reads. Ownership contro
 Use `tilde_list_signal_provider_instances` and `tilde_list_signal_rules` before updating or deleting resources. Their mutation functions are `tilde_update_signal_provider`, `tilde_delete_signal_provider`, `tilde_update_signal_rule`, and `tilde_delete_signal_rule`.
 
 In application code, handle typed GitHub, Slack, Sentry, and Firecrawl metadata as shown in the [human ChatKit guide](https://trytilde.ai/docs/chatkit). `onUnprocessed` runs once per unprocessed message; later conversions reuse its cached result.
+
+
+## Change resources through native tools
+
+Agents use native Tilde API/MCP operations under their existing permissions.
+The capability proposal API has been retired. Chain dependent operations using
+returned resource IDs, reconcile partial failures before retrying, and read back
+the resulting resource. Do not widen permissions or switch credentials after an
+authorization failure.
+
+Before enabling a connector, read the managed [enable-connections skill](https://docs.trytilde.ai/llms/connections.md).
+Discover existing user and agent access and verify the correct account first.
+Choose personal/user or bot ownership explicitly; when unclear, ask whether
+other bots should be able to use the account.
+
+Native brokering returns a `connector_setup_required` descriptor for the pending
+resource. API clients render an enable-provider event outside message bubbles
+and open secure configuration modals. In external channels, invoke sendMessage
+with the server-returned hosted setup URL. Credentials stay in native secure
+setup operations, outside chat and persisted client workflow snapshots.
+
+## Recover missing conversation context
+
+Session-scoped MCP connections provide `chatkit_search_history`. The query
+searches the current conversation by default. Set `include_related_sessions` to
+search other conversations that the authenticated agent actively participates
+in with the current session's verified human owner. Ordinary search permissions
+also apply. Models cannot supply a different agent, tenant or user identity to
+this tool. Follow `next_page_token`, even after an empty filtered page.
