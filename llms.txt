@@ -139,3 +139,7 @@ We are currently in early testing stages. Tilde is currently free, it will move 
 - API & dashboard base URL: https://api.trytilde.ai
 - Blog: https://trytilde.ai/blog
 - npm (one CLI & Harness SDK): https://www.npmjs.com/package/@trytilde/harness-sdk
+
+## Managed connection workflow
+
+- [Enable connections](https://docs.trytilde.ai/llms/connections.md): discover existing access, choose personal or bot ownership, complete native brokering, and map only the required tools.

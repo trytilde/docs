@@ -378,5 +378,18 @@ export const providers = [
     "iconSources": [],
     "toolCount": 44,
     "tools": []
+  },
+  {
+    "name": "WhatsApp",
+    "slug": "whatsapp",
+    "initials": "WH",
+    "category": "Chat",
+    "summary": "Send WhatsApp text, template, and media messages, mark messages read, fetch media metadata, list approved templates, and inspect the sending number through the Meta Cloud API.",
+    "auth": [
+      "WhatsApp Cloud API"
+    ],
+    "iconSources": [],
+    "toolCount": 8,
+    "tools": []
   }
 ];

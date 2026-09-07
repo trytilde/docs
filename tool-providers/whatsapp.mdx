@@ -1,0 +1,95 @@
+---
+title: "WhatsApp tools for AI agents"
+sidebarTitle: "WhatsApp"
+description: "Explore 8 WhatsApp tools for AI agents in Tilde, including supported authentication and MCP capabilities."
+keywords:
+  - "WhatsApp AI tools"
+  - "WhatsApp MCP integration"
+  - "WhatsApp tools for AI agents"
+  - "Tilde tool providers"
+  - "MCP tools"
+"og:title": "WhatsApp tools for AI agents | Tilde"
+"og:description": "Explore 8 WhatsApp tools for AI agents in Tilde, including supported authentication and MCP capabilities."
+mode: "wide"
+---
+
+import {
+  PUBLIC_CATALOG_URL,
+  iconAliases,
+  iconUrl,
+  providerFromApi,
+  ProviderLogo,
+  ToolProviderDetail,
+} from "/snippets/tool-provider-browser.jsx";
+
+export const provider = {
+  "name": "WhatsApp",
+  "slug": "whatsapp",
+  "initials": "WH",
+  "category": "Chat",
+  "summary": "Send WhatsApp text, template, and media messages, mark messages read, fetch media metadata, list approved templates, and inspect the sending number through the Meta Cloud API.",
+  "auth": [
+    "WhatsApp Cloud API"
+  ],
+  "iconSources": [],
+  "toolCount": 8,
+  "tools": [
+    [
+      "Send a WhatsApp text message",
+      "Send free-form text to a WhatsApp user. Only allowed within 24 hours of the user's last message; outside that window Meta returns error 131047 and you must use whatsapp_send_template. Bodies over 4096 characters are rejected; split them first."
+    ],
+    [
+      "Send a WhatsApp template message",
+      "Send an approved message template. This is the only way to start a conversation or reach a user whose 24 hour customer service window has closed. Components carry header, body, and button parameters in Meta's format."
+    ],
+    [
+      "Send a WhatsApp media message",
+      "Send an image, video, audio, document, or sticker by public link or previously uploaded media id. Subject to the same 24 hour window as text."
+    ],
+    [
+      "React to a WhatsApp message",
+      "Add an emoji reaction to a message the user sent, or remove one by passing an empty emoji. Reactions are lightweight acknowledgements and do not open or extend the 24 hour window."
+    ],
+    [
+      "Mark a WhatsApp message read",
+      "Mark an inbound message as read (blue ticks) and optionally show a typing indicator while a reply is being prepared."
+    ],
+    [
+      "Get WhatsApp media metadata",
+      "Resolve an inbound media id to its download URL, MIME type, and size. The URL is short-lived and must be fetched with the same bearer token."
+    ],
+    [
+      "List WhatsApp message templates",
+      "List the WhatsApp Business Account's message templates with status, language, category, and components so template sends can be built correctly."
+    ],
+    [
+      "Get the WhatsApp sending number",
+      "Read the sending number's display number, verified name, quality rating, messaging limit tier, and status. Pause outbound traffic when the status is not CONNECTED."
+    ]
+  ]
+};
+
+{/* GENERATED: scripts/generate-tool-provider-pages.mjs */}
+
+Send WhatsApp text, template, and media messages, mark messages read, fetch media metadata, list approved templates, and inspect the sending number through the Meta Cloud API.
+
+Tilde exposes **8 WhatsApp tools** for AI agents through MCP. Connect with WhatsApp Cloud API.
+
+<ToolProviderDetail provider={provider} ProviderLogo={ProviderLogo} />
+
+## Popular WhatsApp tools
+
+- **Send a WhatsApp text message** — Send free-form text to a WhatsApp user. Only allowed within 24 hours of the user's last message; outside that window Meta returns error 131047 and you must use whatsapp_send_template. Bodies over 4096 characters are rejected; split them first.
+- **Send a WhatsApp template message** — Send an approved message template. This is the only way to start a conversation or reach a user whose 24 hour customer service window has closed. Components carry header, body, and button parameters in Meta's format.
+- **Send a WhatsApp media message** — Send an image, video, audio, document, or sticker by public link or previously uploaded media id. Subject to the same 24 hour window as text.
+- **React to a WhatsApp message** — Add an emoji reaction to a message the user sent, or remove one by passing an empty emoji. Reactions are lightweight acknowledgements and do not open or extend the 24 hour window.
+- **Mark a WhatsApp message read** — Mark an inbound message as read (blue ticks) and optionally show a typing indicator while a reply is being prepared.
+- **Get WhatsApp media metadata** — Resolve an inbound media id to its download URL, MIME type, and size. The URL is short-lived and must be fetched with the same bearer token.
+- **List WhatsApp message templates** — List the WhatsApp Business Account's message templates with status, language, category, and components so template sends can be built correctly.
+- **Get the WhatsApp sending number** — Read the sending number's display number, verified name, quality rating, messaging limit tier, and status. Pause outbound traffic when the status is not CONNECTED.
+
+## Connect WhatsApp to an AI agent
+
+Add WhatsApp from the [Tilde dashboard](https://api.trytilde.ai/tools/available-tool-providers), then enable the tools your agent needs on an MCP server. [Learn how tools work in Tilde](/tools).
+
+[Browse every Tilde tool provider](/tool-providers/index) or [compare Tilde-managed and self-managed authentication](/tool-providers/managed-auth).
