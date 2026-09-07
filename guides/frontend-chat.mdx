@@ -32,7 +32,10 @@ Set up your application's own login provider. For Clerk, follow the
 using your application's Clerk keys, provider, sign-in/sign-up pages, middleware,
 and server session verification. Protect API handlers as well as pages.
 
-In Tilde, create the application's organization and enroll its Core subscription.
+Sign in to Tilde and complete the first organization/team setup, or accept an
+invitation to an existing application organization. Organization/team creation is
+a native Tilde setup action; it does not depend on Clerk organization webhooks.
+Enroll the application organization in Core through Tilde administration.
 Create an [organization proxy token](/identities/proxy-tokens) in
 **Settings → Organization → Proxy tokens**. Enable `runtime:delegate`,
 `identities:manage`, and `teams:manage` for first-login provisioning. Add

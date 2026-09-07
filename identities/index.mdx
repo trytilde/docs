@@ -29,6 +29,25 @@ team and identity for each user. Add team memberships when your application
 supports collaboration. An identity must currently belong to the team it acts in;
 knowing a team or resource ID does not grant access.
 
+## Joining Tilde directly
+
+Tilde uses Clerk for login accounts, while organizations and teams are native
+Tilde records. Signing up does not create an organization in Clerk or provision a
+Tilde workspace through a webhook.
+
+If you follow an organization invitation from an email, sign in or sign up with
+the invited account. Tilde accepts the invitation, creates or reuses your identity
+in that organization, selects its team, and opens the home dashboard. Existing
+memberships in other organizations do not change that destination.
+
+Without an invitation or existing membership, Tilde asks you to name your first
+organization and team. Submitting this setup creates the organization, team,
+identity, and administrative membership before opening home. Retrying setup
+reuses the same workspace. Clerk webhooks reconcile account lifecycle only.
+
+The hosted [account-linking flow](/identities/account-linking) can connect an
+existing application identity without creating a separate first organization.
+
 ## Create an application client
 
 Create an [organization proxy token](/identities/proxy-tokens) with identity and
@@ -113,7 +132,8 @@ An unbound client with `identities:manage` can manage an identity's memberships 
 existing teams within the same organization:
 
 ```ts
-const teams = await tilde.identities.listTeams(identityId);
+const teams = await tilde.identities.listTeams(identityId, { pageSize: 50 });
+// teams.items contains this page; continue with teams.next_page_token.
 await tilde.identities.addTeam(identityId, additionalTeamId);
 await tilde.identities.removeTeam(identityId, additionalTeamId);
 await tilde.identities.removeIdentifier(identityId, {
@@ -132,10 +152,18 @@ removing an identifier does not unlink an account or transfer its resources.
 
 ```ts
 const identity = await tilde.identities.get(identityId);
-const firstPage = await tilde.identities.list(0);
+const firstPage = await tilde.identities.list({ pageSize: 50 });
+if (firstPage.next_page_token) {
+  const nextPage = await tilde.identities.list({
+    pageSize: 50, nextPageToken: firstPage.next_page_token,
+  });
+}
 await tilde.identities.update(identityId, { displayName: "Alice Smith" });
 await tilde.identities.update(identityId, { disabled: true });
 ```
+
+Identity and membership lists return `{ items, next_page_token }`. Pass cursors
+unchanged; page sizes are clamped to 1–100.
 
 Verify your identity provider's webhook signatures before changing a mapping.
 Record disabled/deleted state durably, reject stale events, and retry remote
