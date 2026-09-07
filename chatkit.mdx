@@ -13,7 +13,7 @@ ChatKit connects an agent endpoint to the places where work begins. It stores se
 2. **Vercel AI SDK chat provider**: This managed provider exposes your agent through a Vercel AI SDK-compatible endpoint for custom clients.
 3. **Signals**: These are events from third-party providers that Tilde delivers to your agent.
 
-Configure chat providers for conversations from Slack, GitHub, and other supported channels. Use signals when an external event should start or continue a session without first arriving as a chat message.
+Configure chat providers for conversations from Slack, GitHub, Linq, and other supported channels. Use signals when an external event should start or continue a session without first arriving as a chat message. [Connect Linq messaging](/guides/linq) once to provision its ChatKit channel, tools, Signals, and Reverse Proxy together.
 
 ChatKit sessions, routines, and agents are either shared `team` resources or private `user_team` resources. A private resource remains in its execution team and has one owner. Private sessions may also include selected team users as conversation members: members can see the session, read its history, send messages, and receive its live events, while the owner and team, organization, or system administrators manage membership and session administration. Messages, attachments, events, tasks, replies, and turn queues inherit the session's audience.
 
@@ -21,7 +21,11 @@ Agents, sessions, and routines also expose independent visibility and ownership 
 
 Session members are Tilde authorization principals, not ChatKit delivery participants. Adding an agent, Slack channel, or other inbox participant determines where messages flow; adding a Tilde user as a session member determines who may open the private conversation. Removing a member revokes subsequent history and event access, and leaving the execution team invalidates the grant.
 
-Each Mission Control WebSocket retains its authenticated effective user and current Identity groups. Team agent lifecycle changes are sent to every connected team member. Private agent lifecycle changes are sent to users and groups admitted by its visibility plane. Private-session message, streaming, task, and agent-turn events use the session's current visibility grants and conversation membership. Internal audience identifiers are not included in client event payloads.
+Each ChatKit realtime WebSocket retains its authenticated effective user and current Identity groups. Team agent lifecycle changes are sent to every connected team member. Private agent and session events follow their current visibility grants and conversation membership. Authorization changes emit an `access.changed` invalidation so clients refresh their personalized workspace projection.
+
+Realtime events use a closed, client-facing union: `agent.*`, `session.*`, `participant.*`, `message.*`, `queue_item.*`, `turn.*`, `activity.*`, `task.*`, and `chat.error`. Streaming content arrives through sequenced `message.delta` events. Internal event-bus payloads and audience identifiers are never forwarded.
+
+Read state belongs to the user-session relationship. `PUT /api/v1/team/{team_id}/chatkit/workspace/sessions/{session_id}/read-state` accepts `{ "unread": false }` when a user opens a session or `{ "unread": true }` to mark it manually. Other users sharing the session keep independent state.
 
 Signal provider instances and rules may also be personal. A personal rule names the team where its agent action runs. Sessions created by that rule are `user_team` sessions for the same owner, preventing the rule from turning personal activity into a team-visible conversation.
 
@@ -53,6 +57,7 @@ Signal providers and rules use the same two planes. Visibility controls discover
         teamId: process.env.TILDE_TEAM_ID!,
       }),
       webhookSigningKey: process.env.TILDE_WEBHOOK_SIGNING_KEY!,
+      responseMode: "agentLoop",
       async handler(request, context) {
         const history = await context.session.history();
         const messages = await convertToAiSdkMessages({
@@ -85,19 +90,95 @@ Signal providers and rules use the same two planes. Visibility controls discover
   </Step>
 
   <Step title="Connect a channel and test">
-    Go to **ChatKit** → **Configure Chat Providers** and choose where people will talk to the agent. Link the provider to your registered agent, then open [Mission Control](https://api.trytilde.ai/mission-control) to start a test session.
+    Go to **ChatKit** → **Configure Chat Providers** and choose where people will talk to the agent. Link the provider to your registered agent, then open [ChatKit workspace](https://api.trytilde.ai/chatkit-workspace) to start a test session.
   </Step>
 </Steps>
 
-### Test your agent in Mission Control
+### Choose how the endpoint responds
 
-Use [Mission Control](https://api.trytilde.ai/mission-control) to invoke your agent directly and test conversations. Select the correct workspace and agent, then start a session and send a message.
+With AI SDK 7, keep system context in the model call's `instructions` field. Conversation `messages` must not contain system messages; recalled memory remains explicitly untrusted context.
+
+`chatKitEndpoint` requires a top-level `responseMode`:
+
+- `agentLoop` streams returned assistant text as the visible reply, preserving the existing endpoint pattern.
+- `tool` treats returned assistant text as private reasoning. The agent must call `context.session.tools.sendMessage` (also available through `context.$provider.tools`) for visible replies.
+
+Tool mode binds the current session, participant, provider, channel, thread, repository, issue, and recipient routing on the server. The model supplies only message content and provider-action inputs. Slack and GitHub expose reactions and thread reads; Linq exposes reactions, thread reads, poll creation, poll-option updates, and voting; AgentMail exposes thread reads and email delivery fields including `to`, `cc`, `bcc`, subject, HTML, and reply-all.
+
+Pass the same session context to `context.session.createMCPClient({ serverId: process.env.TILDE_MCP_SERVER_ID! })` when the agent consumes tools through MCP. Session tools are added without asking the model for routing identifiers. In a private owner-workspace session, Tilde also derives the authenticated human's personal Memory and Wiki tools from the authorized session. The agent keeps its own identity, and unrelated personal connections are not exposed.
+
+For a shared agent whose MCP server enables speaker-bound personal-tool federation, use `context.mcp.connect({ serverId })`. ChatKit forwards an invocation-scoped capability for the verified speaker outside model input. Tilde resolves only that speaker's eligible personal accounts; an unmapped external speaker receives no personal tools. The capability, user ID, account IDs, and credentials are never copied into messages or room state.
+
+ChatKit assigns compact participant handles and emits durable `participant.joined` and `participant.left` events when a participant becomes visible to or leaves the conversation. Conversation snapshots expose them in `participant_events`, separate from `messages`, so clients can render session activity without adding synthetic chat messages. Tilde still includes the lifecycle context in agent history, and these changes do not start an agent turn.
+
+### Confirm an outbound message
+
+After creating a message, read `GET /api/v1/team/{team_id}/chatkit/session/{session_id}/message/{message_id}/deliveries` with the same organization scope. It requires visibility of the message and its session. Each receipt identifies the channel, provider, status, optional provider message ID, last error, and delivery timestamp.
+
+`provider_status` reports `pending`, `delivered`, or `failed` when the adapter can query final delivery status, as with Telnyx WhatsApp. That result takes precedence over initial queue acceptance: a later carrier rejection returns `dead_letter` and its error. Without a queryable provider status, `delivered` means acceptance. Neither means the recipient read the message. Keep the original message ID for an uncertain send; only a confirmed provider rejection establishes that a new attempt is safe.
+
+### Share a room with people and agents
+
+A ChatKit session can be a private or team room with a durable human and agent roster. Room owners can invite a canonical Tilde user, select an `admin` or `member` collaboration role, add visible agents, inspect pending invitations, revoke an invitation, and remove a participant. The invited user accepts or declines before receiving private room history.
+
+Room roles do not replace resource permissions. Session visibility controls messages, attachments, replay, and live events. Session ownership controls invitations and roster administration. Removing a participant stops future delivery and speaker-bound personal-tool federation.
+
+`client.chatkit.rooms` exposes the typed roster and invitation contract. `runBoundedRoomGroup` deduplicates agents, caps participants and rounds, and stops when a round makes no progress. OpenBot currently keeps the owner room UI dormant until canonical human identity discovery can replace raw user identifiers; the underlying API and SDK contract are available.
+
+### Keep substantial work durable
+
+Owner-only WhatsApp and Linq channels can opt into private conversations with `external_participant_policy: { join: "linked_only", agent_invocation: "linked_only", personal_tools: "linked_participants", session_scope: "personal" }` in their provider configuration. The sender must have a verified identity link routed to that channel and current team membership. Messages retain the verified human actor and the original channel's reply target. Existing shared conversations stay separate; a subsequent real inbound message starts or reuses the owner's private conversation. Other channels retain the default `session_scope: "team"` behavior.
+
+Goals, tasks, background jobs, routines, and AgentRuns let an agent continue substantial work without keeping correctness in one process.
+
+- A **goal** records the outcome for one agent and session. A **task** records an independently deliverable piece of that goal, including dependencies and progress.
+- A **background job** delegates one bounded objective to an explicit child agent. Jobs persist an optional `model_id`, hard duration/token/cost budgets, child session, transcript message IDs, artifacts, and terminal result.
+- An **AgentRun** persists the model-loop objective, generation-fenced lease, steps, token/cost totals, loop counters, wake state, and tool-effect receipts.
+- A **routine** stores recurring intent and its schedule. Prefer an event trigger when the same work can start from a Signal.
+
+Use `client.chatkit.work({ agentId, sessionId })` for goals, tasks, and jobs; `client.chatkit.routines(agentId)` for recurring work; and `client.chatkit.runs` for a durable host. Job actions are `steer`, `stop`, `resume`, and `collect-result`. Only the bound agent can mutate its work. Authorized owners can inspect and control the corresponding conversation work.
+
+Tilde supplies child job ID, generation, model, and budget in the signed request’s typed `execution` context. Hidden continuations carry the run ID, worker ID, generation, and hidden flag there. A continuation for a bound job also carries that job's context in `execution.job`, preserving its selected model and budget. Agent hosts must not accept caller-provided model, budget, run, or worker headers as authority.
+
+Bind a delegated model loop to its job by passing `job: { id: job.jobId, generation: job.generation }` to `client.chatkit.runs.create`. Use the direct `agent_job` execution context or the nested job context of an `agent_run` continuation. Tilde validates the child agent, session lineage, and current job generation, then creates or returns the one Run bound to that generation. Do not reuse an arbitrary active Run from the same session. `chatKitAgentRunIdempotencyKey(triggerId, context.execution)` still supplies retry identity; the typed binding supplies job authority. Ordinary human runs omit `job`.
+
+Once bound, an HTTP turn finishing does not complete the job. An active, waiting, paused, or stalled Run keeps the job running. The worker polls the same durable Run without redispatching the accepted HTTP invocation. A completed Run completes the job; a failed or canceled Run reports failure. Only that terminal result produces the parent's completion wake. Hosts without a bound Run retain the HTTP-terminal contract.
+
+Pass `expectedGeneration: run.generation` when recording a step with `client.chatkit.runs.appendStep`; the SDK sends `expected_generation`. Bound runs require that fence in addition to the current worker lease, so accounting from an older generation cannot land after steering. It remains optional for legacy unbound runs.
+
+Steering a bound job queues the instruction until the Run reaches an idle continuation boundary with no active lease or unresolved tool effect. The next continuation waits for pending steering. Tilde updates the existing Run and acknowledges the command atomically. Stopping the job cancels its bound Run; resuming creates a fresh job generation and a separate Run binding.
+
+A hidden continuation records its completed step before requesting a run transition. Tilde atomically acknowledges the matching planned continuation and applies that transition only for the current generation and unexpired worker lease, with a durable step recorded after the continuation started. Owner control cannot acknowledge a pending continuation, and an uncertain receipt still requires reconciliation or cancellation.
+
+### Compact model context without rewriting history
+
+Context compaction changes model input, not ChatKit history. An agent reports `started`, `ended`, or `failed` lifecycle events to `/chatkit/sessions/{session_id}/compaction-events`. A successful checkpoint stores the exact summary, agent, transcript boundary, compacted and retained message IDs, and token counts.
+
+Load `/chatkit/sessions/{session_id}/messages/from-last-compaction?agent_id=...` to receive the latest successful checkpoint separately from retained and newer messages. In `@trytilde/sdk-vercel-ai-node`, `createChatKitCompactionController` supplies a bounded `prepareStep` loop and `composeChatKitCompactionPrepareStep` preserves provider preparation before applying compaction.
+
+Human-created private workspace sessions belong to the authenticated human, including when a deployment service owns the selected agent. Tilde binds the workspace participant to that human for personal tool access. Delegated child sessions inherit the parent session's ownership.
+
+### Test your agent in ChatKit workspace
+
+Use [ChatKit workspace](https://api.trytilde.ai/chatkit-workspace) to invoke your agent directly and test conversations. Select the correct workspace and agent, then start a session and send a message.
 
 When creating a private session, the creator becomes its owner automatically. The create request may include additional team user IDs, and the session membership endpoints can list, add, or remove non-owner members afterward. Members receive the same live message and agent-turn stream for that session; they do not gain permission to change ownership or manage other members.
 
 <Info>
-  Mission Control requires the **Vercel AI Endpoint** ChatKit provider to be enabled for your agent.
+  ChatKit workspace requires the **Vercel AI Endpoint** ChatKit provider to be enabled for your agent.
 </Info>
+
+### Approve agent-requested capability changes
+
+An agent may create a durable self-extension proposal when it needs a connector, MCP server, skill registry, custom tool, agent bundle, memory bank, or wiki that it cannot already use. Tilde validates the requested category, rejects secret-shaped fields, and authors the permission, credential, cost, audience, egress, security, and undo preview.
+
+The active conversation renders that proposal as a secure **Yes** or **No** Human Approval card. The decision is bound to the proposal ID, immutable proposal hash, proposal generation, authenticated human principal, requesting agent, and originating session. A typed button decision is required; free-text confirmation in chat does not approve a proposal.
+
+Only the requesting agent's human owner, a human team administrator, or a system administrator can decide the proposal. The requesting human cannot approve their own request, and an agent credential cannot approve, reject, cancel, roll back, or claim one-time outputs. **Yes** atomically completes the linked Human Approval and queues leased execution. **No** atomically cancels the approval and records proposal rejection.
+
+Credential values, credential references, approval tokens, OAuth state, and generated signing keys are never included in model-visible proposal text. If execution needs provider setup, the server returns a secret-free setup-item reference only after approval. The approving human continues through the normal server-authored credential or OAuth card. The original agent can then resume its task from the durable decision and proposal status.
+
+Execution records whether each resource was created by the proposal or reused. Rollback removes only proposal-created receipts. One-time generated values are encrypted and can be consumed once through the human-only outputs endpoint.
 
 ### Search conversations
 
@@ -108,7 +189,7 @@ curl --get \
   --header "Authorization: Bearer $TILDE_API_KEY" \
   --data-urlencode "q=deployment rollback" \
   --data-urlencode "page_size=25" \
-  "https://api.trytilde.ai/api/v1/team/$TILDE_TEAM_ID/chatkit/mission-control/search"
+  "https://api.trytilde.ai/api/v1/team/$TILDE_TEAM_ID/chatkit/workspace/search"
 ```
 
 Each result has a `kind` of `session_title`, `agent`, or `message`. Message results include the canonical ChatKit message. Use the opaque `next_page_token` to continue in relevance order.
@@ -120,10 +201,49 @@ curl --get \
   --header "Authorization: Bearer $TILDE_API_KEY" \
   --data-urlencode "q=customer reference" \
   --data-urlencode "session_id=$TILDE_SESSION_ID" \
-  "https://api.trytilde.ai/api/v1/team/$TILDE_TEAM_ID/chatkit/mission-control/search"
+  "https://api.trytilde.ai/api/v1/team/$TILDE_TEAM_ID/chatkit/workspace/search"
 ```
 
 Search uses case-insensitive full-text terms. It does not provide fuzzy, typo-tolerant, or substring matching.
+
+### Audit coding-agent sessions
+
+Connect Codex, Claude Code, Cursor, OpenCode, or Gemini CLI with `openbot plugin` to record coding
+sessions in ChatKit while installing the Tilde MCP servers and managed skills
+you select.
+
+```bash
+openbot plugin --cli codex --agent-id "$TILDE_CHATKIT_AGENT_ID"
+openbot plugin --cli claude --agent-id "$TILDE_CHATKIT_AGENT_ID"
+openbot plugin --cli cursor --agent-id "$TILDE_CHATKIT_AGENT_ID"
+openbot plugin --cli opencode --agent-id "$TILDE_CHATKIT_AGENT_ID"
+openbot plugin --cli gemini --agent-id "$TILDE_CHATKIT_AGENT_ID"
+```
+
+The setup command installs the harness's native lifecycle hooks. Codex receives
+a Tilde plugin because Codex hooks are plugin-owned. OpenCode receives a
+fail-open global plugin. Claude Code, Cursor, and Gemini CLI use their user hook
+settings. Authentication stays in the existing Tilde plugin token store, while
+the hook routing file contains only the API URL, team ID, and agent ID.
+
+Each coding-agent session maps to one tenant-scoped ChatKit session. User
+prompts and final responses become ordinary searchable messages. Tool start,
+completion, and failure hooks become canonical tool executions with stable
+source, session, and call correlation. Tilde MCP tools and process-local tools
+share the same audit model.
+
+<Warning>
+  Canonical tool executions retain their input, output, and errors for audit.
+  Choose an agent with the correct visibility grants and do not pass secrets in
+  prompts or tool arguments. Browser views still apply the agent's ChatKit
+  observability policy; storage does not discard details merely because a view
+  hides them.
+</Warning>
+
+Use the normal ChatKit search endpoint to find coding-session prompts and
+responses across sessions. A repeated hook delivery reuses the original
+lookup-key session and tool execution identity instead of creating a second
+conversation.
 
 ### Provider-specific message metadata
 
@@ -146,6 +266,7 @@ Supported chat providers add validated metadata to the endpoint context. Use the
         teamId: process.env.TILDE_TEAM_ID!,
       }),
       webhookSigningKey: process.env.TILDE_WEBHOOK_SIGNING_KEY!,
+      responseMode: "agentLoop",
       async handler(_request, context) {
         console.log({
           event: context.github?.event,
@@ -177,6 +298,7 @@ Supported chat providers add validated metadata to the endpoint context. Use the
         teamId: process.env.TILDE_TEAM_ID!,
       }),
       webhookSigningKey: process.env.TILDE_WEBHOOK_SIGNING_KEY!,
+      responseMode: "agentLoop",
       async handler(_request, context) {
         console.log({
           teamId: context.slack?.team_id,
@@ -205,6 +327,20 @@ const messages = await convertToAiSdkMessages({
 ```
 
 The context also includes `sessionId`, team and organization IDs, the invoking user when known, and typed metadata for supported providers such as `context.slack` and `context.github`.
+
+For agent-to-agent delegation, `context.body.session.parentAgentId` identifies the authenticated agent that opened the child session. Direct conversations omit it. A specialist that operates caller-owned runtime state—such as a browser display—can use this server-authored ID to continue the caller's state without accepting a routing identity from model input or client parameters.
+
+`context.agent` identifies the agent receiving the current turn. It includes the canonical `id`, `displayName`, `providerId`, `status`, optional `principalUserId`, optional authenticated `avatar.url`, and `createdAt` / `updatedAt` timestamps from Tilde. Use this context instead of duplicating an agent name or avatar in application configuration.
+
+```typescript
+const receivingAgent = {
+  id: context.agent?.id,
+  name: context.agent?.displayName,
+  avatarUrl: context.agent?.avatar?.url,
+};
+```
+
+The avatar URL is a Tilde API path and requires the same server-side Tilde authentication as other agent resources. The `agent` field is optional on the wire so an updated SDK remains compatible with requests from an older Tilde deployment.
 
 ## Handle unprocessed content
 
@@ -456,6 +592,7 @@ export const POST = chatKitEndpoint({
     teamId: process.env.TILDE_TEAM_ID!,
   }),
   webhookSigningKey: process.env.TILDE_WEBHOOK_SIGNING_KEY!,
+  responseMode: "agentLoop",
   async handler(_request, context) {
     const history = await context.session.history();
     const messages = await convertToAiSdkMessages({

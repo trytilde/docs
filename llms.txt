@@ -30,8 +30,9 @@ These features are all exposed through cloud API’s that hide away the detail.
 - Common providers: A common-provider installation is the live authorization parent for its generated MCP, ChatKit, Signals, and reverse-proxy surfaces. Initial policy comes from the source credential; later child policy changes go through the installation. Credential secrets remain separately protected.
 - Policy intersections: Operations spanning roots require every visibility decision, including MCP server plus tool group, signal provider plus rule, and ChatKit provider or agent plus session. Reverse-proxy invocation requires profile visibility and receives only an exact internal credential-consumption capability.
 - Infrastructure: Billing entitlement records and encryption keys are not visibility/ownership roots. Billing gates authorized operations; server-only crypto capabilities bind resource-secret use to an exact resource, action, and scope.
-- Human users: Humans who sign in and user the paltform
-- Machine users: Often agents. When API keys are generated that are not tied to a human user, a machine user is provisioned, added to the relevant team and the API key associated to them.
+- Human users: People who sign in or own personal API keys.
+- Agent users: First-class users for deployed agents and installations. An API key without a nominated owner creates an agent user and team membership.
+- Credentials: API keys authenticate as their owning human or agent user. OAuth bearer tokens authenticate humans. Never send both credential forms on one request; Tilde rejects ambiguous credentials. There is no long-lived on-behalf-of identity mode.
 
 ## Use Tilde without a human account
 
@@ -80,7 +81,7 @@ Claiming transfers every team and supported resource from the temporary organiza
 1. Call `tilde_whoami` first.
 2. Select the target team from the returned identity. Teams are also called workspaces.
 3. Pass `team_id` to team-scoped functions. Personal REST routes use `/api/v1/user/{user_id}/...`; ordinary personal creates infer the effective user and cannot nominate another owner. The organization is inferred from the authenticated OAuth token or API key.
-4. Prefer OAuth when acting for a human. Use a team-scoped machine API key for a deployed agent.
+4. Use a bearer token or human-owned API key for a human. Use a team-scoped agent-owned API key for a deployed agent. Installation agents may create and reconcile agents when their ordinary permissions allow it.
 
 If a function returns `approval_url`, show it to the user. Then immediately call the returned `next_tool_name` with `next_tool_arguments` and wait for approval before continuing.
 
@@ -93,7 +94,7 @@ For authorization-bearing REST resources, set one plane with `POST .../{resource
 - For all team scoped API endpoints, the route path always contains /team/{team_id}
 - All organisation and team scoped endpoints are available in Global MCP and take these params in the input schema
 - Global MCP and all runtime MCP servers support both [Oauth](https://modelcontextprotocol.io/specification/draft/basic/authorization) and API key headers via "x-api-key"
-- Prefer Oauth over API key where possible and always in cases where you are acting on behalf of a user. Most seperately deployed harness SDK agents will always use machine generated API keys, which are provided when user invokes create agent endpoints
+- Use a human bearer token or human-owned API key for human actions. Separately deployed agents use agent-owned API keys returned by agent registration. Do not combine the two credential forms or model a permanent agent-on-behalf-of-human actor.
 - For agent, tool endpoints and anywhere else mentioned, always secure the endpoints via the Harness SDK and provide webhook signing secrets which are generated on remote tool server and agent creation to validate inputs
 - When building, use dev tunnels if you need to test and publicaly expose agents and tools from your local environment to the public internet for Tilde to be able to test integration with. This will often require updating the agent or tool configurations to dev tunnel mode
 - Always export state of the Tilde team / workspace you're working in at tilde.state.yaml if you're commiting source code to a repo. This is infrastructure as code file that represents the configuration along with the agent source code that is required to deploy to a new environment.

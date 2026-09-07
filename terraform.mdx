@@ -15,6 +15,8 @@ Each exported resource may carry a tagged `team`, `user`, or `user_team` ownersh
 
 Hosted MCP provider connections preserve their catalog provider identity, endpoint configuration, authentication mode, tool provider, and MCP mappings. API keys, bearer tokens, OAuth client secrets, access tokens, and refresh tokens remain encrypted credential references rather than state values.
 
+Safe self-extension proposals export secret-free intent, the server-authored review preview, any secret-free provider-setup continuation, and source resource receipts as audit metadata. Approval identity, Human Approval tokens, leases, execution status, generated outputs, and source rollback authority are not portable. Import always creates a fresh pending proposal in the destination workspace, rebuilds its preview, and requires a new explicit human approval there. Imported source receipts never authorize deletion of destination resources.
+
 OAuth providers that use dynamic client registration must register a new client in the destination environment because the redirect URI and client registration belong to the source environment. Import recreates the provider and returns a one-time authorization URL. Manual OAuth providers keep their pre-registered client configuration and ask you to reconnect the user credential separately.
 
 Commit `tilde.state.yaml` with your application so reviewers can see which Tilde resources it expects.
@@ -32,9 +34,9 @@ Commit `tilde.state.yaml` with your application so reviewers can see which Tilde
 
   <Tab title="CLI">
     ```bash
-    pnpm add -D @trytilde/cli
-    pnpm exec tilde auth login
-    pnpm exec tilde state export ./tilde.state.yaml
+    pnpm add -D openbot
+    pnpm exec openbot auth login
+    pnpm exec openbot state export ./tilde.state.yaml
     ```
   </Tab>
 </Tabs>
@@ -51,8 +53,8 @@ Commit `tilde.state.yaml` with your application so reviewers can see which Tilde
 You can perform the same workflow from the CLI:
 
 ```bash
-pnpm exec tilde auth login
-pnpm exec tilde state import ./tilde.state.yaml ./tilde-state-import-outputs.yaml
+pnpm exec openbot auth login
+pnpm exec openbot state import ./tilde.state.yaml ./tilde-state-import-outputs.yaml
 ```
 
 The CLI shows the plan before applying it. Add `--auto-apply` only in a trusted automated workflow where the state change has already been reviewed.
@@ -64,6 +66,12 @@ Add the button to a project's `README.md` when its repository contains a `tilde.
 [![Deploy with Tilde](https://api.trytilde.ai/deploy-button.svg)](https://api.trytilde.ai/deploy?repository-url=https%3A%2F%2Fgithub.com%2Ftrytilde%2Fexamples&state-path=hello-world-agent%2Ftilde.state.yaml)
 
 Clicking the button opens Tilde, asks the user to select a workspace, reads the state file from GitHub, collects its variables, and shows the import plan before creating resources.
+
+Common-provider integrations are exported as one installation plus a pending
+credential setup reference. For example, importing Linq restores the desired
+Tool, ChatKit, Signals, and Reverse Proxy bundle without exporting its API token
+or webhook signing secret. Reconnect the Linq credential once after import to
+materialize every generated surface.
 
 Use this Markdown and replace both query parameters with your repository and state-file path:
 

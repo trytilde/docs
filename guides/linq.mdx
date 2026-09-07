@@ -1,0 +1,102 @@
+---
+title: "Connect Linq messaging"
+description: "Connect Linq once to provision messaging tools, ChatKit, Signals, and authenticated API access in Tilde."
+---
+
+Linq connects iMessage, RCS, and SMS conversations to Tilde. One Linq common-provider installation provisions all supported surfaces from the same account:
+
+- 23 typed MCP messaging and account-management tools;
+- a ChatKit channel for inbound conversations and agent replies;
+- a Signals provider for Linq webhook events; and
+- a disabled-by-default Reverse Proxy profile for the Partner API V3.
+
+## Before you start
+
+Create a Partner API token in [Linq API Tooling](https://dashboard.linqapp.com/api-tooling). Treat it as a secret. Tilde stores the token as an encrypted managed credential; it does not place the token in MCP schemas, fixed tool arguments, webhook URLs, or exported state.
+
+Decide which phone lines the installation should own:
+
+- Leave **Phone-line filters** empty to use the account's complete line pool and Linq failover.
+- Enter one or more E.164 numbers, separated by commas, to limit inbound routing and outbound defaults to that operational pool.
+- Create one Tilde installation per line when each line needs independent agents, access policy, or lifecycle. Use a shared installation when several lines should round-robin as one pool.
+
+## Connect Linq
+
+1. In Tilde, open **ChatKit** or **Tools** and add **Linq**.
+2. Enter the Linq API token and an account or line-pool name.
+3. Optionally enter the E.164 phone-line filters and choose a default ChatKit agent.
+4. Complete setup once. Tilde provisions the Tool, ChatKit, Signals, and Reverse Proxy surfaces together; connecting Linq from either Tools or ChatKit produces the same installation.
+5. Enable the Linq tools needed by an MCP server. The Reverse Proxy remains disabled until you explicitly enable it.
+
+The same bundle is preserved by Tilde state export as a `common_provider/installation` plus a pending `credential/setup_item`. After importing state, reconnect the API token once to restore every generated surface. Webhook signing secrets are generated again and are never exported.
+
+## Webhooks
+
+For the managed Linq setup, **do not create a webhook subscription manually**. Tilde creates it through the Linq Partner API, subscribes to the events Linq currently accepts, stores the one-time Standard Webhooks signing secret, and removes the subscription when the common installation is deleted.
+
+The generated target has this shape:
+
+```text
+https://api.trytilde.ai/api/v1/webhooks/{linq-signal-endpoint-id}/events?version=2026-02-03
+```
+
+The concrete URL is shown by the Tilde setup response and belongs to that Signals provider instance. Do not reuse another installation's endpoint.
+
+If you intentionally configure Linq as a standalone Signals provider instead of the common managed installation:
+
+1. Create the Signals provider in Tilde and copy its generated webhook URL.
+2. In Linq API Tooling, create a webhook subscription whose target is the copied URL with `?version=2026-02-03` appended.
+3. Subscribe to the event families your automation needs.
+4. Copy the returned `whsec_...` signing secret immediately into the Tilde setup field. Linq returns it only when the subscription is created.
+
+## Supported events
+
+Tilde normalizes Linq message, reaction, poll, participant, chat, typing, phone-number, contact-card, payment, and connection events. Incoming `message.received` events can also open or continue a ChatKit session keyed by the Linq chat.
+
+Linq currently advertises four webhook names that its subscription-creation endpoint rejects: `payment.declined`, `payment.authorized`, `connection.created`, and `connection.revoked`. Managed setup detects explicit rejection and retries without only those names; the rest of the catalog remains subscribed.
+
+## Go-live practices
+
+Design messaging for inbound-first conversations, space messages naturally, share contact cards early, and round-robin new users across active lines. Keep fallback lines warm.
+
+Do not exceed roughly 5,000–7,000 messages per day per line, include links or media in the first message, bombard non-responders, isolate Android users onto separate lines, or use iMessage for cold outreach.
+
+## Verify the connection
+
+Use the Linq tools to list phone lines and chats, then send a reply to a conversation that has already messaged the line. Confirm that:
+
+- the recipient receives the text, reaction, or poll;
+- a `linq.message.received` Signal appears for an inbound reply; and
+- the matching ChatKit session receives the inbound message when the messages subscription is enabled.
+
+[Browse all Linq MCP tools](/tool-providers/linq) or [learn how ChatKit providers work](/chatkit).
+
+## TypeScript SDK types
+
+`@trytilde/sdk-vercel-ai-node` exposes inbound Linq message metadata as
+`context.linq` with `LinqChatKitMessageMetadata`. Signals use the complete
+`LinqSignalType` union and the event-indexed `LinqSignalByType` map, so a
+`"linq.message.received"` handler receives a narrowed
+`LinqWebhookEnvelope<"message.received">` rather than untyped JSON.
+
+Register conversions under `onUnprocessed.linq` when loading ChatKit history:
+
+```ts
+const messages = await convertToAiSdkMessages({
+  messages: history.items,
+  onUnprocessed: {
+    linq: {
+      "linq.message.received": async (signal) => ({
+        id: signal.id,
+        role: "user",
+        parts: [
+          {
+            type: "text",
+            text: `New message in ${signal.data.data.chat?.id}`,
+          },
+        ],
+      }),
+    },
+  },
+});
+```

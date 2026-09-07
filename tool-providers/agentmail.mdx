@@ -1,0 +1,65 @@
+---
+title: "AgentMail tools for AI agents"
+sidebarTitle: "AgentMail"
+description: "Explore 2 AgentMail tools for AI agents in Tilde, including supported authentication and MCP capabilities."
+keywords:
+  - "AgentMail AI tools"
+  - "AgentMail MCP integration"
+  - "AgentMail tools for AI agents"
+  - "Tilde tool providers"
+  - "MCP tools"
+"og:title": "AgentMail tools for AI agents | Tilde"
+"og:description": "Explore 2 AgentMail tools for AI agents in Tilde, including supported authentication and MCP capabilities."
+mode: "wide"
+---
+
+import {
+  PUBLIC_CATALOG_URL,
+  iconAliases,
+  iconUrl,
+  providerFromApi,
+  ProviderLogo,
+  ToolProviderDetail,
+} from "/snippets/tool-provider-browser.jsx";
+
+export const provider = {
+  "name": "AgentMail",
+  "slug": "agentmail",
+  "initials": "AG",
+  "category": "Chat",
+  "summary": "Compose and reply to AgentMail email conversations.",
+  "auth": [
+    "AgentMail API key"
+  ],
+  "iconSources": [],
+  "toolCount": 2,
+  "tools": [
+    [
+      "sendMessage",
+      "Compose or reply to an email through a bound AgentMail inbox."
+    ],
+    [
+      "getThread",
+      "Get the AgentMail thread bound to this ChatKit session."
+    ]
+  ]
+};
+
+{/* GENERATED: scripts/generate-tool-provider-pages.mjs */}
+
+Compose and reply to AgentMail email conversations.
+
+Tilde exposes **2 AgentMail tools** for AI agents through MCP. Connect with AgentMail API key.
+
+<ToolProviderDetail provider={provider} ProviderLogo={ProviderLogo} />
+
+## Popular AgentMail tools
+
+- **sendMessage** — Compose or reply to an email through a bound AgentMail inbox.
+- **getThread** — Get the AgentMail thread bound to this ChatKit session.
+
+## Connect AgentMail to an AI agent
+
+Add AgentMail from the [Tilde dashboard](https://api.trytilde.ai/tools/available-tool-providers), then enable the tools your agent needs on an MCP server. [Learn how tools work in Tilde](/tools).
+
+[Browse every Tilde tool provider](/tool-providers/index) or [compare Tilde-managed and self-managed authentication](/tool-providers/managed-auth).

@@ -23,11 +23,13 @@ capability; it does not require or confer credential ownership.
 ## Recommended workflow
 
 1. Call `tilde_search_available_capabilities` with a specific intent such as `"GitHub pull request tools"`. Use `include_schemas: true` when you need provider or tool input details.
+
+Linq is a common provider: provisioning it from Tools or ChatKit creates the same credential-backed Tool, ChatKit, Signals, and Reverse Proxy bundle. Get the token from `https://dashboard.linqapp.com/api-tooling`. Tilde creates the managed webhook subscription; do not instruct users to add a second webhook unless they deliberately chose a standalone Signals provider. See `/guides/linq`.
 2. Configure the source:
    - Managed provider: `tilde_enable_toolkit_provider`.
    - Provider app that Tilde should provision: `tilde_auto_provision_toolkit_provider`.
    - Existing Streamable HTTP MCP server: `tilde_connect_proxied_mcp_server`.
-   - Harness SDK `toolEndpoint` backend: `tilde_register_custom_tool_backend`.
+   - Tilde SDK `toolEndpoint` backend: `tilde_register_custom_tool_backend`.
 3. If the response contains `approval_url`, send it to the user. Immediately invoke the returned `next_tool_name` with `next_tool_arguments`. Do not continue until it returns `approved`.
 4. Enable only the required provider functions with `tilde_set_toolkit_tool_enabled`.
 5. Create a runtime server with `tilde_create_mcp_server`. Supply a stable lowercase `id`, a human-readable `name`, and `is_dynamic_tool_discovery: true` unless the toolset is very small and fixed.
@@ -74,7 +76,7 @@ For the server-authored hosted-provider catalog, direct the user to **Tools** â†
 
 Do not ask the user to paste provider secrets into chat or into MCP arguments. OAuth client secrets, API keys, and bearer tokens must be entered through Tilde's credential setup. Dynamic OAuth client registrations are environment-specific and require authorization again after state import; pre-registered manual OAuth configurations remain declarative and their user credential is reconnected separately.
 
-Use `tilde_register_custom_tool_backend` for a signed discovery endpoint created with Harness SDK `toolEndpoint`. Save the one-time signing key in the tool server, then call `tilde_refresh_custom_tool_backend` after its manifest changes.
+Use `tilde_register_custom_tool_backend` for a signed discovery endpoint created with Tilde SDK `toolEndpoint`. Save the one-time signing key in the tool server, then call `tilde_refresh_custom_tool_backend` after its manifest changes.
 
 For implementation patterns, inspect the [code review bot](https://github.com/trytilde/examples/tree/main/code-review-bot) and the rest of the [examples repository](https://github.com/trytilde/examples).
 
@@ -87,4 +89,27 @@ Reverse proxies let application code call a provider's native API while Tilde in
 
 ## Connect the deployed agent
 
-Pass the runtime MCP server ID to Harness SDK `createMCPClient`. Follow the [human Tools guide](https://trytilde.ai/docs/tools) for the client code. The code review bot is the preferred reference for custom agents that combine MCP tools, local tools, and reverse proxies.
+Pass the runtime MCP server ID to Tilde SDK `createMCPClient`. Follow the [human Tools guide](https://trytilde.ai/docs/tools) for the client code. The code review bot is the preferred reference for custom agents that combine MCP tools, local tools, and reverse proxies.
+
+Within a `chatKitEndpoint({ responseMode: "tool" })` handler, prefer `context.session.tools`, `context.$provider.tools`, or `context.session.createMCPClient({ serverId })`. These surfaces inject session-bound provider communication tools and prefill routing identifiers. `sendMessage` creates the visible ChatKit message; reactions, thread reads, and Linq poll operations are emitted as canonical tool-execution events.
+
+Use `context.mcp.connect({ serverId })` when a shared ChatKit agent should federate the verified speaker's eligible personal tools. The SDK forwards an invocation-scoped capability outside model input. Never serialize that capability, user IDs, account IDs, or credentials into messages, state, logs, or tool arguments.
+
+For an `agent_job` invocation, use the same `context.mcp.connect` surface. Tilde derives the human from the durable job's private parent-session lineage and an actual ancestor message with a server-authored human actor; do not insert a fake human message into the child session. Capabilities retain the child session, original trigger, and job ID/generation. Their use revalidates the running generation, private owner and grants, active participants, current team membership, and original external sender verification and channel policy. A resumed generation cannot reuse an older capability. Hidden continuations must also match their trusted AgentRun generation and worker lease. Personal federation is withheld if the lineage or original policy cannot be validated.
+
+## Personal OAuth setup from an application
+
+Use the official SDK transport with the authenticated user's session. Discover
+provider/auth-method IDs from the team's provider-setup catalog, then call
+`POST /api/v1/team/{team_id}/provider-setup/start` with `personal: true`, `domain:
+"mcp"`, `provider_id`, `auth_method_id`, a unique `form_values.id`, optional
+`form_values.displayName`, and `return_url`. Follow the returned generic
+`next_action`. List the resulting accounts through the user-scoped tool-group
+route. Multiple accounts of the same provider remain distinct. Personal OAuth
+brokering is restricted to the effective owner; user credentials are encrypted
+and refreshed in the user scope. Omitting `personal` retains team setup.
+
+Personal credential setup ensures organization, workspace (when required for
+broker state), and user key defaults after validating the effective owner.
+Callbacks repair missing defaults before token exchange. A missing personal key
+must never be worked around by encrypting the user's tokens under a team key.

@@ -142,6 +142,7 @@
         "pages": [
           "guides/frontend-chat",
           "guides/code-review-agent",
+          "guides/linq",
           "guides/hosted-openbot"
         ]
       }
