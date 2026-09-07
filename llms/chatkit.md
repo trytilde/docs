@@ -220,8 +220,8 @@ transcript observations must not trigger another model turn or external send.
 `context.audio` and `context.telnyx` come from typed, server-authored speech
 provenance rather than client message metadata.
 
-The manual browser/carrier example is `examples/realtime-voice` in the Harness
-SDK. It never buys phone numbers or changes existing carrier routing. Agent
+The manual browser/carrier example is `examples/realtime-voice` in `trytilde/dispatch`
+(the `@trytilde/sdk` packages). It never buys phone numbers or changes existing carrier routing. Agent
 settings and credential setup references are portable; live connections and
 media tokens are not exported. Configure Telnyx number/application bindings
 again in the destination installation. Native mode does not inherit endpoint
