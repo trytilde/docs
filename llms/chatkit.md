@@ -191,6 +191,63 @@ Use `tilde_list_signal_provider_instances` and `tilde_list_signal_rules` before 
 In application code, handle typed GitHub, Slack, Sentry, and Firecrawl metadata as shown in the [human ChatKit guide](https://trytilde.ai/docs/chatkit). `onUnprocessed` runs once per unprocessed message; later conversions reuse its cached result.
 
 
+## Agent-owned realtime audio
+
+Use the selected tenant host and explicit `team_id` for these REST operations:
+
+1. `GET /api/v1/chatkit/audio/profiles` returns supported profile defaults and
+   server-authored fields. Render these descriptors rather than generating
+   provider-specific setup instructions in frontend code.
+2. Register an HTTP agent with optional `audio` configuration, or use
+   `PUT /api/v1/team/{team_id}/chatkit/agents/{agent_id}/audio` with `{ "audio":
+   <configuration> }`. Set `audio` to null on the PUT route to disable voice.
+3. Configuration fields are `mode` (`pipeline`, `realtime`, or `telnyx_relay`), `credential_id`
+   (optional), `stt_model`, `tts_model`, `realtime_model`, `voice`, `instructions`,
+   `language` (default `en-US`), `interruptible` (default true), and
+   `max_duration_seconds` (10–1800). The OpenAI Audio credential source is
+   `chatkit_openai_audio`; omitting it uses the server OpenAI key for OpenAI modes.
+   Relay uses `stt_model: "deepgram/nova-3"`, `voice: "Telnyx.Ultra.Callie"`,
+   and null `credential_id`; its phone route owns the Telnyx credential.
+4. `POST /api/v1/team/{team_id}/chatkit/agents/{agent_id}/audio/sessions` creates a
+   normal browser session for OpenAI modes and returns `audio_session`, `websocket_path`, and a one-time
+   token. Connect with WebSocket subprotocols `chatkit-audio` and `token.<token>`.
+   This endpoint rejects `telnyx_relay`; relay starts from an incoming call.
+   Send mono signed PCM16 little-endian audio at 24 kHz as base64 `audio` frames.
+5. `PUT /api/v1/team/{team_id}/chatkit/agents/{agent_id}/audio/telnyx` accepts
+   `credential_id` (source `chatkit_telnyx_voice`), `public_key`, `phone_number`,
+   `connection_id`, and public HTTPS `media_base_url`. It returns `route` and
+   `webhook_url`; successful setup also returns the assigned
+   `route.channel_inbox_id`. Use the webhook URL in the dedicated Telnyx application.
+6. The generic channel catalog entry is `chatkit.chat_channel.telnyx_voice`,
+   provider `chatkit.channel.telnyx_voice`. Use auth method
+   `chatkit.channel.telnyx_voice.auth.self_managed` for a returned URL or
+   `chatkit.channel.telnyx_voice.auth.managed` for Tilde to update the existing
+   Voice API application's webhook. Both use your existing encrypted
+   `chatkit_telnyx_voice` credential and existing number/application. Pass the
+   same five setup fields and the normal default agent selection. Managed setup
+   updates webhook configuration; it does not buy, assign, or fund numbers.
+   Calls use the resulting channel as their participant origin.
+
+Pipeline mode invokes the existing callback only when a user speech turn is
+ready. Rust synthesizes the response. Relay invokes the same signed callback
+with `context.audio.mode = "telnyx_relay"`; Telnyx transcribes and synthesizes,
+while Tilde exchanges text frames with the carrier. Realtime mode owns spoken generation;
+transcript observations must not trigger another model turn or external send.
+`context.audio` and `context.telnyx` come from typed, server-authored speech
+provenance rather than client message metadata. Both persisted text and UI
+messages can carry `speech`. Interrupted generated speech retains its original
+text with `interrupted: true`, optional `played_audio_ms`, and optional
+`reported_spoken_text` supplied by the carrier. Preserve the reported prefix
+separately; do not rewrite it as the complete generated response. SDK history
+conversion adds the corresponding annotation before the original content.
+
+The manual browser/carrier example is `examples/realtime-voice` in `trytilde/dispatch`
+(the `@trytilde/sdk` packages). It never buys phone numbers or changes existing carrier routing. Agent
+settings and credential setup references are portable; live connections and
+media tokens are not exported. Configure Telnyx number/application bindings
+again in the destination installation. Native mode does not inherit endpoint
+tools, and browser voice does not establish personal-tool federation.
+
 ## Change resources through native tools
 
 Agents use native Tilde API/MCP operations under their existing permissions.

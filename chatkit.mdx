@@ -617,6 +617,66 @@ export const POST = chatKitEndpoint({
 ChatKit preserves the messages inside a session. [Memory](/memory) stores selected knowledge that should be available across sessions, channels, or agents. Use both when an agent needs conversational continuity and longer-lived organizational context.
 
 
+## Configure realtime voice
+
+Voice settings belong to your Tilde agent. In agent registration, select a voice
+profile and its models, voice, and maximum conversation duration. You can change
+these settings in the agent editor later.
+
+- **Text agent with speech**: Tilde transcribes incoming audio, invokes your normal
+  `chatKitEndpoint` callback, and speaks its streamed text response.
+- **Telnyx Conversation Relay**: Telnyx handles recognition and speech synthesis
+  for incoming phone calls. Tilde receives caller text, invokes your normal
+  callback, and streams its response text to Telnyx. This profile is phone-only.
+- **OpenAI Realtime**: the realtime model generates spoken responses directly.
+  Tilde records the final transcripts without invoking your text endpoint again.
+
+Your text callback receives `context.audio` for transcribed speech turns and
+`context.telnyx` for Telnyx calls. Provider facts are supplied in the signed
+request. A subsequent typed message does not become a speech turn merely because
+its session previously contained a call.
+
+Each call creates a normal ChatKit session. Browser media admission is one-time,
+expires after five minutes, and remains subject to current session membership.
+Call duration is limited by the configured maximum. Call recordings are not
+retained by this initial realtime implementation.
+
+For a manual test, use the SDK repository's `examples/realtime-voice` example. It
+registers three agents. Its microphone page supports the two OpenAI modes; a
+dedicated relay endpoint handles phone calls. To receive calls, configure a
+**Telnyx Voice** chat provider with an existing encrypted Telnyx Voice credential,
+Voice API application, phone number, and default agent. This creates a real
+ChatKit channel that owns the caller's participant route.
+
+Choose **self-managed webhook setup** to copy Tilde's returned webhook URL into
+Telnyx yourself. Choose **managed webhook setup** to let Tilde update the existing
+application's webhook URL using your credential. Managed setup does not provision
+or fund a Telnyx account, purchase a number, or assign numbers to applications.
+Use a dedicated test application for the manual example. The Tilde API must be publicly
+reachable through HTTPS and WSS. Hookdeck webhook replay alone cannot carry live
+bidirectional calls.
+
+For relay, select `telnyx_relay`, transcription model `deepgram/nova-3`, voice
+`Telnyx.Ultra.Callie`, language `en-US`, and interruption enabled. The Telnyx
+route uses its own credential; relay does not require an OpenAI speech key.
+Your callback continues to use its own text model and tools. The SDK example
+accepts `TELNYX_AGENT_MODE=telnyx_relay` and keeps the browser demos available.
+
+Partial relay transcripts do not start agent turns. When speech interrupts a
+response, Tilde retains generated text and separately records the spoken prefix
+reported by the carrier. The SDK annotates both text and UI history so the next
+turn can distinguish generated words from that reported prefix. Caller ID does
+not authorize access to a Tilde human's personal tools.
+
+The [Telnyx Conversation Relay guide](https://developers.telnyx.com/docs/voice/programmable-voice/conversation-relay)
+describes the text WebSocket protocol used between Telnyx and Tilde.
+
+The initial browser implementation streams audio through the Rust API. Direct
+browser-to-provider WebRTC and direct SIP routing are separate transport options
+and are not implied by the OpenAI Realtime profile. Native Realtime uses its
+configured instructions and does not inherit endpoint tools. Browser voice
+identifies its caller but does not yet establish personal-tool federation.
+
 ## Change resources through native tools
 
 Agents use native Tilde API/MCP operations under their existing permissions.
